@@ -355,7 +355,7 @@ Replace portal roots with blade-deep destinations where stable.
 
 ## Gate / test results (this branch)
 
-Recorded **2026-11-16** on `review/2026-11-architect-4161`:
+Recorded **2026-11-16** on `cursor/2026-11-architect-4161`:
 
 - `python3 scripts/validate_sku_catalog.py` → OK
 - `python3 scripts/diff_sku_catalog_vs_learn_csv.py --csv <Learn CSV 2026-08-19>` → **PASS** (0 missing GUIDs / 0 name mismatches / 0 unknown SKU String_Ids)
