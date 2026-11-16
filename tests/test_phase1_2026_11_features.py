@@ -134,9 +134,13 @@ def test_epm_policy_detects_template_family() -> None:
             "name": "EPM elevation rules",
             "templateReference": {"templateFamily": "endpointSecurityEndpointPrivilegeManagement"},
             "technologies": "endpointPrivilegeManagement",
+            "isAssigned": True,
         }
     )
     assert evaluate_intune_epm_policy_present(check, evidence).status is FindingStatus.OK
+    unassigned = copy.deepcopy(evidence)
+    unassigned["intune_bundle"]["configuration_policies"][-1]["isAssigned"] = False
+    assert evaluate_intune_epm_policy_present(check, unassigned).status is FindingStatus.PARTIAL
 
 
 def test_gsa_internet_ok_private_gap_on_demo_fixture() -> None:

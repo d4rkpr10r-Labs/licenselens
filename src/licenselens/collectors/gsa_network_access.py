@@ -32,6 +32,7 @@ DEMO_GSA_NETWORK_ACCESS_BUNDLE: dict[str, Any] = {
             "name": "Internet traffic forwarding",
             "trafficForwardingType": "internet",
             "state": "enabled",
+            "associations": [{"id": "demo-group", "@odata.type": "#microsoft.graph.group"}],
         },
         {
             "id": "demo-private",

@@ -78,11 +78,13 @@ def _evaluate_forwarding_type(
         if str(p.get("trafficForwardingType") or "").lower() == traffic_type.lower()
     ]
     enabled = [p for p in matching if _is_enabled(p)]
+    assigned = [p for p in enabled if _has_assignment(p)]
     count_key = f"{traffic_type}_profile_count"
     enabled_key = f"{traffic_type}_profiles_enabled"
     evidence_out = {
         count_key: len(matching),
         enabled_key: len(enabled),
+        f"{traffic_type}_profiles_assigned": len(assigned),
         "api_version": bundle.get("api_version") or "beta",
         "matching_profile_names": [
             str(p.get("name") or p.get("displayName") or p.get("id") or "?") for p in matching
@@ -90,15 +92,37 @@ def _evaluate_forwarding_type(
     }
     limitations = list(_BETA_LIMITATIONS) + list(bundle.get("limitations") or [])
 
-    if enabled:
+    if assigned:
         return Evaluation(
             status=FindingStatus.OK,
-            summary=f"Entra {label} has {len(enabled)} enabled forwarding profile(s).",
+            summary=(
+                f"Entra {label} has {len(assigned)} enabled forwarding profile(s) "
+                "with user or group assignment."
+            ),
             evidence=evidence_out,
-            customer_summary=f"Entra {label} traffic forwarding is enabled.",
+            customer_summary=f"Entra {label} traffic forwarding is enabled and assigned.",
             confidence=Confidence.HIGH,
             data_sources=["graph.beta.networkAccess.forwardingProfiles"],
             limitations=limitations,
+        )
+    if enabled:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"Entra {label} forwarding profile(s) are enabled but have no "
+                "user or group assignment evidence."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                f"Entra {label} is turned on, but nobody appears assigned yet — "
+                "traffic will not be acquired until users or groups are assigned."
+            ),
+            confidence=Confidence.MEDIUM,
+            data_sources=["graph.beta.networkAccess.forwardingProfiles"],
+            limitations=limitations
+            + [
+                "Enabled without associations does not prove traffic acquisition.",
+            ],
         )
     if matching:
         return Evaluation(
@@ -127,5 +151,18 @@ def _is_enabled(profile: dict[str, Any]) -> bool:
     if state in {"enabled", "on", "active"}:
         return True
     if profile.get("enabled") is True:
+        return True
+    return False
+
+
+def _has_assignment(profile: dict[str, Any]) -> bool:
+    """True when the profile shows at least one user/group association."""
+    associations = profile.get("associations")
+    if isinstance(associations, list) and associations:
+        return True
+    assigned_to = profile.get("assignedTo") or profile.get("assignments")
+    if isinstance(assigned_to, list) and assigned_to:
+        return True
+    if profile.get("isAssigned") is True:
         return True
     return False

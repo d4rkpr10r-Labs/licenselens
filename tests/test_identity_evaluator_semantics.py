@@ -115,7 +115,7 @@ def test_security_defaults_off_with_unknown_ca_is_partial():
     assert result.status == FindingStatus.PARTIAL
 
 
-def test_security_defaults_off_with_enabled_ca_is_ok():
+def test_security_defaults_off_with_enabled_ca_without_baseline_is_partial():
     result = evaluate_security_defaults_on(
         _check("id-security-defaults-on"),
         {
@@ -123,7 +123,47 @@ def test_security_defaults_off_with_enabled_ca_is_ok():
             "ca_policies": [{"id": "ca-1", "state": "enabled"}],
         },
     )
+    assert result.status == FindingStatus.PARTIAL
+
+
+def test_security_defaults_off_with_baseline_ca_is_ok():
+    result = evaluate_security_defaults_on(
+        _check("id-security-defaults-on"),
+        {
+            "security_defaults_policy": {"id": "p", "isEnabled": False},
+            "ca_policies": [
+                {
+                    "id": "mfa",
+                    "displayName": "MFA all users",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["All"]},
+                    },
+                    "grantControls": {
+                        "operator": "OR",
+                        "builtInControls": ["mfa"],
+                    },
+                },
+                {
+                    "id": "legacy",
+                    "displayName": "Block legacy auth",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["All"]},
+                        "clientAppTypes": ["exchangeActiveSync", "other"],
+                    },
+                    "grantControls": {
+                        "operator": "OR",
+                        "builtInControls": ["block"],
+                    },
+                },
+            ],
+        },
+    )
     assert result.status == FindingStatus.OK
+    assert result.evidence["baseline_replaced"] is True
 
 
 def test_security_defaults_off_with_only_report_only_ca_is_not_ok():
