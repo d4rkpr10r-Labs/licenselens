@@ -36,10 +36,12 @@ friendly_sku_names:
   # Microsoft 365 / Office 365 suites
   SPE_E3: Microsoft 365 E3
   SPE_E5: Microsoft 365 E5
+  MICROSOFT_365_E7: Microsoft 365 E7
   SPE_E5_USGOV_GCCHIGH: Microsoft 365 E5 (GCC High)
   SPE_E5_USGOV_DOD: Microsoft 365 E5 (DoD)
   SPE_E3_USGOV_GCCHIGH: Microsoft 365 E3 (GCC High)
   M365_E5_GOV: Microsoft 365 E5 (Government)
+  M365_E5_SUITE_COMPONENTS: Microsoft 365 E5 Suite features
   ENTERPRISEPACK: Office 365 E3
   ENTERPRISEPREMIUM: Office 365 E5
   EMSPREMIUM: Enterprise Mobility + Security E5
@@ -47,8 +49,12 @@ friendly_sku_names:
   AAD_PREMIUM: Microsoft Entra ID P1
   AAD_PREMIUM_P2: Microsoft Entra ID P2
   MICROSOFT_ENTRA_ID_GOVERNANCE: Microsoft Entra ID Governance
+  Microsoft_Entra_ID_Governance: Microsoft Entra ID Governance
+  Microsoft_Entra_Suite_Step_Up_for_Microsoft_Entra_ID_P2: Microsoft Entra Suite Add-on for Microsoft Entra ID P2
+  AGENT_365: Microsoft Agent 365
   WORKLOAD_IDENTITIES_P2: Microsoft Entra Workload ID Premium
   WORKLOAD_IDENTITIES_PREMIUM_CN: Microsoft Entra Workload ID Premium (China)
+  Microsoft_Intune_Suite: Microsoft Intune Suite
   # Defender family
   ATP_ENTERPRISE: Microsoft Defender for Office 365 P1
   IDENTITY_THREAT_PROTECTION: Microsoft Defender for Identity
@@ -132,6 +138,16 @@ friendly_plan_names:
   M365_ADVANCED_AUDITING: Microsoft 365 Advanced Auditing
   AUDIT_ENTERPRISE: Microsoft 365 Audit
   ADALLOM_S_O365: Microsoft Defender for Cloud Apps
+  ADALLOM_S_STANDALONE: Microsoft Defender for Cloud Apps
+  ADALLOM_S_DISCOVERY: Microsoft Defender for Cloud Apps Discovery
+  Entra_Premium_Internet_Access: Microsoft Entra Internet Access
+  Entra_Premium_Private_Access: Microsoft Entra Private Access
+  AGENT_365: Microsoft Agent 365
+  Intune-EPM: Intune Endpoint Privilege Management
+  Intune_AdvancedEA: Intune Advanced Analytics
+  REMOTE_HELP: Intune Remote Help
+  CLOUD_PKI: Microsoft Cloud PKI
+  INTUNE_P2: Microsoft Intune Plan 2
   # Exchange / email protection
   EOP_ENTERPRISE: Exchange Online Protection
   EOP_ENTERPRISE_PREMIUM: Exchange Online Protection
@@ -173,7 +189,8 @@ friendly_plan_names:
   BI_AZURE_P_2_GOV: Power BI Pro (Government)
 
 # servicePlanId GUID <-> canonical plan name reference (source: Microsoft Learn
-# "Product names and service plan identifiers for licensing", 2026-08).
+# "Product names and service plan identifiers for licensing", 2026-08-19 CSV;
+# Phase 1 refresh 2026-11-16).
 # GUIDs are stable public identifiers returned by Graph subscribedSkus.
 service_plan_guids:
   41781fb2-bc02-4b7c-bd55-b576c07bb09d: AAD_PREMIUM
@@ -182,11 +199,15 @@ service_plan_guids:
   7dc0e92d-bf15-401d-907e-0884efe7c760: AAD_WRKLDID_P2
   14ab5db5-e6c4-4b20-b4bc-13e36fd2227f: ATA
   f20fedf3-f3c3-43c3-8267-2bfdd51c0939: ATP_ENTERPRISE
+  2e2ddb96-6af9-4b1d-a3f0-d6ecfd22edb2: ADALLOM_S_STANDALONE
+  8c098270-9dd4-4350-9b30-ba4703f3b36b: ADALLOM_S_O365
   70d33638-9c74-4d01-bfd3-562de28bd4ba: BI_AZURE_P2
   0bf3c642-7bb5-4ccc-884e-59d09df0266c: BI_AZURE_P3
   326e2b78-9d27-42c9-8509-46c827743a17: EOP_ENTERPRISE
   75badc48-628e-4446-8460-41344d73abd6: EOP_ENTERPRISE_PREMIUM
   e866a266-3cff-43a3-acca-0c90a7e00c8b: Entra_Identity_Governance
+  8d23cb83-ab07-418f-8517-d7aca77307dc: Entra_Premium_Internet_Access
+  f057aab1-b184-49b2-85c0-881b02a405c5: Entra_Premium_Private_Access
   4de31727-a228-4ec3-a5bf-8e45b5ca48cc: EQUIVIO_ANALYTICS
   34c0d7a0-a70f-4668-9238-47f9fc208882: EXCHANGE_ANALYTICS
   efb87545-963c-4e0d-99df-69c6916d9eb0: EXCHANGE_S_ENTERPRISE
@@ -198,6 +219,7 @@ service_plan_guids:
   9d0c4ee5-e4a1-4625-ab39-d82b619b1a34: INSIDER_RISK_MANAGEMENT
   c1ec4a95-1f05-45b3-a911-aa3fa01094f5: INTUNE_A
   3e170737-c728-4eae-bbb9-3f3360f7184c: INTUNE_A_VL
+  bb73f429-78ef-4ff2-83c8-722b04c3e7d1: Intune-EPM
   9f431833-0334-42de-a7dc-70aa40db46db: LOCKBOX_ENTERPRISE
   2f442157-a11c-46b9-ae5b-6e39ff4e5849: M365_ADVANCED_AUDITING
   0feaeb32-d00e-4d66-bd5a-43b5b83db82c: MCOSTANDARD

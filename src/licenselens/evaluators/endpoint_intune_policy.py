@@ -19,7 +19,10 @@ __all__ = [
     "evaluate_endpoint_mde_connector",
     "evaluate_endpoint_security_baseline",
     "evaluate_endpoint_security_policy_coverage",
+    "evaluate_intune_epm_policy_present",
 ]
+
+_EPM_FAMILY = "endpointsecurityendpointprivilegemanagement"
 
 _EXPECTED_FAMILIES: Final = {
     "antivirus": "antivirus",
@@ -124,6 +127,48 @@ def evaluate_endpoint_security_policy_coverage(
     )
 
 
+def evaluate_intune_epm_policy_present(
+    check: CheckDefinition,
+    evidence: dict[str, Any],
+) -> Evaluation:
+    """At least one Intune Endpoint Privilege Management policy exists."""
+    del check
+    bundle = intune_bundle(evidence)
+    error = surface_error(bundle, "configuration_policies")
+    if error:
+        return unavailable(
+            "Intune configuration policies could not be read; EPM state is unresolved.",
+            surface="configuration_policies",
+            customer_summary=(
+                "We could not confirm whether Endpoint Privilege Management is configured."
+            ),
+        )
+    policies = configuration_policies(bundle)
+    epm = [p for p in policies if _is_epm_policy(p)]
+    evidence_out = {
+        "epm_policy_count": len(epm),
+        "epm_policy_names": [
+            str(p.get("name") or p.get("displayName") or p.get("id") or "?") for p in epm
+        ],
+        "configuration_policy_count": len(policies),
+    }
+    if not epm:
+        return Evaluation(
+            status=FindingStatus.GAP,
+            summary="No Intune Endpoint Privilege Management configuration policy was found.",
+            evidence=evidence_out,
+            customer_summary=("EPM appears licensed but no elevation policy is configured."),
+            **direct_meta(),
+        )
+    return Evaluation(
+        status=FindingStatus.OK,
+        summary=f"{len(epm)} Intune Endpoint Privilege Management policy(ies) configured.",
+        evidence=evidence_out,
+        customer_summary="Endpoint Privilege Management policies are present.",
+        **direct_meta(),
+    )
+
+
 def evaluate_endpoint_mde_connector(
     check: CheckDefinition,
     evidence: dict[str, Any],
@@ -195,6 +240,17 @@ def _family(policy: dict[str, Any]) -> str:
     if isinstance(ref, dict):
         return str(ref.get("templateFamily") or "")
     return ""
+
+
+def _is_epm_policy(policy: dict[str, Any]) -> bool:
+    family = _family(policy).lower().replace("_", "")
+    if _EPM_FAMILY in family:
+        return True
+    technologies = str(policy.get("technologies") or "").lower().replace("_", "")
+    if "endpointprivilegemanagement" in technologies:
+        return True
+    name = str(policy.get("name") or policy.get("displayName") or "").lower()
+    return "privilege management" in name or "endpoint privilege" in name
 
 
 def _family_hit(key: str, families: set[str]) -> bool:

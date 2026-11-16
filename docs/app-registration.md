@@ -96,6 +96,8 @@ See the full matrix (including MDE, Sentinel RBAC, and PowerShell roles) in
 - `SecurityIdentitiesSensors.Read.All`
 - `User.Read.All`
 - `CustomDetection.Read.All`
+- `NetworkAccess.Read.All`
+- `SecurityCopilotWorkspaces.Read.All`
 
 **Microsoft Purview role-group assignments** (for `pur-ediscovery-readiness`):
 

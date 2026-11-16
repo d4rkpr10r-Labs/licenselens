@@ -7,6 +7,7 @@ packs:
 check_ids:
   - sen-analytics-rule-coverage
   - sen-ueba-not-enabled
+  - xdr-sec-copilot-workspace-provisioned
 backend_preferences:
   preferred:
     - arm

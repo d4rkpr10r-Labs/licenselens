@@ -22,12 +22,13 @@ effort: hours
 blast_radius: all_users
 pack: starter
 exposure_class: none
-deep_link: https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+deep_link: https://security.microsoft.com/sentinel/analytics
 collector: sentinel_analytics
 remediation: >
   Enable relevant content hub solutions and scheduled rules; cover
   identity, endpoint, and cloud control-plane sources first.
 references:
+  - https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal
   - https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
 flagship: true
 flagship_security_intent: "Run enabled Sentinel scheduled analytics rules so SIEM spend produces detection yield."

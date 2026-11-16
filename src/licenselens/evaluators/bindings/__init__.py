@@ -19,6 +19,7 @@ from licenselens.evaluators.bindings.collaboration_teams_meeting import (
 )
 from licenselens.evaluators.bindings.defender import register_defender
 from licenselens.evaluators.bindings.defender_endpoint import register_defender_endpoint
+from licenselens.evaluators.bindings.defender_mdca import register_defender_mdca
 from licenselens.evaluators.bindings.defender_mdo import register_defender_mdo
 from licenselens.evaluators.bindings.endpoint_intune import register_endpoint_intune
 from licenselens.evaluators.bindings.endpoint_intune_depth import register_endpoint_intune_depth
@@ -26,6 +27,7 @@ from licenselens.evaluators.bindings.endpoint_intune_policy import register_endp
 from licenselens.evaluators.bindings.endpoint_mde_xdr import register_endpoint_mde_xdr
 from licenselens.evaluators.bindings.exchange_email_auth import register_exchange_email_auth
 from licenselens.evaluators.bindings.exchange_mailflow import register_exchange_mailflow
+from licenselens.evaluators.bindings.gsa_network_access import register_gsa_network_access
 from licenselens.evaluators.bindings.identity_access import register_identity_access
 from licenselens.evaluators.bindings.identity_apps_consent import register_identity_apps_consent
 from licenselens.evaluators.bindings.identity_apps_credentials import (
@@ -51,6 +53,7 @@ from licenselens.evaluators.bindings.power_platform_tenant import register_power
 from licenselens.evaluators.bindings.purview import register_purview
 from licenselens.evaluators.bindings.purview_governance import register_purview_governance
 from licenselens.evaluators.bindings.purview_manual import register_purview_manual
+from licenselens.evaluators.bindings.security_copilot import register_security_copilot
 from licenselens.evaluators.bindings.security_suite_dlp import register_security_suite_dlp
 from licenselens.evaluators.bindings.security_suite_spam import register_security_suite_spam
 from licenselens.evaluators.bindings.security_suite_threat import register_security_suite_threat
@@ -69,7 +72,9 @@ def register_all_evaluators(catalog: RegistrationCatalog) -> None:
     register_collaboration_teams_meeting(catalog)
     register_defender(catalog)
     register_defender_endpoint(catalog)
+    register_defender_mdca(catalog)
     register_defender_mdo(catalog)
+    register_gsa_network_access(catalog)
     register_endpoint_intune(catalog)
     register_endpoint_intune_depth(catalog)
     register_endpoint_intune_policy(catalog)
@@ -97,6 +102,7 @@ def register_all_evaluators(catalog: RegistrationCatalog) -> None:
     register_purview(catalog)
     register_purview_governance(catalog)
     register_purview_manual(catalog)
+    register_security_copilot(catalog)
     register_security_suite_dlp(catalog)
     register_security_suite_spam(catalog)
     register_security_suite_threat(catalog)

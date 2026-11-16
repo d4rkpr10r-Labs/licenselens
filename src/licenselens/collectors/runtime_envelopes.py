@@ -70,6 +70,8 @@ ERROR_ALIASES: dict[str, str] = {
     "license_assignment": "license_assignment_error",
     "security_alerts_bundle": "security_alerts_bundle_error",
     "xdr_custom_detections": "xdr_custom_detections_error",
+    "gsa_network_access": "gsa_network_access_error",
+    "security_copilot": "security_copilot_error",
 }
 
 

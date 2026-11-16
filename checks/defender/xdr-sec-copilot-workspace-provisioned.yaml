@@ -1,0 +1,48 @@
+id: xdr-sec-copilot-workspace-provisioned
+title: Security Copilot workspace provisioned
+customer_title: Included Security Copilot capacity may be unused
+customer_summary: >
+  Eligible Microsoft 365 E5 and E7 tenants receive Security Copilot inclusion
+  capacity. If Microsoft has enabled the tenant but no workspace exists, that
+  included capacity is not available to analysts.
+expected_state: At least one Security Copilot workspace is present after inclusion enablement.
+customer_next_step: >
+  Confirm Message Center eligibility for Security Copilot inclusion, then open
+  the Security Copilot portal and complete any remaining onboarding steps.
+description: >
+  Uses Graph beta securityCopilot workspaces. An empty list is treated as
+  partial with a phased-rollout limitation — never a high-confidence unused
+  investment gap — because Microsoft enables inclusion in waves.
+workload: defender
+required_capabilities:
+  - security_copilot
+severity: medium
+value_impact: high
+impact: medium
+effort: hours
+blast_radius: admin
+pack: starter
+exposure_class: none
+deep_link: https://securitycopilot.microsoft.com
+collector: security_copilot_collector
+remediation: >
+  Verify the tenant received Security Copilot inclusion, then ensure a workspace
+  is visible in the Security Copilot portal. Do not treat absence alone as proof
+  the entitlement was wasted until Message Center shows the tenant was enabled.
+references:
+  - https://learn.microsoft.com/copilot/security/security-copilot-inclusion
+  - https://learn.microsoft.com/copilot/security/auto-provisioning-security-copilot
+  - https://learn.microsoft.com/graph/api/securitycopilot-list-workspaces?view=graph-rest-beta
+mappings:
+  nist: ["IR-4"]
+  mitre: ["T1213"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: At least one Security Copilot workspace exists.
+  partial: No workspace yet, or evidence is incomplete (phased rollout possible).
+  gap: Not used — empty workspace alone must not become a hard gap.
+  evidence_fields:
+    - workspace_count
+    - workspace_names
+    - api_version

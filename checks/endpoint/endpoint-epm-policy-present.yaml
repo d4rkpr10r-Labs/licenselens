@@ -1,0 +1,45 @@
+id: endpoint-epm-policy-present
+title: Intune Endpoint Privilege Management policy present
+customer_title: Just-enough admin rights on PCs may be unconfigured
+customer_summary: >
+  Endpoint Privilege Management lets people elevate approved apps without
+  standing local admin rights. Paying for EPM while no elevation policy exists
+  leaves local admin as the everyday path.
+expected_state: At least one Intune EPM configuration policy exists for managed devices.
+customer_next_step: >
+  Create and assign an Endpoint Privilege Management elevation policy for
+  Windows devices that should run as standard users.
+description: >
+  When Intune Endpoint Privilege Management is entitled, an elevation-rules
+  configuration policy should exist so standard users are not standing local admins.
+workload: endpoint
+required_capabilities:
+  - intune_endpoint_privilege_management
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://intune.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/endpointPrivilegeManagement
+collector: intune_collector
+remediation: >
+  In Intune Endpoint security, create an Endpoint Privilege Management policy
+  (elevation rules / client settings as required) and assign it to the device groups
+  that should run without standing local admin.
+references:
+  - https://learn.microsoft.com/mem/intune/protect/epm-overview
+  - https://learn.microsoft.com/graph/api/resources/intune-deviceconfigv2-devicemanagementconfigurationtemplatefamily?view=graph-rest-beta
+mappings:
+  nist: ["AC-6", "CM-6"]
+  mitre: ["T1548"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: At least one EPM configuration policy is present.
+  partial: EPM evidence was incomplete.
+  gap: No EPM configuration policy was found.
+  evidence_fields:
+    - epm_policy_count
+    - epm_policy_names

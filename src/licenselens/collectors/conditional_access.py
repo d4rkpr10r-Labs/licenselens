@@ -479,4 +479,26 @@ DEMO_CA_POLICIES: list[dict[str, Any]] = [
             "builtInControls": ["passwordChange"],
         },
     },
+    {
+        "id": "demo-mdca-session",
+        "displayName": "Demo: Monitor cloud apps with Defender for Cloud Apps",
+        "state": "enabled",
+        "conditions": {
+            "users": {"includeUsers": ["All"], "includeRoles": []},
+            "applications": {"includeApplications": ["All"]},
+            "clientAppTypes": ["all"],
+            "signInRiskLevels": [],
+            "userRiskLevels": [],
+        },
+        "grantControls": {
+            "operator": "OR",
+            "builtInControls": ["mfa"],
+        },
+        "sessionControls": {
+            "cloudAppSecurity": {
+                "isEnabled": True,
+                "cloudAppSecurityType": "monitorOnly",
+            }
+        },
+    },
 ]

@@ -1,0 +1,44 @@
+id: id-gsa-private-access-enabled
+title: Entra Private Access traffic profile enabled
+customer_title: Private app Zero Trust access may still be off
+customer_summary: >
+  Entra Private Access replaces broad VPN paths only when the private traffic
+  profile is enabled. Leaving it off wastes Suite or E7 network access value.
+expected_state: The Global Secure Access private traffic forwarding profile is enabled.
+customer_next_step: >
+  In Entra Global Secure Access, enable the Microsoft Entra Private Access
+  traffic profile and publish the private apps users need.
+description: >
+  Reads Graph beta networkAccess forwarding profiles and expects an enabled
+  profile whose trafficForwardingType is private.
+workload: identity
+required_capabilities:
+  - entra_private_access
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IBA/TrafficForwardingMenuBlade
+collector: gsa_network_access_collector
+remediation: >
+  Enable the Private access traffic forwarding profile and configure Quick
+  Access or per-app private access as required.
+references:
+  - https://learn.microsoft.com/entra/global-secure-access/concept-private-access
+  - https://learn.microsoft.com/graph/api/networkaccess-networkaccessroot-list-forwardingprofiles?view=graph-rest-beta
+mappings:
+  nist: ["AC-3", "SC-7"]
+  mitre: ["T1021"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: An enabled private forwarding profile exists.
+  partial: Profiles were returned but enablement is unclear.
+  gap: No enabled private forwarding profile was found.
+  evidence_fields:
+    - private_profiles_enabled
+    - private_profile_count
+    - api_version

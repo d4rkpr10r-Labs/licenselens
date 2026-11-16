@@ -91,6 +91,8 @@ def _source_model(source_id: str) -> str:
         "license_assignment",
         "security_alerts_bundle",
         "xdr_custom_detections",
+        "gsa_network_access",
+        "security_copilot",
     }:
         return "JsonObject"
     if source_id.endswith("_policy") or source_id.endswith("_summary"):

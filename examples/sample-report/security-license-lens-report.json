@@ -11,6 +11,7 @@
   "scanned_at": "2026-08-13T00:00:00+00:00",
   "owned_capabilities": [
     "conditional_access",
+    "defender_cloud_apps",
     "defender_endpoint_p2",
     "defender_identity",
     "defender_office_p1",
@@ -33,6 +34,7 @@
     "purview_insider_risk",
     "purview_retention",
     "purview_sensitivity_labels",
+    "security_copilot",
     "sharepoint_online",
     "teams"
   ],
@@ -51,6 +53,26 @@
       "why_it_matters": "Passwords alone are not enough. Good sign-in rules stop many everyday account takeovers before damage is done.",
       "if_unused": "Your licenses include advanced sign-in rules, but they may still be loose or incomplete.",
       "docs_url": "https://learn.microsoft.com/entra/identity/conditional-access/overview",
+      "entitlement_kind": "included",
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
+    },
+    {
+      "id": "defender_cloud_apps",
+      "name": "Microsoft Defender for Cloud Apps",
+      "plain_name": "Cloud app visibility and session control",
+      "matched_skus": [
+        "SPE_E5"
+      ],
+      "matched_service_plans": [
+        "ADALLOM_S_O365"
+      ],
+      "outcome": "Monitor and control risky cloud-app sessions for licensed users.",
+      "why_it_matters": "Shadow IT and unmanaged SaaS sessions leak data outside your email and endpoint controls.",
+      "if_unused": "MDCA may be entitled while no Conditional Access App Control session policies exist.",
+      "docs_url": "https://learn.microsoft.com/defender-cloud-apps/what-is-defender-for-cloud-apps",
       "entitlement_kind": "included",
       "observed_resources": [],
       "assigned_users": null,
@@ -107,7 +129,7 @@
       "why_it_matters": "Many tenants own P1-level email protections that never leave default off states.",
       "if_unused": "Safe content policies may be missing, scoped to pilots, or left in evaluation mode.",
       "docs_url": "https://learn.microsoft.com/defender-office-365/defender-for-office-365",
-      "entitlement_kind": "add_on",
+      "entitlement_kind": "included",
       "observed_resources": [],
       "assigned_users": null,
       "enabled_users": 100,
@@ -467,6 +489,24 @@
       "why_it_matters": "Classification without enforcement is a sticker; labels with protection change outcomes.",
       "if_unused": "Labels may exist but remain unpublished, unused, or never auto-applied.",
       "docs_url": "https://learn.microsoft.com/purview/sensitivity-labels",
+      "entitlement_kind": "included",
+      "observed_resources": [],
+      "assigned_users": null,
+      "enabled_users": 100,
+      "prepaid_units": 100
+    },
+    {
+      "id": "security_copilot",
+      "name": "Microsoft Security Copilot",
+      "plain_name": "AI assistants for security operations",
+      "matched_skus": [
+        "SPE_E5"
+      ],
+      "matched_service_plans": [],
+      "outcome": "Have a provisioned Security Copilot workspace so SOC and security admins can use included SCUs.",
+      "why_it_matters": "Included Security Copilot capacity is wasted if the workspace was never provisioned after Microsoft enables the tenant.",
+      "if_unused": "E5/E7 inclusion may be entitled while no Security Copilot workspace is present (confirm phased rollout first).",
+      "docs_url": "https://learn.microsoft.com/copilot/security/security-copilot-inclusion",
       "entitlement_kind": "included",
       "observed_resources": [],
       "assigned_users": null,
@@ -842,7 +882,7 @@
         "global_admin_principal_count": 2,
         "declared_break_glass_principal_count": 0,
         "identified_break_glass_accounts": [],
-        "enabled_ca_policy_count": 3,
+        "enabled_ca_policy_count": 4,
         "report_only_ca_policy_count": 0,
         "unjustified_exclusion_issues": [],
         "unjustified_exclusion_count": 0,
@@ -1717,7 +1757,7 @@
       "blast_radius": "all_users",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in",
+      "deep_link": "https://security.microsoft.com/sentinel/analytics",
       "summary": "1 of 3 evaluable rules reference tables that are not ingesting (ratio 0.33); unwatched core tables: AADRiskyUsers, AADUserRiskEvents, EmailAttachmentInfo, EmailEvents, EmailUrlInfo, IdentityDirectoryEvents, IdentityLogonEvents, IdentityQueryEvents, OfficeActivity, SecurityAlert, SecurityIncident.",
       "evidence": {
         "dead_rules": [
@@ -1757,6 +1797,7 @@
       ],
       "remediation": "For each dead rule, either enable the matching data connector or disable the rule. Confirm every ingesting core table is referenced by a live rule.",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
         "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in"
       ],
       "customer_title": "Some detection rules watch logs that are not arriving",
@@ -1802,7 +1843,7 @@
       "blast_radius": "all_users",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/azure/sentinel/connect-data-sources",
+      "deep_link": "https://security.microsoft.com/sentinel/data-connectors",
       "summary": "Owned capabilities have no core tables ingesting in the last 7 days: defender_endpoint_p2.",
       "evidence": {
         "capabilities": {
@@ -1902,6 +1943,7 @@
       ],
       "remediation": "Enable the Microsoft Sentinel data connectors for each owned capability and verify core tables show rows in Usage over seven days.",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
         "https://learn.microsoft.com/azure/sentinel/connect-data-sources"
       ],
       "customer_title": "Your security workspace may not be collecting the logs you already pay for",
@@ -2933,7 +2975,7 @@
       "blast_radius": "all_users",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks",
+      "deep_link": "https://security.microsoft.com/sentinel/automation",
       "summary": "No Sentinel automation rules or playbooks were found.",
       "evidence": {
         "total_automation_rules": 0,
@@ -2946,6 +2988,7 @@
       ],
       "remediation": "Configure automation rules that trigger playbooks for high-value alerts and confirm at least one runbook-style playbook is enabled.",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
         "https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks"
       ],
       "customer_title": "Automate part of the incident response",
@@ -3046,7 +3089,7 @@
       "blast_radius": "all_users",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics",
+      "deep_link": "https://security.microsoft.com/sentinelSettings/entityBehaviorAnalytics",
       "summary": "Sentinel UEBA / entity analytics does not appear enabled.",
       "evidence": {
         "ueba_enabled": false,
@@ -3062,6 +3105,7 @@
       ],
       "remediation": "Enable Entity behavior analytics (UEBA) on the Sentinel workspace and ensure required data sources are connected.",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
         "https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics"
       ],
       "customer_title": "Behavior-based detection may still be switched off",
@@ -3508,11 +3552,12 @@
       "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ConditionalAccess/ConditionalAccessBlade/~/Policies",
       "summary": "Conditional Access is partially configured: missing enforced legacy authentication block.",
       "evidence": {
-        "policy_count": 3,
-        "enabled_count": 3,
+        "policy_count": 4,
+        "enabled_count": 4,
         "report_only_count": 0,
         "mfa_enforced_policies": [
-          "Demo: MFA for all users"
+          "Demo: MFA for all users",
+          "Demo: Monitor cloud apps with Defender for Cloud Apps"
         ],
         "mfa_report_only_policies": [],
         "legacy_block_enforced": [],
@@ -3776,7 +3821,7 @@
       "blast_radius": "all_users",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in",
+      "deep_link": "https://security.microsoft.com/sentinel/analytics",
       "summary": "Thin Sentinel analytics-rule deployment: 3 enabled scheduled/NRT rule(s), 3 tactic(s) (total rules=3).",
       "evidence": {
         "total_rules": 3,
@@ -3833,6 +3878,7 @@
       ],
       "remediation": "Enable relevant content hub solutions and scheduled rules; cover identity, endpoint, and cloud control-plane sources first.",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
         "https://learn.microsoft.com/azure/sentinel/detect-threats-built-in"
       ],
       "customer_title": "Your security command center may have few alarms turned on",
@@ -3876,7 +3922,7 @@
       "blast_radius": "all_users",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/azure/sentinel/connect-data-sources",
+      "deep_link": "https://security.microsoft.com/sentinel/data-connectors",
       "summary": "Thin Sentinel data connectors: 1 connected connector(s), only 0 high-value source(s).",
       "evidence": {
         "total_connectors": 1,
@@ -3893,6 +3939,7 @@
       ],
       "remediation": "Connect high-value data sources (Entra ID sign-ins, Microsoft 365 activity, and Defender XDR signals) to the Sentinel workspace and verify ingestion.",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
         "https://learn.microsoft.com/azure/sentinel/connect-data-sources"
       ],
       "customer_title": "Feed your security command center with real signals",
@@ -6239,10 +6286,12 @@
         "label": "MFA for all users",
         "enforced_policies": [
           "Demo: MFA for all users",
-          "Demo: Require MFA for sign-in risk"
+          "Demo: Require MFA for sign-in risk",
+          "Demo: Monitor cloud apps with Defender for Cloud Apps"
         ],
         "universal_policies": [
-          "Demo: MFA for all users"
+          "Demo: MFA for all users",
+          "Demo: Monitor cloud apps with Defender for Cloud Apps"
         ],
         "scoped_policies": [
           {
@@ -6443,6 +6492,75 @@
         ]
       },
       "evaluator_ref": "licenselens.evaluators.identity_risk.evaluate_idprotect_off",
+      "tier": "activation"
+    },
+    {
+      "check_id": "id-mdca-ca-session-control",
+      "title": "Defender for Cloud Apps Conditional Access App Control",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/cloudapps/policies/session",
+      "summary": "1 enabled Conditional Access policy(ies) use Defender for Cloud Apps session control.",
+      "evidence": {
+        "enabled_session_policies": [
+          "Demo: Monitor cloud apps with Defender for Cloud Apps"
+        ],
+        "report_only_session_policies": [],
+        "enabled_count": 1,
+        "report_only_count": 0
+      },
+      "entitlements_used": [
+        "defender_cloud_apps"
+      ],
+      "remediation": "In Entra Conditional Access, add a session control that uses Defender for Cloud Apps (monitor only or block downloads as appropriate), then confirm the matching session policy appears under Cloud Apps in the Defender portal.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/conditional-access/concept-session-control",
+        "https://learn.microsoft.com/graph/api/resources/cloudappsecuritysessioncontrol?view=graph-rest-1.0",
+        "https://learn.microsoft.com/defender-cloud-apps/session-policy-aad"
+      ],
+      "customer_title": "Cloud app sessions may not be monitored or controlled",
+      "customer_summary": "Cloud app sessions are covered by Conditional Access App Control.",
+      "customer_next_step": "Create a Conditional Access policy that enables Microsoft Defender for Cloud Apps session control for the apps and users that need monitoring or blocking.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.identity.conditionalAccess"
+      ],
+      "limitations": [
+        "This check reads Conditional Access sessionControls.cloudAppSecurity only.",
+        "MDCA portal policy catalogs are not available via Microsoft Graph."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-3"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "An enabled CA policy uses cloudAppSecurity session control.",
+        "partial": "Only report-only CA policies use cloudAppSecurity session control.",
+        "gap": "No CA policy uses cloudAppSecurity session control.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled_session_policies",
+          "report_only_session_policies"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.defender_mdca.evaluate_mdca_ca_session_control",
       "tier": "activation"
     },
     {
@@ -10430,6 +10548,75 @@
       "tier": "activation"
     },
     {
+      "check_id": "xdr-sec-copilot-workspace-provisioned",
+      "title": "Security Copilot workspace provisioned",
+      "workload": "defender",
+      "status": "ok",
+      "severity": "medium",
+      "value_impact": "high",
+      "impact": "medium",
+      "effort": "hours",
+      "blast_radius": "admin",
+      "pack": "starter",
+      "exposure_class": "none",
+      "deep_link": "https://securitycopilot.microsoft.com",
+      "summary": "1 Security Copilot workspace(s) present.",
+      "evidence": {
+        "workspace_count": 1,
+        "workspace_names": [
+          "SecurityCopilot_Workspace"
+        ],
+        "api_version": "beta"
+      },
+      "entitlements_used": [
+        "security_copilot"
+      ],
+      "remediation": "Verify the tenant received Security Copilot inclusion, then ensure a workspace is visible in the Security Copilot portal. Do not treat absence alone as proof the entitlement was wasted until Message Center shows the tenant was enabled.",
+      "references": [
+        "https://learn.microsoft.com/copilot/security/security-copilot-inclusion",
+        "https://learn.microsoft.com/copilot/security/auto-provisioning-security-copilot",
+        "https://learn.microsoft.com/graph/api/securitycopilot-list-workspaces?view=graph-rest-beta"
+      ],
+      "customer_title": "Included Security Copilot capacity may be unused",
+      "customer_summary": "A Security Copilot workspace is available for included capacity.",
+      "customer_next_step": "Confirm Message Center eligibility for Security Copilot inclusion, then open the Security Copilot portal and complete any remaining onboarding steps.",
+      "status_label": "Looking good",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.beta.security.securityCopilot.workspaces"
+      ],
+      "limitations": [
+        "Demo fixture \u2014 not a live tenant read.",
+        "Graph securityCopilot APIs are beta.",
+        "Security Copilot inclusion for Microsoft 365 E5/E7 is phased; an empty workspace list may mean Microsoft has not enabled the tenant yet."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "IR-4"
+        ],
+        "mitre": [
+          "T1213"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "At least one Security Copilot workspace exists.",
+        "partial": "No workspace yet, or evidence is incomplete (phased rollout possible).",
+        "gap": "Not used \u2014 empty workspace alone must not become a hard gap.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "workspace_count",
+          "workspace_names",
+          "api_version"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.security_copilot.evaluate_sec_copilot_workspace_provisioned",
+      "tier": "activation"
+    },
+    {
       "check_id": "teams-internal-auto-admit",
       "title": "Internal users are not auto-admitted to meetings",
       "workload": "collaboration",
@@ -10541,6 +10728,62 @@
       "tier": "activation"
     },
     {
+      "check_id": "endpoint-epm-policy-present",
+      "title": "Intune Endpoint Privilege Management policy present",
+      "workload": "endpoint",
+      "status": "not_licensed",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://intune.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/endpointPrivilegeManagement",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "In Intune Endpoint security, create an Endpoint Privilege Management policy (elevation rules / client settings as required) and assign it to the device groups that should run without standing local admin.",
+      "references": [
+        "https://learn.microsoft.com/mem/intune/protect/epm-overview",
+        "https://learn.microsoft.com/graph/api/resources/intune-deviceconfigv2-devicemanagementconfigurationtemplatefamily?view=graph-rest-beta"
+      ],
+      "customer_title": "Just-enough admin rights on PCs may be unconfigured",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-6",
+          "CM-6"
+        ],
+        "mitre": [
+          "T1548"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "At least one EPM configuration policy is present.",
+        "partial": "EPM evidence was incomplete.",
+        "gap": "No EPM configuration policy was found.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "epm_policy_count",
+          "epm_policy_names"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_intune_epm_policy_present",
+      "tier": "activation"
+    },
+    {
       "check_id": "id-ca-workload-identity",
       "title": "No Conditional Access policy covers service-principal risk",
       "workload": "identity",
@@ -10598,6 +10841,120 @@
         ]
       },
       "evaluator_ref": "licenselens.evaluators.identity_access.evaluate_ca_workload_identity",
+      "tier": "activation"
+    },
+    {
+      "check_id": "id-gsa-internet-access-enabled",
+      "title": "Entra Internet Access traffic profile enabled",
+      "workload": "identity",
+      "status": "not_licensed",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IBA/TrafficForwardingMenuBlade",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "Enable the Internet access traffic forwarding profile in Microsoft Entra Global Secure Access and assign the users who should be protected.",
+      "references": [
+        "https://learn.microsoft.com/entra/global-secure-access/how-to-manage-internet-access",
+        "https://learn.microsoft.com/graph/api/networkaccess-networkaccessroot-list-forwardingprofiles?view=graph-rest-beta"
+      ],
+      "customer_title": "Identity-aware web gateway may still be off",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-3",
+          "SC-7"
+        ],
+        "mitre": [
+          "T1071"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "An enabled internet forwarding profile exists.",
+        "partial": "Profiles were returned but enablement is unclear.",
+        "gap": "No enabled internet forwarding profile was found.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "internet_profiles_enabled",
+          "internet_profile_count",
+          "api_version"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.gsa_network_access.evaluate_gsa_internet_access_enabled",
+      "tier": "activation"
+    },
+    {
+      "check_id": "id-gsa-private-access-enabled",
+      "title": "Entra Private Access traffic profile enabled",
+      "workload": "identity",
+      "status": "not_licensed",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_IBA/TrafficForwardingMenuBlade",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "Enable the Private access traffic forwarding profile and configure Quick Access or per-app private access as required.",
+      "references": [
+        "https://learn.microsoft.com/entra/global-secure-access/concept-private-access",
+        "https://learn.microsoft.com/graph/api/networkaccess-networkaccessroot-list-forwardingprofiles?view=graph-rest-beta"
+      ],
+      "customer_title": "Private app Zero Trust access may still be off",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-3",
+          "SC-7"
+        ],
+        "mitre": [
+          "T1021"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "An enabled private forwarding profile exists.",
+        "partial": "Profiles were returned but enablement is unclear.",
+        "gap": "No enabled private forwarding profile was found.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "private_profiles_enabled",
+          "private_profile_count",
+          "api_version"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.gsa_network_access.evaluate_gsa_private_access_enabled",
       "tier": "activation"
     },
     {
@@ -10875,7 +11232,7 @@
       "collector": "ca_policies",
       "status": "success",
       "source": "demo",
-      "items_collected": 3,
+      "items_collected": 4,
       "warnings": [],
       "errors": []
     },
@@ -10913,6 +11270,14 @@
     },
     {
       "collector": "exchange_bundle",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "collector": "gsa_network_access",
       "status": "success",
       "source": "demo",
       "items_collected": 0,
@@ -11080,6 +11445,14 @@
       "errors": []
     },
     {
+      "collector": "security_copilot",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
       "collector": "security_defaults_policy",
       "status": "success",
       "source": "demo",
@@ -11158,7 +11531,9 @@
     "Security & Compliance PowerShell (scc_compliance)",
     "azure.arm.securityInsights",
     "graph.beta.security.insiderRiskManagement.policies",
+    "graph.beta.security.securityCopilot.workspaces",
     "graph.deviceManagement",
+    "graph.identity.conditionalAccess",
     "graph.security.cases.ediscoveryCases",
     "graph.security.incidents",
     "graph.subscribedSkus",
@@ -11210,14 +11585,14 @@
     }
   ],
   "capability_rollup": {
-    "you_own": 8,
-    "fully_working": 3,
+    "you_own": 9,
+    "fully_working": 4,
     "needs_attention": 4,
     "partly_set_up": 1,
     "assessment_incomplete": 0,
-    "not_licensed": 3,
+    "not_licensed": 6,
     "entitlement_unknown": 0,
-    "realized_percent": 38
+    "realized_percent": 44
   },
   "capability_outcomes": [
     {
@@ -11478,6 +11853,16 @@
       ]
     },
     {
+      "id": "security_copilot",
+      "name": "Microsoft Security Copilot",
+      "plain_name": "AI assistants for security operations",
+      "status": "fully_working",
+      "status_label": "Met assessed criteria",
+      "related_check_ids": [
+        "xdr-sec-copilot-workspace-provisioned"
+      ]
+    },
+    {
       "id": "exchange_online_protection",
       "name": "Exchange Online Protection",
       "plain_name": "Baseline spam and malware filtering for email",
@@ -11491,6 +11876,16 @@
         "mdo-quarantine-policy",
         "mdo-spam-phish-not-inbox",
         "mdo-transport-rule-external-forward"
+      ]
+    },
+    {
+      "id": "defender_cloud_apps",
+      "name": "Microsoft Defender for Cloud Apps",
+      "plain_name": "Cloud app visibility and session control",
+      "status": "fully_working",
+      "status_label": "Met assessed criteria",
+      "related_check_ids": [
+        "id-mdca-ca-session-control"
       ]
     },
     {

@@ -1,0 +1,45 @@
+id: id-gsa-internet-access-enabled
+title: Entra Internet Access traffic profile enabled
+customer_title: Identity-aware web gateway may still be off
+customer_summary: >
+  Entra Internet Access only protects traffic when the internet forwarding
+  profile is enabled. A licensed Suite or E7 tenant with the profile off is not
+  realizing that control.
+expected_state: The Global Secure Access internet traffic forwarding profile is enabled.
+customer_next_step: >
+  In Entra Global Secure Access, enable the Microsoft Entra Internet Access
+  traffic profile and assign users or groups.
+description: >
+  Reads Graph beta networkAccess forwarding profiles and expects an enabled
+  profile whose trafficForwardingType is internet.
+workload: identity
+required_capabilities:
+  - entra_internet_access
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_IBA/TrafficForwardingMenuBlade
+collector: gsa_network_access_collector
+remediation: >
+  Enable the Internet access traffic forwarding profile in Microsoft Entra
+  Global Secure Access and assign the users who should be protected.
+references:
+  - https://learn.microsoft.com/entra/global-secure-access/how-to-manage-internet-access
+  - https://learn.microsoft.com/graph/api/networkaccess-networkaccessroot-list-forwardingprofiles?view=graph-rest-beta
+mappings:
+  nist: ["AC-3", "SC-7"]
+  mitre: ["T1071"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: An enabled internet forwarding profile exists.
+  partial: Profiles were returned but enablement is unclear.
+  gap: No enabled internet forwarding profile was found.
+  evidence_fields:
+    - internet_profiles_enabled
+    - internet_profile_count
+    - api_version

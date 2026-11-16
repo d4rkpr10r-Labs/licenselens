@@ -1,6 +1,6 @@
 # Checks
 
-Security License Lens ships **170 checks** across ten workload directories.
+Security License Lens ships **175 checks** across ten workload directories.
 Each check is a single YAML file under `checks/<workload>/` and evaluates only
 when its required capabilities are licensed.
 
@@ -15,18 +15,18 @@ here:
 ## Workloads
 
 Counts are the number of `checks/<dir>/*.yaml` files in the tree (must sum to
-170):
+175):
 
 | Workload | Checks | Examples |
 |----------|-------:|----------|
-| identity | 45 | Conditional Access gaps, PIM, dormant privileged accounts |
-| collaboration | 22 | Teams federation, guest access, external sharing |
-| defender | 21 | Safe Links / Safe Attachments, anti-spam, alert policies |
+| identity | 56 | Conditional Access gaps, PIM, dormant privileged accounts |
+| collaboration | 24 | Teams federation, guest access, external sharing |
+| defender | 28 | Safe Links / Safe Attachments, anti-spam, alert policies |
 | exchange | 12 | SPF/DKIM/DMARC, forwarding, SMTP auth, mailbox audit |
-| purview | 11 | DLP policy presence/enforcement, sensitivity labels, retention |
-| power-bi | 9 | Tenant settings, sharing |
-| endpoint | 8 | MDE onboard gaps, Intune policy |
-| power-platform | 6 | DLP policies, environment isolation |
+| purview | 13 | DLP policy presence/enforcement, sensitivity labels, retention |
+| power-bi | 10 | Tenant settings, sharing |
+| endpoint | 14 | MDE onboard gaps, Intune policy |
+| power-platform | 8 | DLP policies, environment isolation |
 | sentinel | 8 | Analytics rule coverage, UEBA, telemetry ingestion |
 | azure | 2 | Azure resource hygiene |
 
@@ -34,7 +34,7 @@ Email is a **priority pack**, not a workload directory under `checks/`.
 
 ## Tiers
 
-109 checks are **activation** (paid security products). 61 checks are
+114 checks are **activation** (paid security products). 61 checks are
 **hygiene** (base-workload configuration). See [Two tiers](concepts.md#two-tiers)
 and the classification table in `audit/check-tier-classification.md`.
 

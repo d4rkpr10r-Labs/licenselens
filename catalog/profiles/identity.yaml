@@ -49,6 +49,9 @@ check_ids:
   - id-cross-tenant-defaults
   - id-logs-to-soc
   - id-ai-agents-risky-block
+  - id-gsa-internet-access-enabled
+  - id-gsa-private-access-enabled
+  - id-mdca-ca-session-control
 backend_preferences:
   preferred:
     - graph

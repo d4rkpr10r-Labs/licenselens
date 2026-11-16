@@ -7,6 +7,7 @@ from licenselens.evaluators.endpoint_intune_policy import (
     evaluate_endpoint_mde_connector,
     evaluate_endpoint_security_baseline,
     evaluate_endpoint_security_policy_coverage,
+    evaluate_intune_epm_policy_present,
 )
 from licenselens.schema_contracts import EvaluationMode
 
@@ -31,6 +32,13 @@ def register_endpoint_intune_policy(catalog: RegistrationCatalog) -> None:
         catalog.add_evaluator(
             check_id="endpoint-security-policy-coverage",
             evaluate=evaluate_endpoint_security_policy_coverage,
+            input_models=("intune_bundle",),
+            collector_id="intune_collector",
+            evaluation_mode=EvaluationMode.DIRECT,
+        )
+        catalog.add_evaluator(
+            check_id="endpoint-epm-policy-present",
+            evaluate=evaluate_intune_epm_policy_present,
             input_models=("intune_bundle",),
             collector_id="intune_collector",
             evaluation_mode=EvaluationMode.DIRECT,

@@ -21,12 +21,13 @@ effort: hours
 blast_radius: all_users
 pack: starter
 exposure_class: none
-deep_link: https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks
+deep_link: https://security.microsoft.com/sentinel/automation
 collector: sentinel_automation_rules_collector
 remediation: >
   Configure automation rules that trigger playbooks for high-value alerts
   and confirm at least one runbook-style playbook is enabled.
 references:
+  - https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal
   - https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks
 enabled: true
 tier: activation
