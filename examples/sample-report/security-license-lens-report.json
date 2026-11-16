@@ -7112,7 +7112,7 @@
       "pack": "email",
       "exposure_class": "none",
       "deep_link": "https://security.microsoft.com/presetSecurityPolicies",
-      "summary": "Direct Exchange read: Safe Links (2 enabled), Safe Attachments (1 enabled), preset rules (1 enabled); 1 custom Safe Links policy(ies) also present.",
+      "summary": "Direct Exchange read: Safe Links (1 org-wide), Safe Attachments blocking (1 org-wide), preset rules (1 org-wide); 1 custom Safe Links policy(ies) also present.",
       "evidence": {
         "source": "powershell.exchange.exo_threat_policies",
         "proxy": false,
@@ -7120,9 +7120,14 @@
         "exchange_direct": true,
         "safe_links_count": 2,
         "safe_links_enabled": 2,
+        "safe_links_org_wide": 1,
         "safe_attachments_count": 1,
         "safe_attachments_enabled": 1,
+        "safe_attachments_blocking": 1,
+        "safe_attachments_org_wide_blocking": 1,
+        "safe_attachments_allow_only": 0,
         "preset_enabled": 1,
+        "preset_org_wide": 1,
         "custom_safe_links": 1,
         "policies": {
           "safe_links": [
@@ -7197,7 +7202,7 @@
         "https://learn.microsoft.com/defender-office-365/preset-security-policies"
       ],
       "customer_title": "Turn on Safe Links and Safe Attachments for everyone",
-      "customer_summary": "Safe Links and Safe Attachments look enabled from a direct policy read.",
+      "customer_summary": "Safe Links and Safe Attachments look enabled org-wide with blocking attachment actions from a direct policy read.",
       "customer_next_step": "Turn on Preset security policies (Standard) for all users in the Defender portal \u2014 Safe Links and Safe Attachments included.",
       "status_label": "Looking good",
       "confidence": "high",
@@ -12197,6 +12202,16 @@
         "watched_by": 0,
         "watched_by_basis": null,
         "connector_hint": "Microsoft Defender XDR connector"
+      },
+      {
+        "capability_id": "defender_xdr",
+        "capability_name": "Cross-product incident correlation",
+        "table": "AADSignInEventsBeta",
+        "tier": "extended",
+        "ingesting": false,
+        "watched_by": null,
+        "watched_by_basis": null,
+        "connector_hint": "Advanced Hunting (not LA Usage parity)"
       },
       {
         "capability_id": "defender_xdr",
