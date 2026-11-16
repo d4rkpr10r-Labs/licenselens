@@ -101,13 +101,14 @@ def human_copy(facet: str, value: str | None) -> str:
 def build_posture(result: ScanResult) -> dict[str, int | str]:
     """Build the A-section posture figure from the capability rollup.
 
-    Returns ``{"realized_percent": int, "realized_sentence": str}`` bound
-    directly to ``result.capability_rollup.realized_percent`` and
-    ``result.capability_rollup.realized_sentence``. No literal number is
-    produced here; the value flows straight from the model.
+    Returns fraction-first fields for DESIGN_V3 (``met`` / ``owned``) plus
+    ``realized_percent`` and ``realized_sentence`` bound directly to the
+    capability rollup. No literal number is produced here.
     """
     rollup = result.capability_rollup
     return {
+        "met": rollup.fully_working,
+        "owned": rollup.you_own,
         "realized_percent": rollup.realized_percent,
         "realized_sentence": rollup.realized_sentence,
     }

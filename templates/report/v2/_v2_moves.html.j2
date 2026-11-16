@@ -31,16 +31,18 @@
       </p>
       <ol class="move-list">
         {% for move in move_list %}
+        {%- set _action = (move.customer_next_step or '') | trim | trim('.') -%}
+        {%- set _title = (move.title or '') | trim | trim('.') -%}
+        {%- set _show_action = _action and _action | lower != _title | lower -%}
         <li class="move-item{% if loop.first %} move-item--lead{% endif %}" id="move-{{ loop.index }}">
-          <span class="move-index mono">{{ '%02d' | format(loop.index) }}</span>
+          <span class="move-index">{{ '%02d' | format(loop.index) }}</span>
           <div class="move-body">
             <div class="move-head">
               <strong class="move-title">{{ move.title }}</strong>
-              {% if move.effort_label %}<span class="effort-label">{{ move.effort_label | lower }}</span>{% endif %}
             </div>
-            {% if move.why %}<p class="move-why"><strong>Why:</strong> {{ move.why }}</p>{% endif %}
-            {% if move.customer_next_step %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
-            {% if move.check_ids %}<p class="move-ids">Checks: <span class="mono">{{ move.check_ids | join(', ') }}</span></p>{% endif %}
+            {% if move.effort_label %}<p class="move-meta effort-label">Effort: {{ move.effort_label }}</p>{% endif %}
+            {% if move.why %}<p class="move-why">{{ move.why }}</p>{% endif %}
+            {% if _show_action %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
             {% if move.deep_link %}<p class="move-link"><a href="{{ move.deep_link }}">Open the admin page</a></p>{% endif %}
           </div>
         </li>

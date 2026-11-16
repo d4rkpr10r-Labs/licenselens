@@ -4,11 +4,10 @@ Two groups, deliberately partitioned:
 
 * **ESTABLISHED INVARIANTS — must PASS today**: offline/autoescape/DOM/filter/
   JSON/heading contracts that must remain green across visual redesigns.
-* **SOC-DARK (v2) DESIGN-SIGNATURE CONTRACTS**: cool blue-grey canvas
-  (#0B0E14), cyan accent tokens, no violet/brass/navy signatures,
+* **ASSESSMENT LEDGER (v3) DESIGN-SIGNATURE CONTRACTS**: light paper canvas
+  (#F3F5F8), deep teal accent, no SOC Dark / violet / brass signatures,
   every declared surface token consumed by a selector, and the §4 radius
-  stops (0/2/6/10/16/999px — 999px pill authorized ONLY for proportion-based
-  fills and constellation node circles).
+  stops (0/2/6/10; optional 999px).
 * **FIXTURE INTEGRITY**: preamble asserting fixtures stay comprehensive.
 """
 
@@ -284,29 +283,36 @@ RETIRED_INK_VERDIGRIS_TOKENS = (
     "--accent: #8ad3b8",
 )
 
-# SOC Dark tokens (DESIGN_V2.md §2.1): the binding v2 palette. The exact
-# declaration strings mirror the `:root` block in
-# templates/report/v2/_v2_styles.css.j2.
-SOC_DARK_TOKENS = (
+# Assessment Ledger tokens (DESIGN_V3.md §2.1): the binding v3 palette from
+# templates/design/tokens.css (included by the report foundation).
+LEDGER_TOKENS = (
+    "--canvas: #F3F5F8",
+    "--surface-1: #FFFFFF",
+    "--surface-2: #EEF1F5",
+    "--surface-3: #E4E9F0",
+    "--surface-4: #D8DEE8",
+    "--border: #D5DCE6",
+    "--border-strong: #A8B4C4",
+    "--text-1: #15202B",
+    "--text-2: #3D4D5C",
+    "--text-3: #5E6E80",
+    "--accent: #0B5F75",
+    "--accent-hover: #094C5E",
+    "--accent-focus: #127A94",
+    "--accent-print: #0B5F75",
+    "--state-action: #B42318",
+    "--state-incomplete: #B54708",
+    "--state-ok: #087443",
+    "--state-neutral: #5B6B7C",
+)
+
+# Retired SOC Dark signatures must not reappear.
+RETIRED_SOC_DARK_TOKENS = (
     "--canvas: #0B0E14",
-    "--surface-1: #131720",
-    "--surface-2: #1A2029",
-    "--surface-3: #212A35",
-    "--surface-4: #2A3542",
-    "--border: #232D38",
-    "--border-strong: #33404E",
-    "--text-1: #EDF2F7",
-    "--text-2: #B6C2CF",
-    "--text-3: #7D8FA3",
     "--accent: #22D3EE",
-    "--accent-hover: #67E8F9",
-    "--accent-focus: #A5F3FC",
-    "--accent-print: #155E75",
     "--state-action: #F87171",
     "--state-incomplete: #F59E0B",
     "--state-ok: #22C55E",
-    "--state-neutral: #94A3B8",
-    "--grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%)",
 )
 
 SURFACE_TOKENS = (
@@ -332,6 +338,9 @@ def test_no_brass_accent_hexes(tmp_path: Path) -> None:
 def test_no_radial_gradient_backdrop(tmp_path: Path) -> None:
     html = render(comprehensive_report(), tmp_path)
     assert "radial-gradient" not in html, "radial-gradient hero glow must be removed"
+    assert "--grad-page" in html or "linear-gradient(180deg" in html, (
+        "Assessment Ledger page wash (--grad-page / linear) must ship"
+    )
 
 
 def test_no_color_mix_usage(tmp_path: Path) -> None:
@@ -340,23 +349,28 @@ def test_no_color_mix_usage(tmp_path: Path) -> None:
 
 
 def test_radii_use_only_declared_stops(tmp_path: Path) -> None:
-    """DESIGN_V2 §4 radius stops: 0/2/6/10 and the 999px pill (authorized
-    ONLY for proportion-based fills and constellation node circles). 16px is
-    withdrawn. Non-stop radii (4px, 12px) and the undeclared 50% circle must
-    never appear; the pill stop must be present for the authorized fills."""
+    """DESIGN_V3 §4 radius stops: 0/2/6/10 (and optional 999px for capsule
+    fills / constellation nodes). 16px is withdrawn. Non-stop radii (4px,
+    12px) and undeclared 50% circles must never appear. Ledger default for
+    the distribution bar is 0."""
     html = render(comprehensive_report(), tmp_path)
     assert "border-radius: 12px" not in html, "12px radius is not a §4 stop"
     assert "border-radius: 4px" not in html, "4px radius is not a §4 stop"
     assert "border-radius: 16px" not in html, "16px radius is withdrawn"
     assert "border-radius: 50%" not in html, "50% circle is not a §4 stop (use 999px)"
     assert "border-radius:50%" not in html, "unspaced circular radius must go"
-    assert "border-radius: 999px" in html, "pill radius (999px) must authorize proportion fills"
 
 
-def test_soc_dark_tokens_present(tmp_path: Path) -> None:
+def test_ledger_tokens_present(tmp_path: Path) -> None:
     html = render(comprehensive_report(), tmp_path)
-    for token in SOC_DARK_TOKENS:
-        assert token in html, f"v2 token {token!r} missing from the report CSS"
+    for token in LEDGER_TOKENS:
+        assert token in html, f"v3 ledger token {token!r} missing from the report CSS"
+
+
+def test_retired_soc_dark_tokens_absent(tmp_path: Path) -> None:
+    html = render(comprehensive_report(), tmp_path)
+    for token in RETIRED_SOC_DARK_TOKENS:
+        assert token not in html, f"retired SOC Dark token {token!r} still present"
 
 
 def test_retired_ink_verdigris_tokens_absent(tmp_path: Path) -> None:

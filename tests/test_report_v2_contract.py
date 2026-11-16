@@ -291,24 +291,24 @@ def test_belief_prose_distinct_for_compliant_findings(tmp_path: Path) -> None:
 
 
 def test_posture_percent_is_data_driven_not_hardcoded(tmp_path: Path) -> None:
-    """The posture percent flows from the model, never a hardcoded literal.
+    """The posture fraction numerator flows from the model (DESIGN_V3).
 
-    The comprehensive fixture renders its own ``realized_percent``; an unrelated
-    literal percent does not appear (unless it happens to equal the model); and the
-    empty fixture renders 0%.
+    Count-up binds ``fully_working`` (met); percent is a secondary caption.
     """
     result = comprehensive_report()
     html = _render(result, tmp_path)
-    percent = result.capability_rollup.realized_percent
-    assert f'data-count-up="{percent}"' in html, "posture figure is not bound to realized_percent"
-    assert ">realized</span>" in html or "% realized" in html
+    met = result.capability_rollup.fully_working
+    owned = result.capability_rollup.you_own
+    assert f'data-count-up="{met}"' in html, "posture figure is not bound to met (fully_working)"
+    assert f">{met}</span>" in html or f">{met}/" in html.replace(" ", "")
+    assert str(owned) in html
     unrelated = 17
-    if percent != unrelated:
+    if met != unrelated:
         assert f'data-count-up="{unrelated}"' not in html, (
-            f"posture literal {unrelated}% leaked when the model says {percent}%"
+            f"posture literal {unrelated} leaked when the model says met={met}"
         )
     empty = _render(empty_report(), tmp_path)
-    assert 'data-count-up="0"' in empty, "empty fixture must render 0% realized"
+    assert 'data-count-up="0"' in empty, "empty fixture must render 0 met"
 
 
 # ---------------------------------------------------------------------------
@@ -330,7 +330,7 @@ def _posture_report(percent: int) -> ScanResult:
 
 @pytest.mark.browser
 def test_reduced_motion_posture_is_instant_without_reveal(browser: Browser, tmp_path: Path) -> None:
-    """Under ``prefers-reduced-motion: reduce`` the digits show the model percent
+    """Under ``prefers-reduced-motion: reduce`` the digits show the met count
     immediately and the body never gains the ``revealed``/``constellation-settled``
     classes (the count-up animation and stagger are skipped)."""
     result = _posture_report(percent=67)
@@ -340,7 +340,7 @@ def test_reduced_motion_posture_is_instant_without_reveal(browser: Browser, tmp_
     page.goto(bundle.entry_path.as_uri())
     page.wait_for_load_state("load")
     assert page.locator(".posture-figure .posture-digits").inner_text() == str(
-        result.capability_rollup.realized_percent
+        result.capability_rollup.fully_working
     )
     body_classes = page.evaluate("() => document.body.className")
     assert "revealed" not in body_classes, "body gained the reveal class under reduced motion"
@@ -370,10 +370,12 @@ def test_default_motion_reveals_constellation(browser: Browser, tmp_path: Path) 
 
 
 def test_app_js_binds_posture_not_hardcoded_percent() -> None:
-    """``app.js`` reads ``realized_percent`` from the data asset and never carries a
-    hardcoded ``% realized`` literal."""
+    """``app.js`` binds the fraction numerator from data (DESIGN_V3) and never
+    carries a hardcoded ``% realized`` literal."""
     app_js = (templates_dir() / "report_app" / "v2" / "app.js").read_text(encoding="utf-8")
-    assert "realized_percent" in app_js, "app.js does not bind the posture percent from data"
+    assert "data-met" in app_js or "fully_working" in app_js, (
+        "app.js does not bind the posture met count from data"
+    )
     assert "% realized" not in app_js, "app.js hardcodes a posture percent literal"
 
 

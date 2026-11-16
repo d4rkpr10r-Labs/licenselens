@@ -33,6 +33,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   derivable from the ops catalog.
 
 ### Changed
+- **Report / wizard design (v3, Assessment Ledger)** — supersedes SOC Dark /
+  DESIGN_V2. Light document-grade default from one shared token file
+  (`templates/design/tokens.css`) across the single-file report, report-app
+  bundle, and local wizard. Fraction-first hero (`met / owned`), deep teal
+  identity (not Tailwind cyan), status color on markers/rails/bars only, solid
+  disclosure borders, open move sequence (no cards-in-cards), effort labels
+  without `~a few hours`, check IDs kept out of the executive move list, sans
+  wordmark (no Palatino/Georgia). Binding contract: `DESIGN_V3.md`. Critique +
+  before/after shots: `audit/2026-11/design/`.
 - **MDO P1 vs P2 entitlement** — `defender_office_p2` no longer unlocks on
   `ATP_ENTERPRISE` alone (July 2026 packaging puts MDO P1 in E3). P1 now
   includes `SPE_E3` / `ENTERPRISEPACK` / E7 aliases.

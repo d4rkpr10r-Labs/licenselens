@@ -86,8 +86,20 @@
       <section id="section-a" class="hero" aria-labelledby="a-title">
         <h2 id="a-title" class="sr-only">Where you stand</h2>
         <div class="opening">
-          <div class="posture-figure" data-realized="{{ o_pct }}">
-            <span class="posture-digits">{{ o_pct }}</span><span class="posture-unit">% realized</span>
+          {%- set o_met = rollup.fully_working -%}
+          {%- set o_own = rollup.you_own -%}
+          <div class="posture-figure" data-realized="{{ o_pct }}" data-met="{{ o_met }}" data-owned="{{ o_own }}">
+            <span class="posture-fraction" aria-label="{{ o_met }} of {{ o_own }} in-scope capabilities met">
+              <span class="posture-digits" data-count-up="{{ o_met }}">{{ o_met }}</span><span class="posture-slash">/</span><span class="posture-denom">{{ o_own }}</span>
+            </span>
+            <span class="posture-unit">
+              In-scope capabilities met all assessed criteria.
+              {%- if o_own > 0 and o_own < 20 %}
+              <span class="posture-pct">About {{ o_pct }}% of the prioritized set.</span>
+              {%- elif o_own >= 20 %}
+              <span class="posture-pct">{{ o_pct }}% realized.</span>
+              {%- endif %}
+            </span>
           </div>
 
           <figure class="dist-figure" data-opening-stage="dist">
@@ -187,16 +199,18 @@
         {% if moves %}
         <ol class="move-list">
           {% for move in moves %}
-          <li class="move-item" id="move-{{ loop.index }}">
-            <span class="move-index mono" aria-hidden="true">{{ '%02d' | format(loop.index) }}</span>
+          {%- set _action = (move.customer_next_step or '') | trim | trim('.') -%}
+          {%- set _title = (move.title or '') | trim | trim('.') -%}
+          {%- set _show_action = _action and _action | lower != _title | lower -%}
+          <li class="move-item{% if loop.first %} move-item--lead{% endif %}" id="move-{{ loop.index }}">
+            <span class="move-index" aria-hidden="true">{{ '%02d' | format(loop.index) }}</span>
             <div class="move-body">
               <div class="move-head">
                 <strong class="move-title">{{ move.title }}</strong>
-                {% if move.effort_label %}<span class="move-effort">{{ move.effort_label | lower }}</span>{% endif %}
               </div>
-              {% if move.why %}<p class="move-why"><strong>Why:</strong> {{ move.why }}</p>{% endif %}
-              {% if move.customer_next_step %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
-              {% if move.check_ids %}<p class="move-ids">Checks: <span class="mono">{{ move.check_ids | join(', ') }}</span></p>{% endif %}
+              {% if move.effort_label %}<p class="move-meta move-effort">Effort: {{ move.effort_label }}</p>{% endif %}
+              {% if move.why %}<p class="move-why">{{ move.why }}</p>{% endif %}
+              {% if _show_action %}<p class="move-action"><strong>Action:</strong> {{ move.customer_next_step }}</p>{% endif %}
               {% if move.deep_link %}<p class="move-link"><a href="{{ move.deep_link }}">Open the admin page</a></p>{% endif %}
             </div>
           </li>
