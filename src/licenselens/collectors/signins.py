@@ -19,6 +19,23 @@ def collect_recent_success_signin_user_ids(
     Uses a hard page cap to keep scans bounded. May under-count very large
     tenants (conservative: fewer known active users → more dormant candidates).
     """
+    user_ids, _truncated = collect_recent_success_signin_sample(
+        client, lookback_days=lookback_days, max_pages=max_pages
+    )
+    return user_ids
+
+
+def collect_recent_success_signin_sample(
+    client: GraphClient,
+    *,
+    lookback_days: int = 90,
+    max_pages: int = 15,
+) -> tuple[set[str], bool]:
+    """Return (userIds, truncated) for successful sign-ins in the lookback window.
+
+    Truncation is driven by ``@odata.nextLink`` remaining after ``max_pages``,
+    not by row-count heuristics.
+    """
     start = datetime.now(UTC) - timedelta(days=lookback_days)
     start_s = start.strftime("%Y-%m-%dT%H:%M:%SZ")
     path = (
@@ -27,13 +44,13 @@ def collect_recent_success_signin_user_ids(
         f"&$filter=createdDateTime ge {start_s} and status/errorCode eq 0"
         f"&$top=500"
     )
-    rows = client.get_list(path, max_pages=max_pages)
+    result = client.get_list_result(path, max_pages=max_pages)
     user_ids: set[str] = set()
-    for row in rows:
+    for row in result.items:
         uid = row.get("userId")
         if uid:
             user_ids.add(str(uid))
-    return user_ids
+    return user_ids, result.truncated
 
 
 def collect_directory_objects_by_ids(

@@ -38,10 +38,12 @@ friendly_sku_names:
   SPE_E5: Microsoft 365 E5
   MICROSOFT_365_E7: Microsoft 365 E7
   SPE_E5_USGOV_GCCHIGH: Microsoft 365 E5 (GCC High)
-  SPE_E5_USGOV_DOD: Microsoft 365 E5 (DoD)
   SPE_E3_USGOV_GCCHIGH: Microsoft 365 E3 (GCC High)
-  M365_E5_GOV: Microsoft 365 E5 (Government)
+  SPE_E3_USGOV_DOD: Microsoft 365 E3 (DoD)
+  M365_G5_GOV: Microsoft 365 G5 (Government)
+  M365_G5_GCC: Microsoft 365 G5 (GCC)
   M365_E5_SUITE_COMPONENTS: Microsoft 365 E5 Suite features
+  WIN_DEF_ATP: Microsoft Defender for Endpoint
   ENTERPRISEPACK: Office 365 E3
   ENTERPRISEPREMIUM: Office 365 E5
   EMSPREMIUM: Enterprise Mobility + Security E5
@@ -128,6 +130,7 @@ friendly_plan_names:
   INFORMATION_BARRIERS: Microsoft Purview Information Barriers
   DATA_LIFECYCLE_MANAGEMENT: Microsoft Purview Data Lifecycle Management
   RECORDS_MANAGEMENT: Microsoft Purview Records Management
+  INSIDER_RISK: Microsoft Purview Insider Risk Management
   INSIDER_RISK_MANAGEMENT: Microsoft Purview Insider Risk Management
   MIR_SERVICE: Microsoft Purview Insider Risk Management
   COMMUNICATION_COMPLIANCE: Microsoft Purview Communication Compliance
@@ -217,6 +220,7 @@ service_plan_guids:
   07699545-9485-468e-95b6-2fca3738be01: FLOW_O365_P3
   c4801e8a-cb58-4c35-aca6-f2dcc106f287: INFORMATION_BARRIERS
   9d0c4ee5-e4a1-4625-ab39-d82b619b1a34: INSIDER_RISK_MANAGEMENT
+  d587c7a3-bda9-4f99-8776-9bcf59c84f75: INSIDER_RISK
   c1ec4a95-1f05-45b3-a911-aa3fa01094f5: INTUNE_A
   3e170737-c728-4eae-bbb9-3f3360f7184c: INTUNE_A_VL
   bb73f429-78ef-4ff2-83c8-722b04c3e7d1: Intune-EPM

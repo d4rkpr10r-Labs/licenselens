@@ -134,8 +134,9 @@ def _is_ident(tok: str) -> bool:
 def _classify(ident: str, *, known_tables: frozenset[str]) -> str:
     if ident in known_tables:
         return "table"
-    if ident.endswith("_CL") and ident not in known_tables:
-        return "parser"
+    # Log Analytics custom tables end in _CL — treat as tables, not ASIM parsers.
+    if ident.endswith("_CL"):
+        return "table"
     if ident.startswith(_PARSER_PREFIXES):
         return "parser"
     return "unknown"

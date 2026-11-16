@@ -31,6 +31,8 @@ def _evaluate_mdo_direct(evidence: dict[str, Any]) -> Evaluation:
 
     enabled_links = [i for i in safe_links if i.get("enabled") is True]
     enabled_attach = [i for i in safe_attach if i.get("enabled") is True]
+    blocking_attach = [i for i in enabled_attach if _safe_attach_blocks(i)]
+    allow_only_attach = [i for i in enabled_attach if not _safe_attach_blocks(i)]
     enabled_preset = [
         i
         for i in preset
@@ -38,9 +40,12 @@ def _evaluate_mdo_direct(evidence: dict[str, Any]) -> Evaluation:
         or str((i.get("properties") or {}).get("State") or "").lower() == "enabled"
     ]
     custom_links = [i for i in safe_links if str(i.get("kind") or "") == "custom"]
+    org_wide_links = [i for i in enabled_links if _policy_is_org_wide(i)]
+    org_wide_attach = [i for i in blocking_attach if _policy_is_org_wide(i)]
+    org_wide_preset = [i for i in enabled_preset if _policy_is_org_wide(i)]
     has_default_or_preset = any(
         str(i.get("kind") or "") in {"default", "preset_standard", "preset_strict", "effective"}
-        for i in enabled_links + enabled_attach + enabled_preset
+        for i in org_wide_links + org_wide_attach + org_wide_preset
     )
 
     evidence_out = {
@@ -50,9 +55,14 @@ def _evaluate_mdo_direct(evidence: dict[str, Any]) -> Evaluation:
         "exchange_direct": True,
         "safe_links_count": len(safe_links),
         "safe_links_enabled": len(enabled_links),
+        "safe_links_org_wide": len(org_wide_links),
         "safe_attachments_count": len(safe_attach),
         "safe_attachments_enabled": len(enabled_attach),
+        "safe_attachments_blocking": len(blocking_attach),
+        "safe_attachments_org_wide_blocking": len(org_wide_attach),
+        "safe_attachments_allow_only": len(allow_only_attach),
         "preset_enabled": len(enabled_preset),
+        "preset_org_wide": len(org_wide_preset),
         "custom_safe_links": len(custom_links),
         "policies": {
             "safe_links": safe_links[:10],
@@ -85,11 +95,16 @@ def _evaluate_mdo_direct(evidence: dict[str, Any]) -> Evaluation:
             **meta,
         )
 
-    if enabled_links and enabled_attach and (enabled_preset or has_default_or_preset):
+    if (
+        org_wide_links
+        and org_wide_attach
+        and (org_wide_preset or has_default_or_preset)
+        and not allow_only_attach
+    ):
         summary = (
-            f"Direct Exchange read: Safe Links ({len(enabled_links)} enabled), "
-            f"Safe Attachments ({len(enabled_attach)} enabled), "
-            f"preset rules ({len(enabled_preset)} enabled); "
+            f"Direct Exchange read: Safe Links ({len(org_wide_links)} org-wide), "
+            f"Safe Attachments blocking ({len(org_wide_attach)} org-wide), "
+            f"preset rules ({len(org_wide_preset)} org-wide); "
             f"{len(custom_links)} custom Safe Links policy(ies) also present."
         )
         return Evaluation(
@@ -97,7 +112,8 @@ def _evaluate_mdo_direct(evidence: dict[str, Any]) -> Evaluation:
             summary=summary,
             evidence=evidence_out,
             customer_summary=(
-                "Safe Links and Safe Attachments look enabled from a direct policy read."
+                "Safe Links and Safe Attachments look enabled org-wide with blocking "
+                "attachment actions from a direct policy read."
             ),
             **meta,
         )
@@ -106,14 +122,16 @@ def _evaluate_mdo_direct(evidence: dict[str, Any]) -> Evaluation:
         status=FindingStatus.PARTIAL,
         summary=(
             "Direct Exchange read shows incomplete MDO coverage: "
-            f"Safe Links enabled={len(enabled_links)}, "
-            f"Safe Attachments enabled={len(enabled_attach)}, "
-            f"preset enabled={len(enabled_preset)}."
+            f"Safe Links org-wide={len(org_wide_links)}, "
+            f"Safe Attachments blocking org-wide={len(org_wide_attach)}, "
+            f"preset org-wide={len(org_wide_preset)}, "
+            f"allow-only Safe Attachments={len(allow_only_attach)}."
         ),
         evidence=evidence_out,
         customer_summary=(
-            "Some stronger email protections are on, but Safe Links or Safe Attachments "
-            "may still miss people. Review preset and custom policies in the portal."
+            "Some stronger email protections are on, but coverage looks pilot-scoped, "
+            "Allow-action Safe Attachments, or missing Standard/Strict presets. "
+            "Review preset and custom policies in the portal."
         ),
         **meta,
     )
@@ -127,6 +145,54 @@ def _surface_items(surfaces: dict[str, Any], name: str) -> list[dict[str, Any]]:
         return []
     items = surface.get("items") or []
     return [i for i in items if isinstance(i, dict)]
+
+
+_BLOCKING_SAFE_ATTACH_ACTIONS: frozenset[str] = frozenset(
+    {
+        "block",
+        "dynamicdelivery",
+        "replace",
+    }
+)
+
+
+def _safe_attach_blocks(item: dict[str, Any]) -> bool:
+    """True when Safe Attachments uses a blocking / Dynamic Delivery action."""
+    props = item.get("properties") if isinstance(item.get("properties"), dict) else {}
+    action = str(props.get("Action") or item.get("action") or "").strip().lower()
+    if not action:
+        # Missing Action on an enabled default/preset is treated as unresolved,
+        # not as proof of blocking — caller still needs other signals for OK.
+        return False
+    if action in {"allow", "off", "disabled"}:
+        return False
+    return action in _BLOCKING_SAFE_ATTACH_ACTIONS
+
+
+def _policy_is_org_wide(item: dict[str, Any]) -> bool:
+    """Heuristic org-wide coverage from kind + EXO assignment fields."""
+    kind = str(item.get("kind") or "").lower()
+    if kind in {"default", "preset_standard", "preset_strict", "effective"}:
+        return True
+    assignments = item.get("assignments") or []
+    if not isinstance(assignments, list):
+        return False
+    # Empty assignment lists on enabled custom policies are treated as scoped /
+    # unknown — not org-wide — so pilots cannot look fully realized.
+    if not assignments:
+        return False
+    normalized = {str(a).strip().lower() for a in assignments if a is not None}
+    if not normalized:
+        return False
+    if normalized & {"all", "*", "allrecipients", "all users", "allusers"}:
+        return True
+    # Priority/State-only assignment captures from EXO are not recipient scope.
+    non_meta = {
+        value
+        for value in normalized
+        if value not in {"enabled", "disabled", "on", "off"} and not value.isdigit()
+    }
+    return not non_meta
 
 
 def _evaluate_mdo_proxy(evidence: dict[str, Any]) -> Evaluation:

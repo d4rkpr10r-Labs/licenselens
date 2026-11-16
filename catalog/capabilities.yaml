@@ -43,9 +43,9 @@ capabilities:
       - ENTERPRISEPREMIUM
       - SPE_E5
     sku_aliases:
-      - M365_E5_GOV
+      - M365_G5_GOV
       - MICROSOFT_365_E7
-      - SPE_E5_USGOV_DOD
+      - M365_G5_GCC
       - SPE_E5_USGOV_GCCHIGH
     clouds:
       - commercial
@@ -141,7 +141,7 @@ capabilities:
     sku_aliases:
       - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
-      - SPE_E5_USGOV_DOD
+      - M365_G5_GCC
       - SPE_E5_USGOV_GCCHIGH
     clouds:
       - commercial
@@ -244,7 +244,7 @@ capabilities:
       - SPE_E5
     sku_aliases:
       - MICROSOFT_365_E7
-      - SPE_E5_USGOV_DOD
+      - M365_G5_GCC
       - SPE_E5_USGOV_GCCHIGH
     clouds:
       - commercial
@@ -282,7 +282,8 @@ capabilities:
       - ENTERPRISEPREMIUM
       - IDENTITY_THREAT_PROTECTION
     sku_aliases:
-      - IDENTITY_THREAT_PROTECTION_GOV
+      - M365_G5_GCC
+      - M365_G5_GOV
       - MICROSOFT_365_E7
       - SPE_E5_USGOV_GCCHIGH
     clouds:
@@ -319,11 +320,12 @@ capabilities:
     service_plan_ids:
       - 871d91ec-ec1a-452b-a83f-bd76c7d770ef
     sku_part_numbers:
-      - DEFENDER_ENDPOINT_P2
       - IDENTITY_THREAT_PROTECTION
       - SPE_E5
+      - WIN_DEF_ATP
     sku_aliases:
-      - DEFENDER_ENDPOINT_P2_GOV
+      - M365_G5_GCC
+      - M365_G5_GOV
       - MICROSOFT_365_E7
       - SPE_E5_USGOV_GCCHIGH
     clouds:
@@ -480,7 +482,7 @@ capabilities:
     sku_aliases:
       - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
-      - SPE_E5_USGOV_DOD
+      - M365_G5_GCC
       - SPE_E5_USGOV_GCCHIGH
     clouds:
       - commercial
@@ -804,12 +806,10 @@ capabilities:
     entitlement_kind: add_on
     service_plan_names:
       - BI_AZURE_P3
-      - POWER_BI_PREMIUM_PER_USER
     service_plan_ids:
       - 0bf3c642-7bb5-4ccc-884e-59d09df0266c
     sku_part_numbers:
       - PBI_PREMIUM_PER_USER
-      - POWER_BI_PREMIUM_PER_USER
     clouds:
       - commercial
       - gcc
@@ -820,8 +820,11 @@ capabilities:
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq
 
-    service_plan_aliases: []
-    sku_aliases: []
+    service_plan_aliases:
+      - POWER_BI_PREMIUM_PER_USER
+    sku_aliases:
+      - PBI_PREMIUM_PER_USER_ADDON
+      - PBI_PREMIUM_PER_USER_GCC
   - id: intune
     name: Microsoft Intune
     plain_name: Manage and protect company devices and apps
@@ -856,7 +859,7 @@ capabilities:
     sku_aliases:
       - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
-      - SPE_E5_USGOV_DOD
+      - M365_G5_GCC
       - SPE_E5_USGOV_GCCHIGH
     clouds:
       - commercial
@@ -906,15 +909,11 @@ capabilities:
     workloads: [defender, endpoint]
     entitlement_kind: add_on
     service_plan_names:
-      - DEFENDER_ENDPOINT_P1
       - MDE_LITE
-      - MDE_P1
     service_plan_ids:
       - 292cc034-7b7c-4950-aaf5-943befd3f1d4
     sku_part_numbers:
       - DEFENDER_ENDPOINT_P1
-      - IDENTITY_THREAT_PROTECTION
-      - MDE_P1
       - SPE_E3
     clouds:
       - commercial
@@ -927,8 +926,11 @@ capabilities:
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-endpoint/defender-endpoint-plan-1-2
 
-    service_plan_aliases: []
-    sku_aliases: []
+    service_plan_aliases:
+      - DEFENDER_ENDPOINT_P1
+      - MDE_P1
+    sku_aliases:
+      - DEFENDER_ENDPOINT_P1_EDU
   - id: defender_xdr
     name: Microsoft Defender XDR
     plain_name: Cross-product incident correlation
@@ -958,7 +960,8 @@ capabilities:
       - IDENTITY_THREAT_PROTECTION
       - SPE_E5
     sku_aliases:
-      - IDENTITY_THREAT_PROTECTION_GOV
+      - M365_G5_GCC
+      - M365_G5_GOV
       - MICROSOFT_365_E7
       - SPE_E5_USGOV_GCCHIGH
     clouds:
@@ -1162,14 +1165,14 @@ capabilities:
     workloads: [purview]
     entitlement_kind: add_on
     service_plan_names:
+      - INSIDER_RISK
       - INSIDER_RISK_MANAGEMENT
-      - MIR_SERVICE
     service_plan_ids:
+      - d587c7a3-bda9-4f99-8776-9bcf59c84f75
       - 9d0c4ee5-e4a1-4625-ab39-d82b619b1a34
     sku_part_numbers:
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
-      - INSIDER_RISK_MANAGEMENT
       - SPE_E5
     clouds:
       - commercial
@@ -1181,9 +1184,13 @@ capabilities:
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/insider-risk-management
 
-    service_plan_aliases: []
+    service_plan_aliases:
+      - MIR_SERVICE
     sku_aliases:
+      - M365_G5_GCC
+      - M365_G5_GOV
       - MICROSOFT_365_E7
+      - SPE_E5_USGOV_GCCHIGH
   - id: purview_ediscovery
     name: Microsoft Purview eDiscovery
     plain_name: Legal hold and investigation search

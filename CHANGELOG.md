@@ -10,6 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ### Added
 - **Phase 1 feature research (2026-11)** — `audit/2026-11/feature-research.md`
   with candidates, rejects, and a post-Ignite delta-sweep checklist.
+- **Phase 2 architect review (2026-11)** — `audit/2026-11/architect-review.md`
+  with severity-ranked findings; Critical/High fixed on branch; Medium/Low
+  left as GitHub-issue-ready drafts.
+- **Learn licensing CSV diff** — `scripts/diff_sku_catalog_vs_learn_csv.py`
+  downloads/diffs catalog GUIDs and SKU String_Ids against the official CSV.
 - **Microsoft Learn MCP tooling** — `.cursor/mcp.json` points at
   `https://learn.microsoft.com/api/mcp`.
 - **Catalog capabilities** — `entra_internet_access`, `entra_private_access`,
@@ -22,6 +27,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   `xdr-sec-copilot-workspace-provisioned` (fixtures + unit tests).
 - **Graph permissions** — `NetworkAccess.Read.All` and
   `SecurityCopilotWorkspaces.Read.All` documented for beta collectors.
+- **graph_ops coverage** — AccessReview, AuditLog sign-ins, Organization /
+  subscribedSkus, Secure Score, DLP, eDiscovery, and Insider Risk (beta
+  delegated) operations registered so REQUIRED Graph app permissions are
+  derivable from the ops catalog.
 
 ### Changed
 - **MDO P1 vs P2 entitlement** — `defender_office_p2` no longer unlocks on
@@ -29,6 +38,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   includes `SPE_E3` / `ENTERPRISEPACK` / E7 aliases.
 - **Sentinel admin deep links** — prefer Microsoft Defender portal destinations
   ahead of the Azure portal retirement (2027-03-31).
+- **National-cloud / gov SKU aliases** — replace phantom String_Ids
+  (`SPE_E5_USGOV_DOD`, `M365_E5_GOV`, `DEFENDER_ENDPOINT_P2_GOV`, …) with
+  CSV-backed `M365_G5_*`, `WIN_DEF_ATP`, and related identifiers.
+- **Insider Risk entitlement** — map modern `INSIDER_RISK`
+  (`d587c7a3-…`) alongside legacy `INSIDER_RISK_MANAGEMENT`.
+- **Security Defaults / MDO / GSA / EPM expected state** — tighten OK criteria
+  so baseline-incomplete or unassigned configurations cannot report fully
+  realized.
+- **Pagination truncation** — Entra devices and sign-in samples use
+  `@odata.nextLink` truncation from `get_list_result`.
+- **Sentinel↔telemetry parity** — exclude XDR Advanced Hunting detections from
+  LA Usage dead-rule scoring; treat `*_CL` custom tables as tables.
+- **UI wizard copy** — browser wizard is offline-demo only; live scans are CLI.
+
+### Fixed
+- False `not_licensed` risk for GCC High / G5 Insider Risk when only the
+  modern plan GUID is present.
+- False OK paths for Security Defaults (any CA), MDO (Allow/pilot), GSA
+  (enabled unassigned), and EPM (name-only / unassigned).
 
 ## [0.4.0] — 2026-08-16
 

@@ -52,9 +52,9 @@ _ENV = Environment(
   <p>{{ core_summary }}</p>
   <button type="submit">Run the offline demo</button>
 </form>
-<p>Live tenant sign-in is chosen after you confirm what this tool reads.
-Use <code>licenselens quickstart</code> for a live scan from the terminal tonight
-(0.3.0). The live wizard path ships with 0.4.0.</p>
+<p>This browser wizard runs the offline demo only. For a live tenant scan use
+<code>licenselens quickstart</code> or <code>licenselens scan --live</code> from
+the terminal (device code or client secret).</p>
 """,
             "scan.html": """
 <p id="status">Scanning…</p>

@@ -59,9 +59,10 @@ def test_asim_dns_parser_prefix() -> None:
     assert refs.indeterminate is False
 
 
-def test_custom_cl_table_is_parser() -> None:
+def test_custom_cl_table_is_table() -> None:
     refs = extract_table_refs("Foo_CL | take 1", known_tables=KNOWN)
-    assert refs.parsers == frozenset({"Foo_CL"})
+    assert refs.tables == frozenset({"Foo_CL"})
+    assert refs.parsers == frozenset()
     assert refs.indeterminate is False
 
 

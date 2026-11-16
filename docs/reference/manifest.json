@@ -8,22 +8,22 @@
   "excluded_item_count": 6,
   "flagship_count": 36,
   "generated": {
-    "capabilities.md": "4a7c95ecddc361a048da316443cd072105f7e04fc1d5f1ecc0c6e90b5a811ae8",
+    "capabilities.md": "dbf264dfb5da7ba5d37ced83dbf01e564fa1b0d17b6df3fa9a27f68de56f1fbf",
     "checks.md": "27c0a71bf1dc1146019dfe3e2100577ca42a7c31124a971e7a98fa43878d0df0",
     "coverage.md": "5f2297da9bea71cd283f44fe91275af0ea38dab98c465e3fcbf9199f8e51fdce",
     "index.md": "8971371e519a8d17598634a575261fdb0fbfba3ea8ced6cd3b91d4379a5d3133",
     "permissions.md": "d91775b9ba85cec30f5f7b9a2b6f0d15b652bf90b0b9c8c958639ae455245fda",
     "profiles.md": "4031f71b10c6911a6d3c679adf7367ec5f75887a5d64834a0c094b30b0e978f0",
-    "reference.json": "626633daa89ce9462159b60c0e7cd4050f859cfccd9a860b6e9f1bab3bd6a6a5"
+    "reference.json": "539981714a7d2037e0ff92abec0c54d78e714f9f73df599a4389f106f1841b44"
   },
   "generator": "scripts/generate_reference_docs.py",
   "package_version": "0.4.0",
   "permission_count": 26,
   "profile_count": 11,
-  "sample_sha256": "9a86687059e1cb211b80cbde186c938c6ce5309437ff98e98142939d0f58057b",
+  "sample_sha256": "801fb1b889bd7e57ee52cdbef769d08c042a57a4bfb096e2946fb077471a3db2",
   "sample_version": "0.4.0",
   "sources": {
-    "catalog/capabilities.yaml": "6c144748112cd84e18ba468c6d0083741ef1e9d45105f9e06cdd3d4b3534a6d2",
+    "catalog/capabilities.yaml": "d9fa0d42a0bac02bdf84015001f26d069b3fcc770bcf4280d342910f25831345",
     "catalog/coverage/scuba-2026-08.yaml": "d587763fddd6f606aa2d96477a37128218147f3229150649a312893f596038e1",
     "catalog/profiles/collaboration.yaml": "a5d0b1ef3d6f665f00a488dcee1ce2760c7ac655fea4189135655f7aaec307ae",
     "catalog/profiles/core.yaml": "cd910d18ce527b787b4109d5ebe22873033fadf41036138ad0ad259b1f909308",

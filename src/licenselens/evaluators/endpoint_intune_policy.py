@@ -145,8 +145,10 @@ def evaluate_intune_epm_policy_present(
         )
     policies = configuration_policies(bundle)
     epm = [p for p in policies if _is_epm_policy(p)]
+    assigned = [p for p in epm if _is_assigned_policy(p)]
     evidence_out = {
         "epm_policy_count": len(epm),
+        "epm_assigned_count": len(assigned),
         "epm_policy_names": [
             str(p.get("name") or p.get("displayName") or p.get("id") or "?") for p in epm
         ],
@@ -160,11 +162,28 @@ def evaluate_intune_epm_policy_present(
             customer_summary=("EPM appears licensed but no elevation policy is configured."),
             **direct_meta(),
         )
+    if not assigned:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"{len(epm)} Intune Endpoint Privilege Management policy(ies) exist "
+                "but none are assigned to devices or users."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "EPM policies are defined but not assigned, so elevation rules are not "
+                "reaching managed devices yet."
+            ),
+            **direct_meta(),
+        )
     return Evaluation(
         status=FindingStatus.OK,
-        summary=f"{len(epm)} Intune Endpoint Privilege Management policy(ies) configured.",
+        summary=(
+            f"{len(assigned)} Intune Endpoint Privilege Management policy(ies) "
+            "configured and assigned."
+        ),
         evidence=evidence_out,
-        customer_summary="Endpoint Privilege Management policies are present.",
+        customer_summary="Endpoint Privilege Management policies are present and assigned.",
         **direct_meta(),
     )
 
@@ -243,14 +262,19 @@ def _family(policy: dict[str, Any]) -> str:
 
 
 def _is_epm_policy(policy: dict[str, Any]) -> bool:
+    """Match EPM by template family / technologies only — never by display name."""
     family = _family(policy).lower().replace("_", "")
     if _EPM_FAMILY in family:
         return True
     technologies = str(policy.get("technologies") or "").lower().replace("_", "")
-    if "endpointprivilegemanagement" in technologies:
+    return "endpointprivilegemanagement" in technologies
+
+
+def _is_assigned_policy(policy: dict[str, Any]) -> bool:
+    if policy.get("isAssigned") is True or policy.get("assigned") is True:
         return True
-    name = str(policy.get("name") or policy.get("displayName") or "").lower()
-    return "privilege management" in name or "endpoint privilege" in name
+    assignments = policy.get("assignments")
+    return isinstance(assignments, list) and bool(assignments)
 
 
 def _family_hit(key: str, families: set[str]) -> bool:

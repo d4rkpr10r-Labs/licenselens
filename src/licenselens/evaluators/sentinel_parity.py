@@ -99,6 +99,12 @@ def evaluate_sen_rule_telemetry_parity(
     truncated = False
 
     for rule in _iter_rule_queries(evidence):
+        # Defender XDR custom detections query Advanced Hunting schema, not the
+        # Sentinel Log Analytics Usage probe. Scoring them as "dead" against LA
+        # tables creates false gaps under unified portal / data-lake estates.
+        if rule.get("source") == "xdr":
+            indeterminate += 1
+            continue
         refs = extract_table_refs(rule["query"], known_tables=known)
         if refs.indeterminate:
             indeterminate += 1
@@ -196,6 +202,15 @@ def evaluate_sen_rule_telemetry_parity(
         status = FindingStatus.PARTIAL
         summary = f"{summary.rstrip('.')} (table-list fallback only; not marked fully OK)."
 
+    limitations: list[str] = []
+    if indeterminate:
+        limitations.append(
+            "XDR Advanced Hunting custom detections and indeterminate KQL are excluded "
+            "from the Sentinel Log Analytics dead-rule ratio."
+        )
+    if incomplete:
+        limitations.append("Log Analytics Usage surface was incomplete; table-list fallback only.")
+
     return Evaluation(
         status=status,
         summary=summary,
@@ -203,6 +218,7 @@ def evaluate_sen_rule_telemetry_parity(
         customer_summary=customer,
         confidence=Confidence.LOW if incomplete else Confidence.HIGH,
         data_sources=["la:usageByTable"],
+        limitations=limitations,
     )
 
 

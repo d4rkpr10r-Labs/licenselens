@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from typing import Any
 
+from licenselens.collectors import conditional_access as ca
 from licenselens.evaluators.common import Evaluation
 from licenselens.models import CheckDefinition, FindingStatus
 
@@ -27,6 +28,39 @@ def _enabled_ca_policies(policies: Any) -> tuple[int, int, int]:
             # Unknown state: count as present-but-uncertain, not enforced.
             report_only += 1
     return enabled, report_only, disabled
+
+
+def _security_defaults_baseline_replaced(policies: list[dict[str, Any]]) -> dict[str, Any]:
+    """True when enforced CA covers the Security Defaults MFA + legacy baseline.
+
+    Any enabled CA policy is not enough: SD also requires MFA and blocks legacy
+    clients. Reuse the same predicates as the dedicated CA coverage checks so a
+    tenant that only has a niche policy cannot look "fine".
+    """
+    enforced = [p for p in policies if ca.is_enabled(p)]
+    mfa = [
+        p
+        for p in enforced
+        if ca.requires_mfa(p) and ca.includes_all_users(p) and ca.policy_scope(p).is_universal
+    ]
+    legacy = [
+        p
+        for p in enforced
+        if ca.is_legacy_auth_block(p)
+        and ca.includes_all_users(p)
+        and ca.scope_for_block(p, allowed_client_subset=ca.LEGACY_CLIENT_APP_TYPES).is_universal
+    ]
+    return {
+        "baseline_mfa_all_users": bool(mfa),
+        "baseline_legacy_auth_block": bool(legacy),
+        "baseline_replaced": bool(mfa) and bool(legacy),
+        "baseline_mfa_policy_names": [
+            str(p.get("displayName") or p.get("id") or "?") for p in mfa[:5]
+        ],
+        "baseline_legacy_policy_names": [
+            str(p.get("displayName") or p.get("id") or "?") for p in legacy[:5]
+        ],
+    }
 
 
 def evaluate_security_defaults_on(
@@ -93,18 +127,38 @@ def evaluate_security_defaults_on(
     evidence_out["ca_policy_count"] = len(list(ca_policies or []))
     evidence_out["ca_enabled_count"] = enabled
     evidence_out["ca_report_only_count"] = report_only
-    if enabled > 0:
+    policies = [p for p in (ca_policies or []) if isinstance(p, dict)]
+    baseline = _security_defaults_baseline_replaced(policies)
+    evidence_out.update(baseline)
+    if baseline["baseline_replaced"]:
         return Evaluation(
             status=FindingStatus.OK,
             summary=(
-                "Security defaults are disabled and Conditional Access is in use "
-                f"({enabled} enabled polic"
-                f"{'y' if enabled == 1 else 'ies'})."
+                "Security defaults are disabled and Conditional Access replaces the "
+                f"baseline ({enabled} enabled polic"
+                f"{'y' if enabled == 1 else 'ies'} with all-user MFA and a legacy "
+                "authentication block)."
             ),
             evidence=evidence_out,
             customer_summary=(
-                "The free Microsoft security defaults are off, and your tenant is "
-                "instead protected by customizable Conditional Access policies."
+                "The free Microsoft security defaults are off, and Conditional Access "
+                "covers the same baseline: multi-factor for everyone and a block on "
+                "outdated sign-in methods."
+            ),
+        )
+    if enabled > 0:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                "Security defaults are disabled and Conditional Access policies are "
+                f"enabled ({enabled}), but they do not yet replace the Security "
+                "Defaults baseline (all-user MFA and legacy authentication block)."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                "Security Defaults are off and some sign-in policies exist, but they "
+                "do not yet match the baseline protection Security Defaults provided. "
+                "Confirm all-user MFA and a legacy-authentication block are enforced."
             ),
         )
     if report_only > 0:
