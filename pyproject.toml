@@ -92,6 +92,7 @@ packages = ["src/licenselens"]
 "templates/report.html.j2" = "licenselens/data/templates/report.html.j2"
 "templates/report/v2" = "licenselens/data/templates/report/v2"
 "templates/report_app" = "licenselens/data/templates/report_app"
+"templates/design" = "licenselens/data/templates/design"
 "assets/vendor/microsoft-cloud" = "licenselens/data/vendor/microsoft-cloud"
 # The PowerShell collector bridge (email/collaboration/power-data packs) is
 # PowerShell-only data. Ship the runtime module — manifest, module body, entry

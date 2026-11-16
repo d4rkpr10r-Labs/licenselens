@@ -61,33 +61,27 @@ def test_contrast_ratio_rejects_malformed_input() -> None:
             contrast_ratio(bad, "#ffffff")
 
 
-def test_cool_blue_accent_on_canvas() -> None:
-    assert contrast_ratio("#88b4d8", "#0f1114") >= 4.5
+def test_ledger_accent_on_canvas() -> None:
+    assert contrast_ratio("#0B5F75", "#F3F5F8") >= 4.5
 
 
-def test_cool_blue_focus_on_surface() -> None:
-    assert contrast_ratio("#b8d6ee", "#16191d") >= 3.0
+def test_ledger_focus_on_surface() -> None:
+    assert contrast_ratio("#127A94", "#FFFFFF") >= 3.0
 
 
 def test_print_accent_on_white() -> None:
-    assert contrast_ratio("#2c5a7d", "#ffffff") >= 4.5
+    assert contrast_ratio("#0B5F75", "#ffffff") >= 4.5
 
 
-def test_screen_semantic_colors_on_white_are_not_print_safe() -> None:
-    """Screen semantic tokens are not used as print inks; pin that they stay
-    below AA on white so print overrides remain required."""
-    recorded = {
-        "#ff737a": 2.6298,
-        "#e2b84b": 1.8764,
-        "#67c991": 2.0309,
-        "#96938b": 3.0688,
-    }
-    for color, expected in recorded.items():
-        ratio = contrast_ratio(color, "#ffffff")
-        assert ratio == pytest.approx(expected, abs=1e-4), f"recorded ratio for {color} drifted"
-        assert ratio < 4.5, f"screen semantic {color} unexpectedly print-safe on white"
+def test_ledger_status_inks_meet_aa_on_white() -> None:
+    """V3 Assessment Ledger status tokens are paper-safe (screen == print)."""
+    for color in ("#B42318", "#B54708", "#087443", "#5B6B7C"):
+        assert contrast_ratio(color, "#ffffff") >= 4.5, (
+            f"ledger status {color} below 4.5:1 on white"
+        )
 
 
-def test_print_status_inks_meet_aa_on_white() -> None:
-    for color in ("#b3261e", "#8a5a00", "#1e7a3a", "#57534e"):
-        assert contrast_ratio(color, "#ffffff") >= 4.5, f"print ink {color} below 4.5:1 on white"
+def test_ledger_text_ramp_on_canvas() -> None:
+    assert contrast_ratio("#15202B", "#F3F5F8") >= 4.5
+    assert contrast_ratio("#3D4D5C", "#F3F5F8") >= 4.5
+    assert contrast_ratio("#5E6E80", "#F3F5F8") >= 4.5

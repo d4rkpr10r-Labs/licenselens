@@ -1,4 +1,4 @@
-/* Versioned offline report application (report app v2, DESIGN_V2 "SOC Dark").
+/* Versioned offline report application (report app v2 shell, DESIGN_V3 Assessment Ledger).
  *
  * Everything is rendered client-side from the escaped data assets
  * ``window.LICENSELENS_REPORT_JSON``, ``window.LICENSELENS_VIEWMODEL`` and
@@ -1374,18 +1374,24 @@
   // -------------------------------------------------------------------------
 
   function posturePercent() {
+    // DESIGN_V3: count-up targets the fraction numerator (met), not the %.
     var figure = document.querySelector(".posture-figure");
-    if (figure && figure.hasAttribute("data-realized")) {
-      var fromAttr = parseInt(figure.getAttribute("data-realized"), 10);
-      if (!isNaN(fromAttr)) return fromAttr;
+    if (figure && figure.hasAttribute("data-met")) {
+      var fromMet = parseInt(figure.getAttribute("data-met"), 10);
+      if (!isNaN(fromMet)) return fromMet;
+    }
+    var digits = document.querySelector(".posture-figure .posture-digits[data-count-up]");
+    if (digits) {
+      var fromDigits = parseInt(digits.getAttribute("data-count-up"), 10);
+      if (!isNaN(fromDigits)) return fromDigits;
     }
     var posture = (vm.sections && vm.sections.A && vm.sections.A.posture) || null;
-    if (posture && typeof posture.realized_percent === "number") {
-      return posture.realized_percent;
+    if (posture && typeof posture.met === "number") {
+      return posture.met;
     }
     var rollup = report && report.capability_rollup;
-    if (rollup && typeof rollup.realized_percent === "number") {
-      return rollup.realized_percent;
+    if (rollup && typeof rollup.fully_working === "number") {
+      return rollup.fully_working;
     }
     return null;
   }

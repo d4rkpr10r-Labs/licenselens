@@ -1,0 +1,49 @@
+/* ==========================================================================
+   Security License Lens — shared design tokens (V3, Assessment Ledger)
+   Binding contract: DESIGN_V3.md. Consumed by the single-file report,
+   the report-app bundle foundation, and the local wizard. The only literal
+   hex values in product CSS live here (or in surface-specific print
+   overrides that reference these names). Offline; no external fonts.
+   ========================================================================== */
+:root {
+  /* Screen — light document-grade default */
+  --canvas: #F3F5F8;
+  --surface-1: #FFFFFF;
+  --surface-2: #EEF1F5;
+  --surface-3: #E4E9F0;
+  --surface-4: #D8DEE8;
+  --border: #D5DCE6;
+  --border-strong: #A8B4C4;
+  --text-1: #15202B;
+  --text-2: #3D4D5C;
+  --text-3: #5E6E80;
+  --accent: #0B5F75;
+  --accent-hover: #094C5E;
+  --accent-focus: #127A94;
+  --accent-print: #0B5F75;
+  --state-action: #B42318;
+  --state-incomplete: #B54708;
+  --state-ok: #087443;
+  --state-neutral: #5B6B7C;
+  --grad-raised: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%);
+  --grad-page: linear-gradient(180deg, #E9EEF4 0%, var(--canvas) 28%);
+  --shadow-1: 0 1px 2px rgba(21, 32, 43, 0.06);
+  --shadow-2: 0 2px 8px rgba(21, 32, 43, 0.10);
+  --blur-nav: blur(8px);
+  --nav-surface: rgba(255, 255, 255, 0.92);
+
+  /* Print — paper ledger (same identity; slightly stronger borders) */
+  --print-ink: #15202B;
+  --print-paper: #FFFFFF;
+  --print-hero: #EEF1F5;
+  --print-border: #C6D0DA;
+  --print-border-strong: #7E8B99;
+  --print-action: #B42318;
+  --print-incomplete: #B54708;
+  --print-ok: #087443;
+  --print-neutral: #5B6B7C;
+
+  /* Type — system sans + mono only (no serif wordmark) */
+  --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}

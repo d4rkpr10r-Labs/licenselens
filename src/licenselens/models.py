@@ -129,10 +129,10 @@ CONFIDENCE_PLAIN_LABELS: dict[str, str] = {
 }
 
 EFFORT_PLAIN_LABELS: dict[str, str] = {
-    "minutes": "~minutes",
-    "hours": "~a few hours",
-    "half_day": "~half a day",
-    "days": "~days",
+    "minutes": "Minutes",
+    "hours": "Hours",
+    "half_day": "Half a day",
+    "days": "Days",
 }
 
 EFFORT_DISCLAIMER = "Effort is a rough guide, not a quote."

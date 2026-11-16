@@ -13,6 +13,7 @@ from jinja2 import DictLoader, Environment, select_autoescape
 
 from licenselens.cli_profile_info import profile_requirement_report
 from licenselens.engine.profiles import load_builtin_profiles
+from licenselens.paths import templates_dir
 from licenselens.ui.server import WizardHandler, WizardHTTPServer, serve
 from licenselens.ui.state import DEFAULT_PROFILE_ID, ScanSession, UiState
 
@@ -29,7 +30,10 @@ _ENV = Environment(
 </head>
 <body>
   <main>
-    <h1>LicenseLens</h1>
+    <header class="wizard-brand">
+      <h1>Security License Lens</h1>
+      <p class="tagline">Entitlements, controls, and configuration gaps.</p>
+    </header>
     {% include page %}
   </main>
   <script src="/app.js"></script>
@@ -37,7 +41,7 @@ _ENV = Environment(
 </html>
 """,
             "mode.html": """
-<p>Read-only. Nothing leaves this computer. No account, no telemetry.</p>
+<p class="lede">Read-only. Nothing leaves this computer. No account, no telemetry.</p>
 <form method="post" action="/demo">
   <input type="hidden" name="csrf" value="{{ csrf }}">
   <label>Scan profile
@@ -49,10 +53,10 @@ _ENV = Environment(
     {% endfor %}
     </select>
   </label>
-  <p>{{ core_summary }}</p>
+  <p class="help">{{ core_summary }}</p>
   <button type="submit">Run the offline demo</button>
 </form>
-<p>This browser wizard runs the offline demo only. For a live tenant scan use
+<p class="help">This browser wizard runs the offline demo only. For a live tenant scan use
 <code>licenselens quickstart</code> or <code>licenselens scan --live</code> from
 the terminal (device code or client secret).</p>
 """,
@@ -76,14 +80,81 @@ the terminal (device code or client secret).</p>
     ),
 )
 
-APP_CSS = (
-    "body { font-family: ui-sans-serif, system-ui, sans-serif; "
-    "background: #0f1114; color: #f2f4f7; margin: 2rem; }\n"
-    "a { color: #88b4d8; }\n"
-    "button, select { font: inherit; }\n"
-    "main { max-width: 40rem; }\n"
-    "pre { white-space: pre-wrap; }\n"
-)
+_WIZARD_LAYOUT_CSS = """
+* { box-sizing: border-box; }
+html { background: var(--canvas); }
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--grad-page), var(--canvas);
+  color: var(--text-1);
+  line-height: 1.55;
+}
+main {
+  max-width: 40rem;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 3rem;
+}
+.wizard-brand { margin-block-end: 1.5rem; }
+.wizard-brand h1 {
+  margin: 0;
+  font-size: clamp(1.75rem, 2.4vw, 2.125rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+}
+.tagline { margin: 0.35rem 0 0; color: var(--text-2); }
+.lede { color: var(--text-2); }
+.help { color: var(--text-2); font-size: 0.9375rem; }
+a { color: var(--accent); text-decoration: none; }
+a:hover, a:focus-visible { color: var(--accent-hover); text-decoration: underline; }
+a:focus-visible, button:focus-visible, select:focus-visible {
+  outline: 2px solid var(--accent-focus);
+  outline-offset: 2px;
+}
+label {
+  display: block;
+  font-weight: 600;
+  font-size: 0.875rem;
+  margin-block-end: 0.5rem;
+}
+select, button {
+  font: inherit;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-1);
+  color: var(--text-1);
+}
+select { width: 100%; max-width: 100%; }
+button {
+  margin-block-start: 12px;
+  background: var(--accent);
+  color: var(--surface-1);
+  border-color: var(--accent);
+  font-weight: 600;
+  cursor: pointer;
+}
+button:hover { background: var(--accent-hover); border-color: var(--accent-hover); }
+pre {
+  white-space: pre-wrap;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  padding: 12px;
+}
+code { font-family: var(--font-mono); font-size: 0.88em; }
+@media (prefers-reduced-motion: reduce) {
+  * { transition: none !important; animation: none !important; }
+}
+"""
+
+
+def _wizard_css() -> str:
+    """Compose shared V3 tokens with wizard layout CSS (one token file)."""
+    tokens_path = templates_dir() / "design" / "tokens.css"
+    tokens = tokens_path.read_text(encoding="utf-8") if tokens_path.is_file() else ""
+    return f"{tokens}\n{_WIZARD_LAYOUT_CSS}\n"
+
 
 APP_JS = """
 async function poll() {
@@ -171,7 +242,7 @@ class WizardApp:
         handler._send(200, body)
 
     def handle_css(self, handler: WizardHandler) -> None:
-        handler._send(200, APP_CSS.encode("utf-8"), content_type="text/css; charset=utf-8")
+        handler._send(200, _wizard_css().encode("utf-8"), content_type="text/css; charset=utf-8")
 
     def handle_js(self, handler: WizardHandler) -> None:
         handler._send(
@@ -280,4 +351,4 @@ def serve_wizard(
 
 
 def html_escape(value: str) -> str:
-    return escape(value, quote=True)
+    return escape(value)

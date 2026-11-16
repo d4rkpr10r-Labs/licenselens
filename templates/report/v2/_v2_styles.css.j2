@@ -1,75 +1,15 @@
 /* ==========================================================================
-   Security License Lens — v2 report foundation stylesheet
-   Design identity: "SOC Dark" (DESIGN_V2.md, the binding v2 contract).
+   Security License Lens — report foundation stylesheet
+   Design identity: "Assessment Ledger" (DESIGN_V3.md, binding v3 contract).
 
    This file is a Jinja2 partial: it is included inside an existing
    <style> block by both the single-file and bundle renderers, so it must
    never carry a <style> wrapper of its own.
 
-   Contract notes enforced here (DESIGN_V2.md section numbers):
-     - §2: Every color is a declared token; the only literal hex values in
-       this file live inside the :root block. The only pinned gradient is
-       --grad-raised; the single nav blur is a token, never ad-hoc.
-     - §3: locked type scale (3.375rem hero figure in --text-1, 1.625rem h1,
-       1rem tenant line, 1rem/1.55 body); mono only for technical values;
-       uppercase only via .micro-label (kickers, group captions).
-     - §4: spacing is a multiple of 4; radius stops 0 / 2 / 6 / 10 and
-       999px (pill) — pill ONLY for proportion-based fills and the
-       constellation node circles; 16px withdrawn; elevation is selective
-       (shadows are state); layout uses logical properties only.
-     - §11: motion is information design, gated behind body.revealed (JS
-       opt-in). Only transform / opacity / color-resolve animate; nothing
-       loops; nothing animates on scroll or input.
-       prefers-reduced-motion = instant final state, zero information loss.
-     - §13/§14: status is never color-only (glyph + word + color); focus
-       rings, target sizes, forced-colors support.
-     - §15: print is the light inversion with expanded disclosures and
-       visible textual chart equivalents.
+   Tokens live in templates/design/tokens.css (shared with the wizard).
    ========================================================================== */
 
-/* --------------------------------------------------------------------------
-   §2. Token palette — declared once, referenced by name everywhere else.
-   -------------------------------------------------------------------------- */
-:root {
-  /* §2.1 Screen tokens (dark-first, cool) */
-  --canvas: #0B0E14;
-  --surface-1: #131720;
-  --surface-2: #1A2029;
-  --surface-3: #212A35;
-  --surface-4: #2A3542;
-  --border: #232D38;
-  --border-strong: #33404E;
-  --text-1: #EDF2F7;
-  --text-2: #B6C2CF;
-  --text-3: #7D8FA3;
-  --accent: #22D3EE;
-  --accent-hover: #67E8F9;
-  --accent-focus: #A5F3FC;
-  --accent-print: #155E75;
-  --state-action: #F87171;
-  --state-incomplete: #F59E0B;
-  --state-ok: #22C55E;
-  --state-neutral: #94A3B8;
-  --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
-  --shadow-1: 0 1px 2px rgba(0,0,0,.35), 0 1px 4px rgba(0,0,0,.25);
-  --shadow-2: 0 2px 6px rgba(0,0,0,.4), 0 8px 20px rgba(0,0,0,.35);
-  --blur-nav: blur(8px);
-
-  /* §2.2 Print tokens (light inversion) */
-  --print-ink: #1A2230;
-  --print-paper: #FFFFFF;
-  --print-hero: #EEF2F6;
-  --print-border: #C6D0DA;
-  --print-border-strong: #7E8B99;
-  --print-action: #B02A37;
-  --print-incomplete: #7A5000;
-  --print-ok: #1B6B3F;
-  --print-neutral: #4A5661;
-
-  /* §3. Typography — system-only, offline-safe stacks (locked values). */
-  --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-}
+{% include "design/tokens.css" %}
 
 /* --------------------------------------------------------------------------
    Base — canvas, page chrome, layout container.
@@ -80,10 +20,10 @@ html { background: var(--canvas); }
 
 body {
   margin: 0;
-  background: var(--canvas);
+  background: var(--grad-page), var(--canvas);
   color: var(--text-1);
   font-family: var(--font-sans);
-  font-size: 1rem; /* §3 body scale, locked */
+  font-size: 1rem;
   line-height: 1.55;
 }
 
@@ -105,9 +45,13 @@ header {
 /* The single bounded report container (exactly one main element). */
 main {
   max-width: 1160px;
-  margin-block: 0;
+  margin-block: 0 48px;
   margin-inline: auto;
   padding-inline: 32px;
+  padding-block: 8px 32px;
+  background: var(--surface-1);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-1);
 }
 
 /* --------------------------------------------------------------------------
@@ -126,27 +70,54 @@ h3 { font-size: 1rem; font-weight: 600; line-height: 1.35; }
   color: var(--text-2);
 }
 
-/* Hero figure: the ONE dominant metric (§5A). Primary ink, never accent. */
+/* Hero figure: fraction-first (DESIGN_V3 §5A). Primary ink, never accent. */
 .posture-figure {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px 20px;
   margin-block: 16px 0;
   color: var(--text-1);
 }
-.posture-digits {
-  font-size: 3.375rem;
+.posture-fraction {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: clamp(2.75rem, 6vw, 3.5rem);
   font-weight: 650;
   line-height: 1.0;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   color: var(--text-1);
 }
-.posture-unit {
-  font-size: 1rem;
+.posture-digits {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: inherit;
+  color: var(--text-1);
+}
+.posture-slash {
+  color: var(--text-3);
   font-weight: 500;
-  line-height: 1.2;
+  padding-inline: 4px;
+}
+.posture-denom {
+  color: var(--text-1);
+  font-weight: 650;
+}
+.posture-unit {
+  max-width: 28ch;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.35;
   color: var(--text-2);
+}
+.posture-pct {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 0.875rem;
+  color: var(--text-3);
 }
 
 /* Metric figure (secondary) — supporting stats, always tabular numerals. */
@@ -212,11 +183,12 @@ p,
 p { max-width: 72ch; }
 
 /* --------------------------------------------------------------------------
-   §2.3 Identity accent — links, selection, focus rings. Accent never colors
-   a semantic status and never colors chart data.
+   Identity accent — links, selection, focus rings. Accent never colors
+   a semantic status and never colors chart data. Underline on hover/focus.
    -------------------------------------------------------------------------- */
-a { color: var(--accent); text-decoration: underline; }
-a:hover { color: var(--accent-hover); }
+a { color: var(--accent); text-decoration: none; }
+a:hover { color: var(--accent-hover); text-decoration: underline; }
+a:focus-visible { text-decoration: underline; }
 
 ::selection {
   background: var(--accent);
@@ -234,24 +206,28 @@ a:hover { color: var(--accent-hover); }
    Whitespace and rules bound sections; cards only where a bounded unit
    earns one; shadows are state, never decoration.
    -------------------------------------------------------------------------- */
+/* Open ledger sections: hairline rules, not bordered cards-in-cards. */
 section {
-  background: var(--surface-1);
-  border: 1px solid var(--border);
+  background: transparent;
+  border: 0;
   border-radius: 0;
-  padding-block: 24px;
-  padding-inline: 32px;
+  padding-block: 32px 8px;
+  padding-inline: 0;
 }
 
-section + section { margin-block-start: 24px; }
+section + section {
+  margin-block-start: 8px;
+  border-block-start: 1px solid var(--border);
+}
 
-/* Hero: open typographic layout on the canvas — rules + whitespace, not a card (§4 / §5A). */
+/* Hero: open typographic layout on the sheet — rules + whitespace, not a card. */
 .hero {
   background: transparent;
   box-shadow: none;
   border: 0;
   border-block-end: 1px solid var(--border);
   border-radius: 0;
-  padding-block: 24px;
+  padding-block: 28px 24px;
   padding-inline: 0;
 }
 
@@ -324,8 +300,8 @@ section + section { margin-block-start: 24px; }
    shadow. Caret rotates 90° on open.
    -------------------------------------------------------------------------- */
 details.tech {
-  background: var(--surface-1);
-  border: 1px dashed var(--border);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
   border-radius: 0;
   padding-inline: 12px;
 }
@@ -542,17 +518,24 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 .move-item {
   display: flex;
   gap: 16px;
-  padding: 20px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  padding-block: 20px;
+  padding-inline: 0;
+  background: transparent;
+  border: 0;
+  border-block-start: 1px solid var(--border);
+  border-radius: 0;
+}
+.move-list .move-item:first-child {
+  border-block-start: 0;
+  padding-block-start: 0;
 }
 .move-item--lead {
-  box-shadow: var(--shadow-1);
-  background: var(--surface-3);
+  box-shadow: none;
+  background: transparent;
+  border-block-start-width: 0;
 }
-.move-item--lead .move-title { font-size: 1.25rem; }
-.move-index { color: var(--accent); font-weight: 700; }
+.move-item--lead .move-title { font-size: 1.1875rem; }
+.move-index { color: var(--text-3); font-weight: 650; font-variant-numeric: tabular-nums; }
 .move-body { display: flex; flex-direction: column; gap: 4px; }
 .move-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
 .move-effort { color: var(--text-2); font-size: 0.8125rem; }
@@ -645,10 +628,11 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 .dist-figure { margin-block: 20px 0; }
 .dist-bar {
   display: flex;
-  height: 8px;
-  border-radius: 999px;
+  height: 6px;
+  border-radius: 0;
   overflow: hidden;
   background: var(--surface-3);
+  max-width: 42rem;
 }
 .dist-segment {
   border: none;
@@ -692,12 +676,12 @@ details.tech[open] > .tech-body { animation: fade-in 150ms ease-out both; }
 .posture-sentence { color: var(--text-2); margin-block: 8px 0; max-width: 72ch; }
 
 .effort-label {
-  display: inline-block;
-  padding: 2px 8px;
-  border: 1px solid var(--border-strong);
-  border-radius: 6px;
-  font-size: 0.75rem;
-  color: var(--text-2);
+  display: inline;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  font-size: 0.8125rem;
+  color: var(--text-3);
 }
 
 /* --------------------------------------------------------------------------

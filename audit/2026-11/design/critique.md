@@ -128,6 +128,22 @@ Curated in-repo:
 
 ---
 
-## 8. Stop line
+## 8. Stop line (first return)
 
-Two static HTML directions follow this critique (`direction-a-ledger.html`, `direction-b-instrument.html`). **No DESIGN_V3.md and no three-surface implementation until the owner picks a direction.**
+Two static HTML directions followed this critique (`direction-a-ledger.html`,
+`direction-b-instrument.html`). Owner picked **Direction A — Assessment Ledger**.
+
+## 9. How each “feels off” cause was resolved (after Direction A)
+
+Contract churn is closed by `DESIGN_V3.md` superseding V2/V1 and by one shared
+token file (`templates/design/tokens.css`) consumed by the single-file report,
+report-app foundation, and wizard CSS — CHANGELOG/README now describe the
+Assessment Ledger that actually ships. The wrong genre is fixed by the light
+document default (paper canvas, white sheet, teal identity) instead of SOC Dark
+cyan. Tailwind-default status/accent hexes are gone; the serif wordmark is gone
+(sans lockup only); the hero leads with `met/owned` so small-N percents stay
+secondary captions; move Action lines that only restate the title are omitted,
+effort reads as `Hours` (not `~a few hours`), and check IDs stay under technical
+disclosure; sections are open rules instead of cards-in-cards; closed
+disclosures use solid borders; links use teal with underline on hover/focus.
+After-shots: `audit/2026-11/design/after/`.

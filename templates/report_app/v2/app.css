@@ -1,34 +1,10 @@
 /* ==========================================================================
-   Security License Lens — offline report app stylesheet (report app v2).
-   Design identity: "SOC Dark" (DESIGN_V2.md, the true v2 contract).
+   Security License Lens — offline report app stylesheet (report app v2 shell).
+   Design identity: "Assessment Ledger" (DESIGN_V3.md).
 
    App-shell + A-E layout layer for the bundle. The shared foundation
-   (report/v2/_v2_styles.css.j2) supplies the token palette, base, status
-   variants, glyph rules, and shared-partial styling; this file adds the
-   header bar, the sticky contextual nav (sections A-E + workload tabs),
-   the app-main shell, the signature opening choreography (DESIGN_V2 11),
-   the interactive constellation, the capability detail list, moves,
-   finding rails, the charts + filter toolbar, the print-only unpaginated
-   list, and the bundle-specific motion / reduced-motion / forced-colors /
-   print layers.
-
-   Contract notes enforced here:
-     - Every color is a declared token from DESIGN_V2.md section 2; the only
-       literal colors live inside the :root block. The supplement block below
-       re-declares the tokens the shared foundation may not have updated yet
-       with byte-identical DESIGN_V2 values (last declaration wins; identical
-       values, so the cascade never diverges).
-     - All directional layout rules use logical properties (border-inline-start,
-       margin-inline, padding-inline, text-align: start/end).
-     - Radii only from the section 4 stops: 0 / 2 / 6 / 10, plus 999px
-       exclusively for proportion-based fills (distribution segments, chart
-       bars). 16px is withdrawn.
-     - Gradients: only --grad-raised. Blur: only --blur-nav on the sticky
-       nav, behind a @supports guard. Shadows: --shadow-1/2 as state only;
-       a card at rest has no shadow. --grad-hero and --shadow-3 withdrawn.
-     - Screen is always dark; only @media print inverts to light ink.
-     - Reduced motion collapses to the instant final state with zero
-       information loss; forced-colors collapses chrome to system colors.
+   (report/v2/_v2_styles.css.j2 → design/tokens.css) supplies the token
+   palette. This file must not redeclare conflicting hex values.
    ========================================================================== */
 
 [hidden] { display: none !important; }
@@ -38,16 +14,9 @@
    declare yet (values byte-identical to DESIGN_V2 2; safe duplicates).
    -------------------------------------------------------------------------- */
 :root {
-  --grad-raised: linear-gradient(180deg, var(--surface-3) 0%, var(--surface-2) 100%);
+  /* Bundle-only aliases already declared in design/tokens.css; keep names
+     reachable if a stale foundation omit slips through. Do not pin dark hex. */
   --blur-nav: blur(8px);
-  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35), 0 1px 4px rgba(0, 0, 0, 0.25);
-  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.35);
-  /* Translucent twin of --surface-3: the one authorized backdrop-filter
-     surface (sticky nav, DESIGN_V2 2.3). Opaque --surface-3 is the fallback. */
-  --nav-surface: rgba(33, 42, 53, 0.86);
-  /* Focus ring (DESIGN_V2 2.3): the bundle owns its copy so the ring never
-     depends on the shared foundation staying in sync. */
-  --accent-focus: #A5F3FC;
 }
 
 /* --------------------------------------------------------------------------
@@ -167,11 +136,11 @@ header.app-header {
   min-width: 0;
 }
 .logo h1 {
-  font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  font-size: 2rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: var(--font-sans);
+  font-size: clamp(1.75rem, 2.4vw, 2.125rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 .tagline { margin: 0; color: var(--text-2); font-size: 0.9375rem; font-weight: 400; }
 .lens-mark {
@@ -366,25 +335,50 @@ section.hero {
 }
 .opening-identity__id { font-size: 0.8125rem; color: var(--text-3); font-weight: 400; }
 
-/* The ONE dominant metric (DESIGN_V2 5A). Primary ink, never accent. */
+/* Fraction-first hero (DESIGN_V3 §5A). Primary ink, never accent. */
 .posture-figure {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
-  gap: 10px;
+  gap: 12px 20px;
   margin-block: 16px 0;
   color: var(--text-1);
   animation: none;
 }
-.posture-digits {
-  font-size: 3.375rem;
+.posture-fraction {
+  display: inline-flex;
+  align-items: baseline;
+  font-size: clamp(2.75rem, 6vw, 3.5rem);
   font-weight: 650;
   line-height: 1.0;
   font-variant-numeric: tabular-nums;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  color: var(--text-1);
+}
+.posture-digits {
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: inherit;
   color: var(--text-1);
   animation: none;
 }
-.posture-unit { font-size: 1rem; font-weight: 500; color: var(--text-2); }
+.posture-slash { color: var(--text-3); font-weight: 500; padding-inline: 4px; }
+.posture-denom { color: var(--text-1); font-weight: 650; }
+.posture-unit {
+  max-width: 28ch;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.35;
+  color: var(--text-2);
+}
+.posture-pct {
+  display: block;
+  margin-block-start: 2px;
+  font-size: 0.875rem;
+  color: var(--text-3);
+}
 
 .posture-sentence { margin-block: 8px 0; color: var(--text-2); max-width: 72ch; }
 
@@ -427,10 +421,11 @@ section.hero {
 .dist-figure { margin-block: 20px 0; }
 .dist-bar {
   display: flex;
-  height: 8px;
+  height: 6px;
   background: var(--surface-3);
-  border-radius: 999px;
+  border-radius: 0;
   overflow: hidden;
+  max-width: 42rem;
 }
 .dist-seg,
 .dist-segment {
@@ -653,27 +648,32 @@ button.constellation-caption[aria-pressed="true"] { color: var(--accent); }
   padding: 0;
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 0;
 }
 .move-item {
   display: flex;
-  gap: 12px;
-  padding: 16px 20px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  gap: 16px;
+  padding-block: 20px;
+  padding-inline: 0;
+  background: transparent;
+  border: 0;
+  border-block-start: 1px solid var(--border);
+  border-radius: 0;
 }
-.move-item:first-child {
-  border-color: var(--border-strong);
-  box-shadow: var(--shadow-1);
+.move-item:first-child,
+.move-item--lead {
+  border-block-start: 0;
+  padding-block-start: 0;
+  box-shadow: none;
 }
-.move-item:first-child .move-title { font-size: 1.06rem; }
-.move-index { color: var(--accent); font-weight: 650; font-size: 0.8125rem; }
+.move-item--lead .move-title,
+.move-item:first-child .move-title { font-size: 1.1875rem; }
+.move-index { color: var(--text-3); font-weight: 650; font-size: 0.875rem; font-variant-numeric: tabular-nums; }
 .move-body { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .move-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
-.move-title { font-size: 1rem; font-weight: 600; }
-.move-effort { color: var(--text-2); font-size: 0.8125rem; }
-.move-why, .move-action, .move-ids, .move-link { margin: 0; max-width: none; }
+.move-title { font-size: 1.0625rem; font-weight: 650; }
+.move-effort, .move-meta { color: var(--text-3); font-size: 0.8125rem; margin: 6px 0 0; }
+.move-why, .move-action, .move-ids, .move-link { margin: 10px 0 0; max-width: 62ch; }
 .move-note { color: var(--text-3); font-size: 0.8125rem; }
 
 /* --------------------------------------------------------------------------

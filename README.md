@@ -30,10 +30,10 @@ the report in your browser.
 
 ![report opening](docs/images/report-hero.png)
 
-*The report opens on one number, what it means, and the first ranked action.
-Every claim below it can be opened: findings carry evidence, confidence, and
-limitations, and the technical ledger shows exactly how each verdict was
-derived.*
+*The report opens on a fraction of in-scope capabilities met, what that means,
+and the first ranked action. Every claim below it can be opened: findings carry
+evidence, confidence, and limitations, and the technical ledger shows exactly
+how each verdict was derived.*
 
 On Windows the same pipx install works: the PyPI wheel bundles the PowerShell
 collector bridge since 0.4.0, so the email pack and all PowerShell-only

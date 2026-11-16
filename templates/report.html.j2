@@ -125,11 +125,11 @@
   min-width: 0;
 }
 .logo h1 {
-  font-family: Palatino, "Palatino Linotype", "Book Antiqua", Georgia, serif;
-  font-size: 2rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  line-height: 1.15;
+  font-family: var(--font-sans);
+  font-size: clamp(1.75rem, 2.4vw, 2.125rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
 }
 .tagline { margin: 0; color: var(--text-2); font-size: 0.9375rem; font-weight: 400; }
 .lens-mark {
@@ -177,11 +177,12 @@
   background: none;
   color: var(--accent);
   font-size: 0.9375rem;
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1.2;
-  text-decoration: underline;
+  text-decoration: none;
 }
-.hero-action a:hover { color: var(--accent-hover); }
+.hero-action a:hover,
+.hero-action a:focus-visible { color: var(--accent-hover); text-decoration: underline; }
 
 /* Below-fold reveals: B, C, and Findings fade + 6px rise on first entry,
    one-shot
@@ -290,7 +291,17 @@ body.revealed .reveal-target.is-revealed {
       <div class="opening" data-opening>
         <div class="posture">
           <div class="posture-figure">
-            <span class="posture-digits" data-count-up="{{ _posture.realized_percent }}">{{ _posture.realized_percent }}</span><span class="posture-unit">% realized</span>
+            <span class="posture-fraction" aria-label="{{ _posture.met }} of {{ _posture.owned }} in-scope capabilities met">
+              <span class="posture-digits" data-count-up="{{ _posture.met }}">{{ _posture.met }}</span><span class="posture-slash">/</span><span class="posture-denom">{{ _posture.owned }}</span>
+            </span>
+            <span class="posture-unit">
+              In-scope capabilities met all assessed criteria.
+              {%- if _posture.owned > 0 and _posture.owned < 20 %}
+              <span class="posture-pct">About {{ _posture.realized_percent }}% of the prioritized set.</span>
+              {%- elif _posture.owned >= 20 %}
+              <span class="posture-pct">{{ _posture.realized_percent }}% realized.</span>
+              {%- endif %}
+            </span>
           </div>
         </div>
 

@@ -201,7 +201,7 @@ def test_reports_distinguish_detected_from_evaluated_capabilities(tmp_path: Path
     detected = len(result.owned_capabilities)
     prioritized = result.capability_rollup.you_own
     assert detected > prioritized
-    assert f'data-count-up="{result.capability_rollup.realized_percent}"' in html
+    assert f'data-count-up="{result.capability_rollup.fully_working}"' in html
     for report in (html, md):
         assert str(detected) in report
         assert str(prioritized) in report
