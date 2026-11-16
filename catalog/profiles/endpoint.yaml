@@ -7,6 +7,7 @@ packs:
 check_ids:
   - mde-onboard-gap
   - mdi-sensors-missing
+  - endpoint-epm-policy-present
 backend_preferences:
   preferred:
     - defender

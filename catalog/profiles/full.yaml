@@ -61,6 +61,11 @@ check_ids:
   - pur-ediscovery-readiness
   - mde-onboard-gap
   - mdi-sensors-missing
+  - id-mdca-ca-session-control
+  - xdr-sec-copilot-workspace-provisioned
+  - endpoint-epm-policy-present
+  - id-gsa-internet-access-enabled
+  - id-gsa-private-access-enabled
   - sen-analytics-rule-coverage
   - sen-ueba-not-enabled
   - pur-dlp-not-enforced

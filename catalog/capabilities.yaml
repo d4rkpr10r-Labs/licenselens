@@ -6,8 +6,16 @@
 # backends / source_version support provenance for generated docs.
 # Community PRs welcome with verified Graph subscribedSkus plan names.
 
+# Capability catalog — maps Microsoft service plans / SKUs to high-value features.
+# plain_name / outcome / why_it_matters / if_unused are customer-facing (SMB-friendly).
+# Prefer service_plan_names (stable) over sku_part_numbers.
+# entitlement_kind: included | base | add_on | consumption
+# clouds: omit or [] means all known clouds; otherwise explicit commercial/gcc/gcc_high/dod.
+# backends / source_version support provenance for generated docs.
+# Community PRs welcome with verified Graph subscribedSkus plan names.
+
 version: 1
-source_version: "2026-08"
+source_version: "2026-11"
 capabilities:
   - id: entra_id_p2
     name: Microsoft Entra ID P2
@@ -31,18 +39,79 @@ capabilities:
       - eec0eb4f-6444-4f95-aba0-50c24d67f998
     sku_part_numbers:
       - AAD_PREMIUM_P2
-      - SPE_E5
-      - ENTERPRISEPREMIUM
       - EMSPREMIUM
+      - ENTERPRISEPREMIUM
+      - SPE_E5
     sku_aliases:
-      - SPE_E5_USGOV_GCCHIGH
-      - SPE_E5_USGOV_DOD
       - M365_E5_GOV
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph]
+      - MICROSOFT_365_E7
+      - SPE_E5_USGOV_DOD
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
     source_version: "2026-08"
-    docs_url: https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
+    docs_url: 
+      https://learn.microsoft.com/entra/id-governance/privileged-identity-management/pim-configure
 
+  - id: entra_internet_access
+    name: Microsoft Entra Internet Access
+    plain_name: Secure access to the public internet
+    description: Global Secure Access internet traffic forwarding / identity-aware SWG.
+    outcome: Steer and inspect internet traffic through Entra Internet Access forwarding profiles.
+    why_it_matters: Without internet access profiles, identity-aware network controls for SaaS and 
+      web stay unused.
+    if_unused: Entra Suite / Internet Access may be licensed while no internet forwarding profile is
+      enabled.
+    workloads:
+      - identity
+    entitlement_kind: add_on
+    service_plan_names:
+      - Entra_Premium_Internet_Access
+    service_plan_aliases: []
+    service_plan_ids:
+      - 8d23cb83-ab07-418f-8517-d7aca77307dc
+    sku_part_numbers:
+      - Microsoft_Entra_Suite_Step_Up_for_Microsoft_Entra_ID_P2
+    sku_aliases:
+      - MICROSOFT_365_E7
+    clouds:
+      - commercial
+    backends:
+      - graph
+    source_version: 2026-11
+    docs_url: 
+      https://learn.microsoft.com/entra/global-secure-access/overview-what-is-global-secure-access
+  - id: entra_private_access
+    name: Microsoft Entra Private Access
+    plain_name: Secure access to private apps
+    description: Global Secure Access private traffic forwarding for private apps.
+    outcome: Publish private apps through Entra Private Access forwarding profiles.
+    why_it_matters: Private Access replaces broad VPN exposure with identity-aware app access.
+    if_unused: Entra Suite / Private Access may be licensed while no private forwarding profile is 
+      enabled.
+    workloads:
+      - identity
+    entitlement_kind: add_on
+    service_plan_names:
+      - Entra_Premium_Private_Access
+    service_plan_aliases: []
+    service_plan_ids:
+      - f057aab1-b184-49b2-85c0-881b02a405c5
+    sku_part_numbers:
+      - Microsoft_Entra_Suite_Step_Up_for_Microsoft_Entra_ID_P2
+    sku_aliases:
+      - MICROSOFT_365_E7
+    clouds:
+      - commercial
+    backends:
+      - graph
+    source_version: 2026-11
+    docs_url: https://learn.microsoft.com/entra/global-secure-access/concept-private-access
   - id: conditional_access
     name: Conditional Access
     plain_name: Smarter sign-in rules
@@ -66,22 +135,30 @@ capabilities:
     sku_part_numbers:
       - AAD_PREMIUM
       - AAD_PREMIUM_P2
+      - ENTERPRISEPREMIUM
       - SPE_E3
       - SPE_E5
-      - ENTERPRISEPREMIUM
     sku_aliases:
+      - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
-      - SPE_E5_USGOV_GCCHIGH
       - SPE_E5_USGOV_DOD
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph]
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/entra/identity/conditional-access/overview
 
+    service_plan_aliases: []
   - id: workload_identities_premium
     name: Microsoft Entra Workload ID Premium
     plain_name: Stronger protection for apps and service accounts
-    description: Conditional Access and risk-based protection for service principals and workload identities.
+    description: Conditional Access and risk-based protection for service principals and workload 
+      identities.
     outcome: >
       Apply sign-in rules and risk detection to the non-human accounts that run
       your apps and automations, not only to people.
@@ -101,13 +178,16 @@ capabilities:
       - 7dc0e92d-bf15-401d-907e-0884efe7c760
       - 84c289f0-efcb-486f-8581-07f44fc9efad
     sku_part_numbers:
-      - Workload_Identities_Premium_CN
       - Workload_Identities_P2
-    clouds: [commercial]
-    backends: [graph]
+      - Workload_Identities_Premium_CN
+    clouds:
+      - commercial
+    backends:
+      - graph
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/entra/workload-id/workload-identities-overview
 
+    sku_aliases: []
   - id: entitlement_management
     name: Microsoft Entra ID Governance
     plain_name: Managed access packages for apps, groups, and Teams
@@ -129,11 +209,17 @@ capabilities:
       - e866a266-3cff-43a3-acca-0c90a7e00c8b
     sku_part_numbers:
       - Microsoft_Entra_ID_Governance
-    clouds: [commercial]
-    backends: [graph]
-    source_version: "2026-08"
+    clouds:
+      - commercial
+    backends:
+      - graph
+    source_version: "2026-11"
     docs_url: https://learn.microsoft.com/entra/id-governance/entitlement-management-overview
 
+    service_plan_aliases: []
+    sku_aliases:
+      - MICROSOFT_365_E7
+      - Microsoft_Entra_Suite_Step_Up_for_Microsoft_Entra_ID_P2
   - id: identity_protection
     name: Microsoft Entra ID Protection
     plain_name: Alerts when a sign-in looks suspicious
@@ -154,16 +240,23 @@ capabilities:
       - eec0eb4f-6444-4f95-aba0-50c24d67f998
     sku_part_numbers:
       - AAD_PREMIUM_P2
-      - SPE_E5
       - ENTERPRISEPREMIUM
+      - SPE_E5
     sku_aliases:
-      - SPE_E5_USGOV_GCCHIGH
+      - MICROSOFT_365_E7
       - SPE_E5_USGOV_DOD
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph]
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/entra/id-protection/overview-identity-protection
 
+    service_plan_aliases: []
   - id: defender_office_p2
     name: Microsoft Defender for Office 365 P2
     plain_name: Stronger email and file threat protection
@@ -180,22 +273,28 @@ capabilities:
     entitlement_kind: included
     service_plan_names:
       - THREAT_INTELLIGENCE
-      - ATP_ENTERPRISE
     service_plan_aliases:
       - THREAT_INTELLIGENCE_GOV
     service_plan_ids:
       - 8e0c0a52-6a6c-4d40-8370-dd62790dcd70
-      - f20fedf3-f3c3-43c3-8267-2bfdd51c0939
     sku_part_numbers:
       - SPE_E5
       - ENTERPRISEPREMIUM
       - IDENTITY_THREAT_PROTECTION
     sku_aliases:
-      - SPE_E5_USGOV_GCCHIGH
       - IDENTITY_THREAT_PROTECTION_GOV
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph, exchange_powershell, security_compliance_powershell]
-    source_version: "2026-08"
+      - MICROSOFT_365_E7
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - exchange_powershell
+      - graph
+      - security_compliance_powershell
+    source_version: "2026-11"
     docs_url: https://learn.microsoft.com/defender-office-365/preset-security-policies
 
   - id: defender_endpoint_p2
@@ -220,14 +319,21 @@ capabilities:
     service_plan_ids:
       - 871d91ec-ec1a-452b-a83f-bd76c7d770ef
     sku_part_numbers:
-      - SPE_E5
-      - IDENTITY_THREAT_PROTECTION
       - DEFENDER_ENDPOINT_P2
+      - IDENTITY_THREAT_PROTECTION
+      - SPE_E5
     sku_aliases:
-      - SPE_E5_USGOV_GCCHIGH
       - DEFENDER_ENDPOINT_P2_GOV
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph, mde]
+      - MICROSOFT_365_E7
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - mde
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-endpoint/onboarding
 
@@ -253,14 +359,21 @@ capabilities:
     service_plan_ids:
       - 14ab5db5-e6c4-4b20-b4bc-13e36fd2227f
     sku_part_numbers:
-      - SPE_E5
       - EMSPREMIUM
       - ENTERPRISEPREMIUM
-    clouds: [commercial, gcc, gcc_high]
-    backends: [graph, manual]
+      - SPE_E5
+    clouds:
+      - commercial
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - manual
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-for-identity/deploy-defender-identity
 
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: microsoft_sentinel
     name: Microsoft Sentinel
     plain_name: A central security command center in the cloud
@@ -281,11 +394,18 @@ capabilities:
     # Azure (Sentinel onboarding state / workspace / pricings probes).
     service_plan_ids: []
     sku_part_numbers: []
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [arm, graph]
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - arm
+      - graph
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/azure/sentinel/overview
 
+    sku_aliases: []
   - id: purview_dlp
     name: Microsoft Purview Data Loss Prevention
     plain_name: Guardrails so sensitive data is harder to leak
@@ -301,8 +421,8 @@ capabilities:
     workloads: [purview]
     entitlement_kind: included
     service_plan_names:
-      - MIP_S_CLP2
       - INFORMATION_BARRIERS
+      - MIP_S_CLP2
     service_plan_aliases:
       - MIP_S_CLP1
     service_plan_ids:
@@ -310,14 +430,22 @@ capabilities:
       - c4801e8a-cb58-4c35-aca6-f2dcc106f287
       - 5136a095-5cf0-4aff-bec3-e84448b38ea5
     sku_part_numbers:
-      - SPE_E5
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph, security_compliance_powershell]
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/dlp-learn-about-dlp
 
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: exchange_online
     name: Exchange Online
     plain_name: Business email and calendar in the cloud
@@ -333,9 +461,9 @@ capabilities:
     workloads: [exchange]
     entitlement_kind: base
     service_plan_names:
+      - EXCHANGESTANDARD
       - EXCHANGE_S_ENTERPRISE
       - EXCHANGE_S_STANDARD
-      - EXCHANGESTANDARD
     service_plan_aliases:
       - EXCHANGE_S_ENTERPRISE_GOV
       - EXCHANGE_S_STANDARD_GOV
@@ -343,18 +471,25 @@ capabilities:
       - efb87545-963c-4e0d-99df-69c6916d9eb0
       - 9aaf7827-d63c-4b61-89c3-182f06f82e5c
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
-      - EXCHANGESTANDARD
       - EXCHANGEENTERPRISE
+      - EXCHANGESTANDARD
+      - SPE_E3
+      - SPE_E5
     sku_aliases:
+      - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
-      - SPE_E5_USGOV_GCCHIGH
       - SPE_E5_USGOV_DOD
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [exchange_powershell, graph]
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - exchange_powershell
+      - graph
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/exchange/exchange-online
 
@@ -381,21 +516,30 @@ capabilities:
       - 113feb6c-3fe4-4440-bddc-54d774bf0318
       - 75badc48-628e-4446-8460-41344d73abd6
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
-      - EXCHANGESTANDARD
       - EXCHANGEENTERPRISE
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [exchange_powershell, security_compliance_powershell]
+      - EXCHANGESTANDARD
+      - SPE_E3
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - exchange_powershell
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-office-365/eop-about
 
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: defender_office_p1
     name: Microsoft Defender for Office 365 P1
     plain_name: Safe Attachments and Safe Links essentials
-    description: Defender for Office 365 Plan 1 safe content controls without full P2 investigation suite.
+    description: Defender for Office 365 Plan 1 safe content controls without full P2 investigation 
+      suite.
     outcome: >
       Detonate risky attachments and rewrite dangerous links for licensed users
       even when the full P2 investigation pack is not present.
@@ -404,7 +548,7 @@ capabilities:
     if_unused: >
       Safe content policies may be missing, scoped to pilots, or left in evaluation mode.
     workloads: [defender, exchange]
-    entitlement_kind: add_on
+    entitlement_kind: included
     service_plan_names:
       - ATP_ENTERPRISE
     service_plan_ids:
@@ -414,11 +558,23 @@ capabilities:
       - IDENTITY_THREAT_PROTECTION
       - SPE_E5
       - ENTERPRISEPREMIUM
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [exchange_powershell, security_compliance_powershell, graph]
-    source_version: "2026-08"
+      - SPE_E3
+      - ENTERPRISEPACK
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - exchange_powershell
+      - graph
+      - security_compliance_powershell
+    source_version: "2026-11"
     docs_url: https://learn.microsoft.com/defender-office-365/defender-for-office-365
 
+    service_plan_aliases: []
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: sharepoint_online
     name: SharePoint Online
     plain_name: Team sites and shared file libraries
@@ -434,8 +590,8 @@ capabilities:
     entitlement_kind: base
     service_plan_names:
       - SHAREPOINTENTERPRISE
-      - SHAREPOINTWAC
       - SHAREPOINTSTANDARD
+      - SHAREPOINTWAC
     service_plan_aliases:
       - SHAREPOINTENTERPRISE_GOV
     service_plan_ids:
@@ -443,17 +599,24 @@ capabilities:
       - e95bec33-7c88-4a70-8e19-b10bd9d0c014
       - c7699d2e-19aa-44de-8edf-1736da088ca1
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
-      - SHAREPOINTSTANDARD
       - SHAREPOINTENTERPRISE
+      - SHAREPOINTSTANDARD
+      - SPE_E3
+      - SPE_E5
     sku_aliases:
+      - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
       - SPE_E5_USGOV_GCCHIGH
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [sharepoint_powershell, graph]
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - sharepoint_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/sharepoint/introduction
 
@@ -479,15 +642,24 @@ capabilities:
       - 5dbe027f-2339-4123-9542-606e4d348a72
       - e95bec33-7c88-4a70-8e19-b10bd9d0c014
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [sharepoint_powershell, graph]
+      - SPE_E3
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - sharepoint_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/onedrive/onedrive-admin
 
+    service_plan_aliases: []
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: teams
     name: Microsoft Teams
     plain_name: Chat, meetings, and teamwork hub
@@ -503,26 +675,33 @@ capabilities:
     workloads: [teams, collaboration]
     entitlement_kind: base
     service_plan_names:
-      - TEAMS1
       - MCOSTANDARD
+      - TEAMS1
       - TEAMS_COMMERCIAL_TRIAL
     service_plan_aliases:
-      - TEAMS_GOV
       - MCOSTANDARD_GOV
+      - TEAMS_GOV
     service_plan_ids:
       - 57ff2da0-773e-42df-b2af-ffb7a2317929
       - 0feaeb32-d00e-4d66-bd5a-43b5b83db82c
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
+      - SPE_E3
+      - SPE_E5
       - TEAMS_EXPLORATORY
     sku_aliases:
+      - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
       - SPE_E5_USGOV_GCCHIGH
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [teams_powershell, graph]
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - teams_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/microsoftteams/teams-overview
 
@@ -541,29 +720,36 @@ capabilities:
     entitlement_kind: included
     service_plan_names:
       - FLOW_O365_P2
-      - POWERAPPS_O365_P2
       - FLOW_O365_P3
+      - POWERAPPS_O365_P2
       - POWERAPPS_O365_P3
     service_plan_aliases:
-      - POWERAPPS_PER_USER
       - FLOW_PER_USER
+      - POWERAPPS_PER_USER
     service_plan_ids:
       - 76846ad7-7776-4c40-a281-a386362dd1b9
       - c68f8d98-5534-41c8-bf36-22fa496fa792
       - 07699545-9485-468e-95b6-2fca3738be01
       - 9c0dab89-a30c-4117-86e7-97bda240acd2
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
-      - POWERAPPS_PER_USER
       - FLOW_PER_USER
-    clouds: [commercial, gcc, gcc_high]
-    backends: [power_platform, graph]
+      - POWERAPPS_PER_USER
+      - SPE_E3
+      - SPE_E5
+    clouds:
+      - commercial
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - power_platform
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/power-platform/admin/admin-documentation
 
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: power_bi_pro
     name: Power BI Pro
     plain_name: Shared interactive business reports
@@ -586,15 +772,23 @@ capabilities:
     service_plan_ids:
       - 70d33638-9c74-4d01-bfd3-562de28bd4ba
     sku_part_numbers:
-      - POWER_BI_PRO
-      - SPE_E5
       - ENTERPRISEPREMIUM
+      - POWER_BI_PRO
       - POWER_BI_STANDARD
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [power_bi, graph]
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - power_bi
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/power-bi/enterprise/service-admin-planning
 
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: power_bi_premium
     name: Power BI Premium per user
     plain_name: Advanced capacity-backed Power BI features
@@ -609,18 +803,25 @@ capabilities:
     workloads: [power_bi]
     entitlement_kind: add_on
     service_plan_names:
-      - POWER_BI_PREMIUM_PER_USER
       - BI_AZURE_P3
+      - POWER_BI_PREMIUM_PER_USER
     service_plan_ids:
       - 0bf3c642-7bb5-4ccc-884e-59d09df0266c
     sku_part_numbers:
-      - POWER_BI_PREMIUM_PER_USER
       - PBI_PREMIUM_PER_USER
-    clouds: [commercial, gcc, gcc_high]
-    backends: [power_bi, graph]
+      - POWER_BI_PREMIUM_PER_USER
+    clouds:
+      - commercial
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - power_bi
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/power-bi/enterprise/service-premium-per-user-faq
 
+    service_plan_aliases: []
+    sku_aliases: []
   - id: intune
     name: Microsoft Intune
     plain_name: Manage and protect company devices and apps
@@ -639,28 +840,59 @@ capabilities:
       - INTUNE_A_VL
       - MDM_SALES_COLLABORATION
     service_plan_aliases:
-      - INTUNE_EDU
       - INTUNE_A_GOV
+      - INTUNE_EDU
     service_plan_ids:
       - c1ec4a95-1f05-45b3-a911-aa3fa01094f5
       - 3e170737-c728-4eae-bbb9-3f3360f7184c
       - 3413916e-ee66-4071-be30-6f94d4adfeda
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
+      - EMSPREMIUM
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
-      - EMSPREMIUM
       - INTUNE_A
+      - SPE_E3
+      - SPE_E5
     sku_aliases:
+      - MICROSOFT_365_E7
       - SPE_E3_USGOV_GCCHIGH
-      - SPE_E5_USGOV_GCCHIGH
       - SPE_E5_USGOV_DOD
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph]
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/mem/intune/fundamentals/what-is-intune
 
+  - id: intune_endpoint_privilege_management
+    name: Intune Endpoint Privilege Management
+    plain_name: Just-enough elevation on endpoints
+    description: Intune Endpoint Privilege Management (EPM) elevation policies.
+    outcome: Allow standard users to elevate approved apps without standing local admin rights.
+    why_it_matters: Standing local admin is a top ransomware path; EPM keeps elevation controlled.
+    if_unused: Intune Suite / EPM may be entitled while no elevation policy is deployed.
+    workloads:
+      - endpoint
+      - intune
+    entitlement_kind: add_on
+    service_plan_names:
+      - Intune-EPM
+    service_plan_aliases: []
+    service_plan_ids:
+      - bb73f429-78ef-4ff2-83c8-722b04c3e7d1
+    sku_part_numbers:
+      - Microsoft_Intune_Suite
+    sku_aliases: []
+    clouds:
+      - commercial
+    backends:
+      - graph
+    source_version: 2026-11
+    docs_url: https://learn.microsoft.com/mem/intune/protect/epm-overview
   - id: defender_endpoint_p1
     name: Microsoft Defender for Endpoint P1
     plain_name: Essential next-generation device protection
@@ -675,24 +907,28 @@ capabilities:
     entitlement_kind: add_on
     service_plan_names:
       - DEFENDER_ENDPOINT_P1
-      - MDE_P1
       - MDE_LITE
-    # MDE_LITE (292cc034-7b7c-4950-aaf5-943befd3f1d4) is the service-plan GUID
-    # for Defender for Endpoint Plan 1 per the Microsoft licensing reference
-    # (verified 2026-08). DEFENDER_ENDPOINT_P1 / MDE_P1 are the product
-    # String_Ids whose underlying plan is MDE_LITE.
+      - MDE_P1
     service_plan_ids:
       - 292cc034-7b7c-4950-aaf5-943befd3f1d4
     sku_part_numbers:
       - DEFENDER_ENDPOINT_P1
+      - IDENTITY_THREAT_PROTECTION
       - MDE_P1
       - SPE_E3
-      - IDENTITY_THREAT_PROTECTION
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [mde, graph]
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - mde
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-endpoint/defender-endpoint-plan-1-2
 
+    service_plan_aliases: []
+    sku_aliases: []
   - id: defender_xdr
     name: Microsoft Defender XDR
     plain_name: Cross-product incident correlation
@@ -707,10 +943,10 @@ capabilities:
     workloads: [defender]
     entitlement_kind: included
     service_plan_names:
-      - DEFENDER_ENDPOINT_P2
-      - THREAT_INTELLIGENCE
-      - MDI_Service_Plan
       - ATA
+      - DEFENDER_ENDPOINT_P2
+      - MDI_Service_Plan
+      - THREAT_INTELLIGENCE
     service_plan_aliases:
       - WINDEFATP
     service_plan_ids:
@@ -718,17 +954,86 @@ capabilities:
       - 14ab5db5-e6c4-4b20-b4bc-13e36fd2227f
       - 871d91ec-ec1a-452b-a83f-bd76c7d770ef
     sku_part_numbers:
-      - SPE_E5
-      - IDENTITY_THREAT_PROTECTION
       - EMSPREMIUM
+      - IDENTITY_THREAT_PROTECTION
+      - SPE_E5
     sku_aliases:
-      - SPE_E5_USGOV_GCCHIGH
       - IDENTITY_THREAT_PROTECTION_GOV
-    clouds: [commercial, gcc, gcc_high]
-    backends: [graph, mde]
+      - MICROSOFT_365_E7
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - mde
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/defender-xdr/microsoft-365-defender
 
+  - id: defender_cloud_apps
+    name: Microsoft Defender for Cloud Apps
+    plain_name: Cloud app visibility and session control
+    description: Defender for Cloud Apps (MDCA) including Conditional Access App Control.
+    outcome: Monitor and control risky cloud-app sessions for licensed users.
+    why_it_matters: Shadow IT and unmanaged SaaS sessions leak data outside your email and endpoint 
+      controls.
+    if_unused: MDCA may be entitled while no Conditional Access App Control session policies exist.
+    workloads:
+      - defender
+      - identity
+    entitlement_kind: included
+    service_plan_names:
+      - ADALLOM_S_O365
+      - ADALLOM_S_STANDALONE
+    service_plan_aliases:
+      - ADALLOM_S_STANDALONE_DOD
+    service_plan_ids:
+      - 2e2ddb96-6af9-4b1d-a3f0-d6ecfd22edb2
+      - 8c098270-9dd4-4350-9b30-ba4703f3b36b
+    sku_part_numbers:
+      - ENTERPRISEPREMIUM
+      - SPE_E5
+    sku_aliases:
+      - MICROSOFT_365_E7
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+    source_version: 2026-11
+    docs_url: https://learn.microsoft.com/defender-cloud-apps/what-is-defender-for-cloud-apps
+  - id: security_copilot
+    name: Microsoft Security Copilot
+    plain_name: AI assistants for security operations
+    description: Security Copilot inclusion capacity for eligible Microsoft 365 E5/E7 tenants.
+    outcome: Have a provisioned Security Copilot workspace so SOC and security admins can use 
+      included SCUs.
+    why_it_matters: Included Security Copilot capacity is wasted if the workspace was never 
+      provisioned after Microsoft enables the tenant.
+    if_unused: E5/E7 inclusion may be entitled while no Security Copilot workspace is present 
+      (confirm phased rollout first).
+    workloads:
+      - defender
+    entitlement_kind: included
+    service_plan_names: []
+    service_plan_aliases: []
+    service_plan_ids: []
+    sku_part_numbers:
+      - MICROSOFT_365_E7
+      - SPE_E5
+    sku_aliases:
+      - ENTERPRISEPREMIUM
+      - SPE_E5_USGOV_GCCHIGH
+    clouds:
+      - commercial
+    backends:
+      - graph
+    source_version: 2026-11
+    docs_url: https://learn.microsoft.com/copilot/security/security-copilot-inclusion
   - id: purview_audit
     name: Microsoft Purview Audit
     plain_name: A searchable record of important activity
@@ -742,22 +1047,30 @@ capabilities:
     workloads: [purview]
     entitlement_kind: included
     service_plan_names:
-      - M365_ADVANCED_AUDITING
       - EQUIVIO_ANALYTICS
+      - M365_ADVANCED_AUDITING
     service_plan_aliases:
       - AUDIT_ENTERPRISE
     service_plan_ids:
       - 2f442157-a11c-46b9-ae5b-6e39ff4e5849
       - 4de31727-a228-4ec3-a5bf-8e45b5ca48cc
     sku_part_numbers:
-      - SPE_E5
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph, security_compliance_powershell]
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/audit-solutions-overview
 
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: purview_sensitivity_labels
     name: Microsoft Purview Sensitivity Labels
     plain_name: Labels that classify and protect files and mail
@@ -771,23 +1084,32 @@ capabilities:
     workloads: [purview]
     entitlement_kind: included
     service_plan_names:
+      - INFORMATION_PROTECTION_COMPLIANCE
       - MIP_S_CLP1
       - MIP_S_CLP2
-      - INFORMATION_PROTECTION_COMPLIANCE
     service_plan_ids:
       - 5136a095-5cf0-4aff-bec3-e84448b38ea5
       - efb0351d-3b08-4503-993d-383af8de41e3
     sku_part_numbers:
-      - SPE_E3
-      - SPE_E5
       - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [graph, security_compliance_powershell]
+      - SPE_E3
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/sensitivity-labels
 
+    service_plan_aliases: []
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: purview_retention
     name: Microsoft Purview Data Lifecycle Management
     plain_name: Retention rules that keep or remove content on schedule
@@ -808,16 +1130,25 @@ capabilities:
     service_plan_ids:
       - 65cc641f-cccd-4643-97e0-a17e3045e541
     sku_part_numbers:
-      - SPE_E5
+      - ENTERPRISEPACK
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
       - SPE_E3
-      - ENTERPRISEPACK
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [security_compliance_powershell, graph]
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/retention
 
+    service_plan_aliases: []
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: purview_insider_risk
     name: Microsoft Purview Insider Risk Management
     plain_name: Early warning for risky insider activity
@@ -836,15 +1167,23 @@ capabilities:
     service_plan_ids:
       - 9d0c4ee5-e4a1-4625-ab39-d82b619b1a34
     sku_part_numbers:
-      - SPE_E5
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
       - INSIDER_RISK_MANAGEMENT
-    clouds: [commercial, gcc, gcc_high]
-    backends: [security_compliance_powershell, graph]
+      - SPE_E5
+    clouds:
+      - commercial
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/insider-risk-management
 
+    service_plan_aliases: []
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: purview_ediscovery
     name: Microsoft Purview eDiscovery
     plain_name: Legal hold and investigation search
@@ -859,8 +1198,8 @@ capabilities:
     entitlement_kind: included
     service_plan_names:
       - EQUIVIO_ANALYTICS
-      - LOCKBOX_ENTERPRISE
       - EXCHANGE_ANALYTICS
+      - LOCKBOX_ENTERPRISE
     service_plan_aliases:
       - M365_ADVANCED_AUDITING
     service_plan_ids:
@@ -869,14 +1208,22 @@ capabilities:
       - 34c0d7a0-a70f-4668-9238-47f9fc208882
       - 2f442157-a11c-46b9-ae5b-6e39ff4e5849
     sku_part_numbers:
-      - SPE_E5
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [security_compliance_powershell, graph]
+      - SPE_E5
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/ediscovery
 
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: purview_communication_compliance
     name: Microsoft Purview Communication Compliance
     plain_name: Oversight for risky business communications
@@ -892,18 +1239,24 @@ capabilities:
     service_plan_names:
       - COMMUNICATION_COMPLIANCE
       - COMM_COMPLIANCE
-    # No sourced servicePlanId GUIDs: the licensing reference uses
-    # MICROSOFT_COMMUNICATION_COMPLIANCE / COMMUNICATIONS_COMPLIANCE instead.
     service_plan_ids: []
     sku_part_numbers:
-      - SPE_E5
       - ENTERPRISEPREMIUM
       - INFORMATION_PROTECTION_COMPLIANCE
-    clouds: [commercial, gcc, gcc_high]
-    backends: [security_compliance_powershell, graph]
+      - SPE_E5
+    clouds:
+      - commercial
+      - gcc
+      - gcc_high
+    backends:
+      - graph
+      - security_compliance_powershell
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/purview/communication-compliance
 
+    service_plan_aliases: []
+    sku_aliases:
+      - MICROSOFT_365_E7
   - id: log_analytics
     name: Azure Log Analytics
     plain_name: The log store behind security analytics
@@ -919,11 +1272,17 @@ capabilities:
     service_plan_names: []
     sku_part_numbers: []
     sku_aliases: []
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [arm]
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - arm
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/azure/azure-monitor/logs/log-analytics-overview
 
+    service_plan_aliases: []
   - id: defender_for_cloud_cspm
     name: Microsoft Defender for Cloud CSPM
     plain_name: Cloud security posture for Azure resources
@@ -940,11 +1299,18 @@ capabilities:
     service_plan_names: []
     sku_part_numbers: []
     sku_aliases: []
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [arm]
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - arm
     source_version: "2026-08"
-    docs_url: https://learn.microsoft.com/azure/defender-for-cloud/concept-cloud-security-posture-management
+    docs_url: 
+      https://learn.microsoft.com/azure/defender-for-cloud/concept-cloud-security-posture-management
 
+    service_plan_aliases: []
   - id: defender_for_cloud_servers
     name: Microsoft Defender for Servers
     plain_name: Threat protection for Azure and hybrid servers
@@ -961,7 +1327,13 @@ capabilities:
     service_plan_names: []
     sku_part_numbers: []
     sku_aliases: []
-    clouds: [commercial, gcc, gcc_high, dod]
-    backends: [arm]
+    clouds:
+      - commercial
+      - dod
+      - gcc
+      - gcc_high
+    backends:
+      - arm
     source_version: "2026-08"
     docs_url: https://learn.microsoft.com/azure/defender-for-cloud/defender-for-servers-introduction
+    service_plan_aliases: []
