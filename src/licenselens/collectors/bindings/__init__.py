@@ -308,6 +308,22 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="gsa_network_access_collector",
+            backend=Backend.GRAPH,
+            permissions=("NetworkAccess.Read.All",),
+            dependencies=("gsa_network_access",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
+            collector_id="security_copilot_collector",
+            backend=Backend.GRAPH,
+            permissions=("SecurityCopilotWorkspaces.Read.All",),
+            dependencies=("security_copilot",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
             collector_id="entra_devices_collector",
             backend=Backend.GRAPH,
             permissions=("Device.Read.All",),

@@ -22,12 +22,13 @@ effort: hours
 blast_radius: all_users
 pack: starter
 exposure_class: none
-deep_link: https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
+deep_link: https://security.microsoft.com/sentinel/analytics
 collector: sentinel_analytics
 remediation: >-
   For each dead rule, either enable the matching data connector or disable
   the rule. Confirm every ingesting core table is referenced by a live rule.
 references:
+  - https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal
   - https://learn.microsoft.com/azure/sentinel/detect-threats-built-in
 flagship: true
 flagship_security_intent: "Confirm enabled analytics rules query tables that actually ingested in the last seven days."

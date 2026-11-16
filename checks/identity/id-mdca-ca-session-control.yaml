@@ -1,0 +1,47 @@
+id: id-mdca-ca-session-control
+title: Defender for Cloud Apps Conditional Access App Control
+customer_title: Cloud app sessions may not be monitored or controlled
+customer_summary: >
+  Defender for Cloud Apps can inspect and control risky SaaS sessions through
+  Conditional Access App Control. Owning MDCA without any session-control policy
+  leaves cloud apps outside that guardrail.
+expected_state: An enabled Conditional Access policy uses cloudAppSecurity session control.
+customer_next_step: >
+  Create a Conditional Access policy that enables Microsoft Defender for Cloud
+  Apps session control for the apps and users that need monitoring or blocking.
+description: >
+  MDCA Conditional Access App Control is realized when at least one enabled CA
+  policy sets sessionControls.cloudAppSecurity. Deep MDCA portal policies are
+  not readable via Graph and are out of scope for this check.
+workload: defender
+required_capabilities:
+  - defender_cloud_apps
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://security.microsoft.com/cloudapps/policies/session
+collector: graph_ca
+remediation: >
+  In Entra Conditional Access, add a session control that uses Defender for
+  Cloud Apps (monitor only or block downloads as appropriate), then confirm the
+  matching session policy appears under Cloud Apps in the Defender portal.
+references:
+  - https://learn.microsoft.com/entra/identity/conditional-access/concept-session-control
+  - https://learn.microsoft.com/graph/api/resources/cloudappsecuritysessioncontrol?view=graph-rest-1.0
+  - https://learn.microsoft.com/defender-cloud-apps/session-policy-aad
+mappings:
+  nist: ["AC-2", "AC-3"]
+  mitre: ["T1078"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: An enabled CA policy uses cloudAppSecurity session control.
+  partial: Only report-only CA policies use cloudAppSecurity session control.
+  gap: No CA policy uses cloudAppSecurity session control.
+  evidence_fields:
+    - enabled_session_policies
+    - report_only_session_policies

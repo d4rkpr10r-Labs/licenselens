@@ -22,12 +22,13 @@ effort: hours
 blast_radius: all_users
 pack: starter
 exposure_class: none
-deep_link: https://learn.microsoft.com/azure/sentinel/connect-data-sources
+deep_link: https://security.microsoft.com/sentinel/data-connectors
 collector: la_usage_collector
 remediation: >-
   Enable the Microsoft Sentinel data connectors for each owned capability and
   verify core tables show rows in Usage over seven days.
 references:
+  - https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal
   - https://learn.microsoft.com/azure/sentinel/connect-data-sources
 flagship: true
 flagship_security_intent: "Confirm owned security capabilities send their core tables into the Sentinel workspace."

@@ -123,6 +123,18 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             "graph:xdrCustomDetections",
             30,
         ),
+        "gsa_network_access": (
+            Backend.GRAPH,
+            ("NetworkAccess.Read.All",),
+            "graph:gsaNetworkAccess",
+            30,
+        ),
+        "security_copilot": (
+            Backend.GRAPH,
+            ("SecurityCopilotWorkspaces.Read.All",),
+            "graph:securityCopilotWorkspaces",
+            30,
+        ),
         "pim_policies_bundle": (
             Backend.GRAPH,
             ("RoleManagement.Read.Directory",),
@@ -384,6 +396,16 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             Backend.GRAPH,
             ("CustomDetection.Read.All",),
             ("xdr_custom_detections",),
+        ),
+        "gsa_network_access_collector": (
+            Backend.GRAPH,
+            ("NetworkAccess.Read.All",),
+            ("gsa_network_access",),
+        ),
+        "security_copilot_collector": (
+            Backend.GRAPH,
+            ("SecurityCopilotWorkspaces.Read.All",),
+            ("security_copilot",),
         ),
         "telemetry_expectations_collector": (Backend.NOOP, (), ("telemetry_expectations",)),
         "defender_pricings_collector": (

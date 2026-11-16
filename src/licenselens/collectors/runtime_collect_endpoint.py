@@ -6,6 +6,10 @@ from licenselens.cloud_endpoints import graph_base_url
 from licenselens.collectors.contracts import EvidenceEnvelope, EvidenceKey
 from licenselens.collectors.device_reconcile import reconcile
 from licenselens.collectors.entra_devices import DEMO_ENTRA_DEVICES, collect_entra_devices
+from licenselens.collectors.gsa_network_access import (
+    DEMO_GSA_NETWORK_ACCESS_BUNDLE,
+    collect_gsa_network_access_bundle,
+)
 from licenselens.collectors.intune_policy import (
     DEMO_INTUNE_EVIDENCE_BUNDLE,
     collect_intune_evidence_bundle,
@@ -42,6 +46,10 @@ from licenselens.collectors.secure_score import (
 from licenselens.collectors.security_alerts import (
     DEMO_SECURITY_ALERTS_BUNDLE,
     collect_security_alerts_bundle,
+)
+from licenselens.collectors.security_copilot import (
+    DEMO_SECURITY_COPILOT_BUNDLE,
+    collect_security_copilot_bundle,
 )
 from licenselens.collectors.xdr_detections import (
     DEMO_XDR_CUSTOM_DETECTIONS,
@@ -236,6 +244,48 @@ def collect_xdr_custom_detections_runtime(
             key,
             exc,
             f"Defender XDR custom detection rules could not be read: {exc}",
+            ctx,
+        )
+
+
+def collect_gsa_network_access_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "gsa_network_access"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_GSA_NETWORK_ACCESS_BUNDLE), source="demo")
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        preview = _preview_client(ctx, ctx.client)
+        bundle = collect_gsa_network_access_bundle(preview)
+        return ok(key, bundle, source="graph.beta.networkAccess.forwardingProfiles")
+    except GraphError as exc:
+        return graph_failure(
+            key,
+            exc,
+            f"Global Secure Access forwarding profiles could not be read: {exc}",
+            ctx,
+        )
+
+
+def collect_security_copilot_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "security_copilot"
+    if ctx.is_dry_run:
+        return ok(key, dict(DEMO_SECURITY_COPILOT_BUNDLE), source="demo")
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        preview = _preview_client(ctx, ctx.client)
+        bundle = collect_security_copilot_bundle(preview)
+        return ok(key, bundle, source="graph.beta.security.securityCopilot.workspaces")
+    except GraphError as exc:
+        return graph_failure(
+            key,
+            exc,
+            f"Security Copilot workspaces could not be read: {exc}",
             ctx,
         )
 

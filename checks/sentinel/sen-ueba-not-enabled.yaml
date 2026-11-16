@@ -22,12 +22,13 @@ effort: hours
 blast_radius: all_users
 pack: starter
 exposure_class: none
-deep_link: https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics
+deep_link: https://security.microsoft.com/sentinelSettings/entityBehaviorAnalytics
 collector: sentinel_ueba
 remediation: >
   Enable Entity behavior analytics (UEBA) on the Sentinel workspace and
   ensure required data sources are connected.
 references:
+  - https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal
   - https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics
 enabled: true
 tier: activation
