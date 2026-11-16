@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Direction B — Quiet Instrument · LicenseLens V3 candidate</title>
+  <style>
+    /* Direction B: Quiet Instrument
+       Dark screen default, but not Tailwind cyan SOC. Graphite canvas,
+       steel identity accent, desaturated status ramp. Open layout (no
+       section cards). Fraction-first hero. Same demo data as Direction A. */
+    :root {
+      --canvas: #12141A;
+      --surface-1: #181B22;
+      --surface-2: #1F242D;
+      --surface-3: #272D38;
+      --border: #2C3340;
+      --border-strong: #3D4656;
+      --text-1: #E8ECF1;
+      --text-2: #A7B0BD;
+      --text-3: #7A8494;
+      --accent: #8FA8C2;
+      --accent-hover: #B3C5D8;
+      --accent-focus: #D0DCE8;
+      --state-action: #E07070;
+      --state-incomplete: #D0A15C;
+      --state-ok: #6FBA8A;
+      --state-neutral: #8B93A1;
+      --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --shadow-1: 0 1px 2px rgba(0,0,0,.45);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.55;
+      color: var(--text-1);
+      background:
+        radial-gradient(900px 420px at 12% -8%, rgba(143,168,194,0.08), transparent 60%),
+        linear-gradient(180deg, #151821 0%, var(--canvas) 32%);
+    }
+    a { color: var(--accent); text-decoration: none; border-block-end: 1px solid transparent; }
+    a:hover { color: var(--accent-hover); border-block-end-color: var(--accent-hover); }
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--accent-focus);
+      outline-offset: 2px;
+    }
+
+    .page { max-width: 1120px; margin: 0 auto; padding: 28px 28px 64px; }
+    .banner {
+      margin: 0 0 24px;
+      padding: 10px 14px;
+      background: var(--surface-2);
+      border-inline-start: 3px solid var(--accent);
+      color: var(--text-2);
+      font-size: 0.875rem;
+    }
+    .banner strong { color: var(--text-1); }
+
+    header.masthead {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 18px;
+      padding-block-end: 20px;
+      border-block-end: 1px solid var(--border);
+    }
+    .brand { display: flex; align-items: center; gap: 14px; }
+    .mark { width: 34px; height: 38px; color: var(--accent); flex-shrink: 0; }
+    .mark svg { width: 100%; height: 100%; display: block; }
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.5rem, 2.2vw, 1.875rem);
+      font-weight: 650;
+      letter-spacing: -0.025em;
+      line-height: 1.15;
+    }
+    .tagline { margin: 2px 0 0; color: var(--text-2); font-size: 0.9375rem; }
+    .meta { color: var(--text-3); font-size: 0.8125rem; }
+    .meta .sep { padding-inline: 10px; }
+
+    nav.toc {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    nav.toc a {
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 8px 10px;
+      background: var(--surface-1);
+      color: var(--text-2);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      text-align: center;
+      border: 0;
+    }
+    nav.toc a[aria-current="true"] {
+      color: var(--text-1);
+      background: var(--surface-3);
+      box-shadow: inset 0 2px 0 var(--accent);
+    }
+    @media (max-width: 720px) {
+      nav.toc { grid-template-columns: 1fr 1fr; }
+      .page { padding-inline: 14px; }
+    }
+
+    /* Hero — open on canvas; fraction is the claim */
+    .hero { padding-block: 36px 28px; border-block-end: 1px solid var(--border); }
+    .hero-kicker {
+      margin: 0 0 12px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .posture-row {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 28px;
+      align-items: end;
+    }
+    @media (max-width: 640px) {
+      .posture-row { grid-template-columns: 1fr; gap: 14px; }
+    }
+    .posture-fraction {
+      font-size: clamp(3rem, 7vw, 4rem);
+      font-weight: 650;
+      letter-spacing: -0.04em;
+      line-height: 0.95;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-1);
+    }
+    .posture-fraction .slash { color: var(--text-3); font-weight: 400; margin-inline: 2px; }
+    .posture-side { min-width: 0; padding-block-end: 6px; }
+    .posture-side h2 {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 600;
+      color: var(--text-1);
+    }
+    .posture-side p {
+      margin: 6px 0 0;
+      color: var(--text-2);
+      max-width: 46ch;
+    }
+    .pct-quiet { color: var(--text-3); font-size: 0.875rem; }
+
+    .dist { margin-block-start: 28px; max-width: 40rem; }
+    .dist-bar {
+      display: flex;
+      height: 4px;
+      background: var(--surface-3);
+      overflow: hidden;
+    }
+    .dist-seg.gap { background: var(--state-action); }
+    .dist-seg.partial { background: var(--state-incomplete); }
+    .dist-seg.ok { background: var(--state-ok); }
+    .dist-legend {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px 20px;
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0;
+      font-size: 0.8125rem;
+      color: var(--text-2);
+    }
+    .dist-legend li { display: inline-flex; align-items: center; gap: 8px; }
+    .rail {
+      width: 12px;
+      height: 3px;
+      background: currentColor;
+    }
+    .rail.gap { color: var(--state-action); }
+    .rail.partial { color: var(--state-incomplete); }
+    .rail.ok { color: var(--state-ok); }
+
+    .hero-action { margin-block-start: 20px; }
+    .hero-action a {
+      display: inline-flex;
+      align-items: center;
+      min-height: 44px;
+      font-weight: 600;
+    }
+
+    details.method {
+      margin-block-start: 24px;
+      max-width: 52rem;
+      border-block: 1px solid var(--border);
+      background: transparent;
+    }
+    details.method summary {
+      cursor: pointer;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      font-weight: 600;
+      color: var(--text-2);
+    }
+    details.method[open] summary { color: var(--text-1); }
+    .method-body { padding-block: 0 18px; color: var(--text-2); font-size: 0.9375rem; }
+    .stat-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(6.5rem, 1fr));
+      gap: 16px 12px;
+      margin-block-start: 16px;
+    }
+    .stat .n {
+      font-size: 1.25rem;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-1);
+    }
+    .stat .l { font-size: 0.75rem; color: var(--text-3); }
+
+    .section { padding-block: 40px 8px; }
+    .section-kicker {
+      margin: 0 0 6px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+    .section h2 {
+      margin: 0;
+      font-size: 1.25rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+    .section-help { margin: 8px 0 0; color: var(--text-2); max-width: 60ch; }
+
+    .move-list {
+      list-style: none;
+      margin: 24px 0 0;
+      padding: 0;
+    }
+    .move-item {
+      display: grid;
+      grid-template-columns: 2.5rem 1fr;
+      gap: 4px 18px;
+      padding-block: 22px;
+      border-block-start: 1px solid var(--border);
+    }
+    .move-item--lead { border-block-start-width: 2px; border-block-start-color: var(--border-strong); }
+    .move-index {
+      font-size: 0.875rem;
+      font-weight: 650;
+      font-variant-numeric: tabular-nums;
+      color: var(--text-3);
+      padding-block-start: 5px;
+    }
+    .move-title {
+      margin: 0;
+      font-size: 1.0625rem;
+      font-weight: 650;
+      line-height: 1.35;
+      max-width: 54ch;
+    }
+    .move-item--lead .move-title { font-size: 1.1875rem; }
+    .move-meta { margin: 8px 0 0; font-size: 0.8125rem; color: var(--text-3); }
+    .move-why { margin: 10px 0 0; color: var(--text-2); max-width: 60ch; }
+    .move-link { margin: 14px 0 0; }
+    .move-note { margin: 18px 0 0; font-size: 0.8125rem; color: var(--text-3); }
+
+    .finding {
+      margin-block-start: 24px;
+      padding: 18px 0 18px 18px;
+      border-inline-start: 3px solid var(--state-action);
+      border-block: 1px solid var(--border);
+    }
+    .finding-head { display: flex; flex-wrap: wrap; gap: 10px 14px; align-items: baseline; }
+    .finding-head h3 { margin: 0; font-size: 1.0625rem; }
+    .status-marker {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--state-action);
+    }
+    .status-marker .tick {
+      width: 10px;
+      height: 2px;
+      background: currentColor;
+    }
+    .finding > p { margin: 10px 0 0; color: var(--text-2); max-width: 62ch; }
+    details.tech {
+      margin-block-start: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      padding: 0 12px;
+    }
+    details.tech summary {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: var(--text-2);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .tech-body { padding-block: 0 12px; font-size: 0.875rem; color: var(--text-2); }
+    .tech-body code { font-family: var(--font-mono); color: var(--text-1); }
+
+    .wizard-preview {
+      margin-block-start: 48px;
+      padding: 24px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+    }
+    .wizard-preview h2 { margin: 0 0 8px; font-size: 1.0625rem; }
+    .wizard-preview p { margin: 0 0 14px; color: var(--text-2); }
+    .wizard-preview label { display: block; font-size: 0.8125rem; font-weight: 600; color: var(--text-2); margin-block-end: 6px; }
+    .wizard-preview select,
+    .wizard-preview button {
+      font: inherit;
+      min-height: 44px;
+      padding: 0 12px;
+      border: 1px solid var(--border-strong);
+      background: var(--surface-2);
+      color: var(--text-1);
+    }
+    .wizard-preview button {
+      margin-block-start: 12px;
+      border-color: var(--accent);
+      color: var(--canvas);
+      background: var(--accent);
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .wizard-preview button:hover { background: var(--accent-hover); }
+
+    footer.page-foot {
+      margin-block-start: 28px;
+      color: var(--text-3);
+      font-size: 0.8125rem;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { transition: none !important; animation: none !important; }
+    }
+    @media print {
+      body { background: #fff; color: #15202B; }
+      .banner, nav.toc, .wizard-preview, .hero-action { display: none !important; }
+      .mark, a { color: #0B5F75 !important; }
+      .dist-seg.gap, .rail.gap, .status-marker { color: #B42318 !important; }
+      .dist-seg.partial, .rail.partial { color: #B54708 !important; }
+      .dist-seg.ok, .rail.ok { color: #087443 !important; }
+      .dist-seg { background: currentColor !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <p class="banner"><strong>Direction B — Quiet Instrument.</strong> Dark, steel-accent candidate for V3. Rejects Tailwind cyan. Static mock with demo data. Not shipped.</p>
+
+    <header class="masthead">
+      <div class="brand">
+        <span class="mark" aria-hidden="true">
+          <svg viewBox="0 0 40 45" fill="none">
+            <path d="M8 6h24v33H8z" stroke="currentColor" stroke-width="2"/>
+            <path d="M8 18h24M8 28h24" stroke="currentColor" stroke-width="2"/>
+            <circle cx="20" cy="23" r="5" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </span>
+        <div>
+          <h1>Security License Lens</h1>
+          <p class="tagline">Entitlements, controls, and configuration gaps.</p>
+        </div>
+      </div>
+      <div class="meta">
+        <span>Contoso demo tenant</span><span class="sep" aria-hidden="true">·</span>
+        <span>Offline demo</span><span class="sep" aria-hidden="true">·</span>
+        <span>2026-11-16</span>
+      </div>
+      <nav class="toc" aria-label="Sections">
+        <a href="#stand" aria-current="true">Where you stand</a>
+        <a href="#priorities">What matters most</a>
+        <a href="#owned">What you already own</a>
+        <a href="#findings">Findings</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="hero" id="stand">
+        <p class="hero-kicker">Where you stand</p>
+        <div class="posture-row">
+          <div class="posture-fraction" aria-label="4 of 9 in-scope capabilities met">4<span class="slash">/</span>9</div>
+          <div class="posture-side">
+            <h2>In-scope capabilities met</h2>
+            <p>Priority packs: identity + endpoint. <span class="pct-quiet">≈44% of this set — small denominator, treat as a fraction.</span></p>
+          </div>
+        </div>
+
+        <div class="dist">
+          <div class="dist-bar" role="img" aria-label="Distribution: 4 action required, 1 incomplete, 4 met">
+            <span class="dist-seg gap" style="flex:4"></span>
+            <span class="dist-seg partial" style="flex:1"></span>
+            <span class="dist-seg ok" style="flex:4"></span>
+          </div>
+          <ul class="dist-legend">
+            <li><span class="rail gap" aria-hidden="true"></span>4 action required</li>
+            <li><span class="rail partial" aria-hidden="true"></span>1 incomplete</li>
+            <li><span class="rail ok" aria-hidden="true"></span>4 met</li>
+          </ul>
+        </div>
+
+        <p class="hero-action"><a href="#priorities">View prioritized actions</a></p>
+
+        <details class="method">
+          <summary>How we got here</summary>
+          <div class="method-body">
+            <p>Solid rule at rest — not a dashed placeholder. Accounting stays collapsed until asked for.</p>
+            <div class="stat-row">
+              <div class="stat"><div class="n">9</div><div class="l">Owned (prioritized)</div></div>
+              <div class="stat"><div class="n">4</div><div class="l">Met criteria</div></div>
+              <div class="stat"><div class="n">4</div><div class="l">Action required</div></div>
+              <div class="stat"><div class="n">1</div><div class="l">Partly set up</div></div>
+              <div class="stat"><div class="n">6</div><div class="l">Not licensed</div></div>
+            </div>
+          </div>
+        </details>
+      </section>
+
+      <section class="section" id="priorities">
+        <p class="section-kicker">Priorities</p>
+        <h2>What matters most</h2>
+        <p class="section-help">Numbered sequence on the canvas. No nested cards. Title is the action — no duplicate “Action:” line.</p>
+        <ol class="move-list">
+          <li class="move-item move-item--lead">
+            <div class="move-index">01</div>
+            <div>
+              <h3 class="move-title">Restrict user consent so only admins approve non-trivial permissions</h3>
+              <p class="move-meta">Effort · hours</p>
+              <p class="move-why">Users can still approve app permissions themselves, which is a common path for consent phishing.</p>
+              <p class="move-link"><a href="#">Open the admin page</a></p>
+            </div>
+          </li>
+          <li class="move-item">
+            <div class="move-index">02</div>
+            <div>
+              <h3 class="move-title">Disable SMS, Voice, and Email OTP authentication methods</h3>
+              <p class="move-meta">Effort · hours</p>
+              <p class="move-why">SMS, voice, or email one-time codes are still allowed — these are the easiest multi-factor methods for attackers to abuse.</p>
+              <p class="move-link"><a href="#">Open the admin page</a></p>
+            </div>
+          </li>
+          <li class="move-item">
+            <div class="move-index">03</div>
+            <div>
+              <h3 class="move-title">Create two cloud-only Global Administrator emergency accounts</h3>
+              <p class="move-meta">Effort · hours</p>
+              <p class="move-why">We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.</p>
+              <p class="move-link"><a href="#">Open the admin page</a></p>
+            </div>
+          </li>
+        </ol>
+        <p class="move-note">Mono check IDs stay in technical disclosure, not in this prose path.</p>
+      </section>
+
+      <section class="section" id="owned">
+        <p class="section-kicker">Entitlements</p>
+        <h2>What you already own</h2>
+        <p class="section-help">27 licensed capabilities detected. The instrument focuses attention; it does not invent a second scoreboard.</p>
+      </section>
+
+      <section class="section" id="findings">
+        <p class="section-kicker">Findings</p>
+        <h2>Evidence-backed gaps</h2>
+        <p class="section-help">Status color on the rail and marker only.</p>
+        <article class="finding">
+          <div class="finding-head">
+            <span class="status-marker"><span class="tick" aria-hidden="true"></span> Action required</span>
+            <h3>User consent for non-trivial permissions is still allowed</h3>
+          </div>
+          <p>You pay for stronger app-consent controls. We expected admin-only approval for non-trivial permissions. We observed user consent still permitted.</p>
+          <details class="tech">
+            <summary>Evidence and check detail</summary>
+            <div class="tech-body">
+              <p><strong>Check:</strong> <code>id-app-user-consent-restricted</code></p>
+              <p><strong>Evidence:</strong> direct · <strong>Confidence:</strong> high</p>
+            </div>
+          </details>
+        </article>
+      </section>
+
+      <aside class="wizard-preview">
+        <h2>Local wizard (same token file)</h2>
+        <p>Read-only. Nothing leaves this computer.</p>
+        <label for="profile">Scan profile</label>
+        <select id="profile"><option>Core default assessment — 71 checks</option></select>
+        <div><button type="button">Run the offline demo</button></div>
+      </aside>
+    </main>
+
+    <footer class="page-foot">
+      Direction B mock · offline · steel accent (not #22D3EE) · Security License Lens is not affiliated with Microsoft.
+    </footer>
+  </div>
+</body>
+</html>
