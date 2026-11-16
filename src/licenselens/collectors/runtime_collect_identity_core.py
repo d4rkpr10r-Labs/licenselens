@@ -34,7 +34,7 @@ from licenselens.collectors.security_defaults import (
 )
 from licenselens.collectors.signins import (
     collect_directory_objects_by_ids,
-    collect_recent_success_signin_user_ids,
+    collect_recent_success_signin_sample,
 )
 from licenselens.engine.collection_context import ScanCollectionContext
 from licenselens.engine.planner import CollectionContext
@@ -116,10 +116,9 @@ def collect_recent_signins_runtime(
     assert ctx.client is not None
     max_pages = 15
     try:
-        signin_ids = collect_recent_success_signin_user_ids(
+        signin_ids, truncated = collect_recent_success_signin_sample(
             ctx.client, lookback_days=90, max_pages=max_pages
         )
-        truncated = len(signin_ids) >= max_pages * 400
         ctx.extras["signin_lookback_days"] = 90
         ctx.extras["signin_sample_truncated"] = truncated
         return ok(

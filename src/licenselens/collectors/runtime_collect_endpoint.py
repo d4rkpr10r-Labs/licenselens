@@ -300,7 +300,13 @@ def collect_entra_devices_runtime(
         return error(key, "no Graph client available")
     try:
         bundle = collect_entra_devices(ctx.client)
-        return ok(key, bundle, source="graph.devices", items=int(bundle.get("count") or 0))
+        return ok(
+            key,
+            bundle,
+            source="graph.devices",
+            items=int(bundle.get("count") or 0),
+            truncated=bool(bundle.get("truncated")),
+        )
     except GraphError as exc:
         return graph_failure(key, exc, f"Entra devices could not be read: {exc}", ctx)
 

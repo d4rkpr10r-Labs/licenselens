@@ -26,14 +26,13 @@ def collect_entra_devices(
     max_pages: int = 30,
 ) -> dict[str, Any]:
     """Return hashed Entra device inventory (no raw displayName)."""
-    rows = client.get_list(
+    result = client.get_list_result(
         "/devices",
         params={"$select": _SELECT, "$top": "999"},
         max_pages=max_pages,
     )
-    truncated = len(rows) >= max_pages * 999
     devices: list[dict[str, Any]] = []
-    for item in rows:
+    for item in result.items:
         if not isinstance(item, dict):
             continue
         devices.append(
@@ -53,6 +52,8 @@ def collect_entra_devices(
     return {
         "devices": devices,
         "count": len(devices),
-        "truncated": truncated,
+        "truncated": result.truncated,
+        "pages_read": result.pages_read,
+        "max_pages": result.max_pages,
         "window_days": 30,
     }
