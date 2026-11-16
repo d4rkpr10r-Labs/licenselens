@@ -109,6 +109,10 @@ expectations:
         tier: extended
         connector_hint: "Microsoft Defender XDR connector"
         source_url: https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-defender-xdr
+      - name: AADSignInEventsBeta
+        tier: extended
+        connector_hint: "Advanced Hunting (not LA Usage parity)"
+        source_url: https://learn.microsoft.com/defender-xdr/advanced-hunting-aadsignineventsbeta-table
   - capability_id: purview_audit
     tables:
       - name: OfficeActivity
