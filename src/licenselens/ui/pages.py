@@ -130,7 +130,7 @@ select { width: 100%; max-width: 100%; }
 button {
   margin-block-start: 12px;
   background: var(--accent);
-  color: var(--surface-1);
+  color: var(--canvas);
   border-color: var(--accent);
   font-weight: 600;
   cursor: pointer;

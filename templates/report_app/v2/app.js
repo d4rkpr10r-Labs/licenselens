@@ -1,4 +1,4 @@
-/* Versioned offline report application (report app v2 shell, DESIGN_V3 Assessment Ledger).
+/* Versioned offline report application (report app v2 shell, DESIGN_V3 Exposure Console).
  *
  * Everything is rendered client-side from the escaped data assets
  * ``window.LICENSELENS_REPORT_JSON``, ``window.LICENSELENS_VIEWMODEL`` and

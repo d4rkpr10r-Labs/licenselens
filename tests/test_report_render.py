@@ -4,8 +4,8 @@ Two groups, deliberately partitioned:
 
 * **ESTABLISHED INVARIANTS — must PASS today**: offline/autoescape/DOM/filter/
   JSON/heading contracts that must remain green across visual redesigns.
-* **ASSESSMENT LEDGER (v3) DESIGN-SIGNATURE CONTRACTS**: light paper canvas
-  (#F3F5F8), deep teal accent, no SOC Dark / violet / brass signatures,
+* **EXPOSURE CONSOLE (v3) DESIGN-SIGNATURE CONTRACTS**: dark graphite canvas
+  (#12141A), steel accent (#7BA3C4), no SOC Dark / violet / brass signatures,
   every declared surface token consumed by a selector, and the §4 radius
   stops (0/2/6/10; optional 999px).
 * **FIXTURE INTEGRITY**: preamble asserting fixtures stay comprehensive.
@@ -283,28 +283,30 @@ RETIRED_INK_VERDIGRIS_TOKENS = (
     "--accent: #8ad3b8",
 )
 
-# Assessment Ledger tokens (DESIGN_V3.md §2.1): the binding v3 palette from
+# Exposure Console tokens (DESIGN_V3.md §2.1): the binding v3 dark palette from
 # templates/design/tokens.css (included by the report foundation).
-LEDGER_TOKENS = (
-    "--canvas: #F3F5F8",
-    "--surface-1: #FFFFFF",
-    "--surface-2: #EEF1F5",
-    "--surface-3: #E4E9F0",
-    "--surface-4: #D8DEE8",
-    "--border: #D5DCE6",
-    "--border-strong: #A8B4C4",
-    "--text-1: #15202B",
-    "--text-2: #3D4D5C",
-    "--text-3: #5E6E80",
-    "--accent: #0B5F75",
-    "--accent-hover: #094C5E",
-    "--accent-focus: #127A94",
-    "--accent-print: #0B5F75",
-    "--state-action: #B42318",
-    "--state-incomplete: #B54708",
-    "--state-ok: #087443",
-    "--state-neutral: #5B6B7C",
+EXPOSURE_CONSOLE_TOKENS = (
+    "--canvas: #12141A",
+    "--surface-1: #1A1D26",
+    "--surface-2: #22262F",
+    "--surface-3: #2A2F3A",
+    "--surface-4: #343A48",
+    "--border: #2E3440",
+    "--border-strong: #3D4554",
+    "--text-1: #E8EAEF",
+    "--text-2: #B4BAC6",
+    "--text-3: #8B93A1",
+    "--accent: #7BA3C4",
+    "--accent-hover: #9BB4CC",
+    "--accent-focus: #B8C9D9",
+    "--accent-print: #2F5A78",
+    "--state-action: #E07070",
+    "--state-incomplete: #D0A15C",
+    "--state-ok: #6FBA8A",
+    "--state-neutral: #8B93A1",
 )
+# Back-compat alias for older test names in this module.
+LEDGER_TOKENS = EXPOSURE_CONSOLE_TOKENS
 
 # Retired SOC Dark signatures must not reappear.
 RETIRED_SOC_DARK_TOKENS = (
@@ -339,7 +341,7 @@ def test_no_radial_gradient_backdrop(tmp_path: Path) -> None:
     html = render(comprehensive_report(), tmp_path)
     assert "radial-gradient" not in html, "radial-gradient hero glow must be removed"
     assert "--grad-page" in html or "linear-gradient(180deg" in html, (
-        "Assessment Ledger page wash (--grad-page / linear) must ship"
+        "Exposure Console page wash (--grad-page / linear) must ship"
     )
 
 
@@ -351,7 +353,7 @@ def test_no_color_mix_usage(tmp_path: Path) -> None:
 def test_radii_use_only_declared_stops(tmp_path: Path) -> None:
     """DESIGN_V3 §4 radius stops: 0/2/6/10 (and optional 999px for capsule
     fills / constellation nodes). 16px is withdrawn. Non-stop radii (4px,
-    12px) and undeclared 50% circles must never appear. Ledger default for
+    12px) and undeclared 50% circles must never appear. Console default for
     the distribution bar is 0."""
     html = render(comprehensive_report(), tmp_path)
     assert "border-radius: 12px" not in html, "12px radius is not a §4 stop"
@@ -361,10 +363,10 @@ def test_radii_use_only_declared_stops(tmp_path: Path) -> None:
     assert "border-radius:50%" not in html, "unspaced circular radius must go"
 
 
-def test_ledger_tokens_present(tmp_path: Path) -> None:
+def test_exposure_console_tokens_present(tmp_path: Path) -> None:
     html = render(comprehensive_report(), tmp_path)
-    for token in LEDGER_TOKENS:
-        assert token in html, f"v3 ledger token {token!r} missing from the report CSS"
+    for token in EXPOSURE_CONSOLE_TOKENS:
+        assert token in html, f"v3 Exposure Console token {token!r} missing from the report CSS"
 
 
 def test_retired_soc_dark_tokens_absent(tmp_path: Path) -> None:

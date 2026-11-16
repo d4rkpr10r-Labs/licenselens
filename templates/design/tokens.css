@@ -1,38 +1,40 @@
 /* ==========================================================================
-   Security License Lens — shared design tokens (V3, Assessment Ledger)
-   Binding contract: DESIGN_V3.md. Consumed by the single-file report,
-   the report-app bundle foundation, and the local wizard. The only literal
-   hex values in product CSS live here (or in surface-specific print
-   overrides that reference these names). Offline; no external fonts.
+   Security License Lens — shared design tokens (V3, Exposure Console)
+   Binding contract: DESIGN_V3.md. Research:
+   audit/2026-11/design/dark-vuln-gui-research.md
+   Consumed by the single-file report, the report-app bundle foundation, and
+   the local wizard. The only literal hex values in product CSS live here
+   (or in surface-specific print overrides that reference these names).
+   Offline; no external fonts. Dark screen default; print stays light paper.
    ========================================================================== */
 :root {
-  /* Screen — light document-grade default */
-  --canvas: #F3F5F8;
-  --surface-1: #FFFFFF;
-  --surface-2: #EEF1F5;
-  --surface-3: #E4E9F0;
-  --surface-4: #D8DEE8;
-  --border: #D5DCE6;
-  --border-strong: #A8B4C4;
-  --text-1: #15202B;
-  --text-2: #3D4D5C;
-  --text-3: #5E6E80;
-  --accent: #0B5F75;
-  --accent-hover: #094C5E;
-  --accent-focus: #127A94;
-  --accent-print: #0B5F75;
-  --state-action: #B42318;
-  --state-incomplete: #B54708;
-  --state-ok: #087443;
-  --state-neutral: #5B6B7C;
+  /* Screen — dark Exposure Console (vuln / ASPM / CNAPP operator norm) */
+  --canvas: #12141A;
+  --surface-1: #1A1D26;
+  --surface-2: #22262F;
+  --surface-3: #2A2F3A;
+  --surface-4: #343A48;
+  --border: #2E3440;
+  --border-strong: #3D4554;
+  --text-1: #E8EAEF;
+  --text-2: #B4BAC6;
+  --text-3: #8B93A1;
+  --accent: #7BA3C4;
+  --accent-hover: #9BB4CC;
+  --accent-focus: #B8C9D9;
+  --accent-print: #2F5A78;
+  --state-action: #E07070;
+  --state-incomplete: #D0A15C;
+  --state-ok: #6FBA8A;
+  --state-neutral: #8B93A1;
   --grad-raised: linear-gradient(180deg, var(--surface-2) 0%, var(--surface-1) 100%);
-  --grad-page: linear-gradient(180deg, #E9EEF4 0%, var(--canvas) 28%);
-  --shadow-1: 0 1px 2px rgba(21, 32, 43, 0.06);
-  --shadow-2: 0 2px 8px rgba(21, 32, 43, 0.10);
+  --grad-page: linear-gradient(180deg, #181B24 0%, var(--canvas) 28%);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 2px 10px rgba(0, 0, 0, 0.45);
   --blur-nav: blur(8px);
-  --nav-surface: rgba(255, 255, 255, 0.92);
+  --nav-surface: rgba(26, 29, 38, 0.92);
 
-  /* Print — paper ledger (same identity; slightly stronger borders) */
+  /* Print — light paper ledger (shareable document) */
   --print-ink: #15202B;
   --print-paper: #FFFFFF;
   --print-hero: #EEF1F5;
@@ -43,7 +45,37 @@
   --print-ok: #087443;
   --print-neutral: #5B6B7C;
 
-  /* Type — system sans + mono only (no serif wordmark) */
+  /* Type — system sans + mono only (no serif wordmark, no bundled webfonts) */
   --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  color-scheme: dark;
+}
+
+@media print {
+  :root {
+    --canvas: #F3F5F8;
+    --surface-1: #FFFFFF;
+    --surface-2: #EEF1F5;
+    --surface-3: #E4E9F0;
+    --surface-4: #D8DEE8;
+    --border: #D5DCE6;
+    --border-strong: #A8B4C4;
+    --text-1: #15202B;
+    --text-2: #3D4D5C;
+    --text-3: #5E6E80;
+    --accent: #2F5A78;
+    --accent-hover: #244860;
+    --accent-focus: #3D6F92;
+    --state-action: #B42318;
+    --state-incomplete: #B54708;
+    --state-ok: #087443;
+    --state-neutral: #5B6B7C;
+    --grad-page: none;
+    --grad-raised: none;
+    --shadow-1: none;
+    --shadow-2: none;
+    --nav-surface: #FFFFFF;
+    color-scheme: light;
+  }
 }
