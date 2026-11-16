@@ -90,6 +90,4 @@ def test_console_text_ramp_on_canvas() -> None:
 def test_print_status_inks_meet_aa_on_white() -> None:
     """Print remaps to paper-safe status inks."""
     for color in ("#B42318", "#B54708", "#087443", "#5B6B7C"):
-        assert contrast_ratio(color, "#ffffff") >= 4.5, (
-            f"print status {color} below 4.5:1 on white"
-        )
+        assert contrast_ratio(color, "#ffffff") >= 4.5, f"print status {color} below 4.5:1 on white"
