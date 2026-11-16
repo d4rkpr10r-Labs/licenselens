@@ -137,13 +137,18 @@ Two static HTML directions followed this critique (`direction-a-ledger.html`,
 
 Contract churn is closed by `DESIGN_V3.md` superseding V2/V1 and by one shared
 token file (`templates/design/tokens.css`) consumed by the single-file report,
-report-app foundation, and wizard CSS — CHANGELOG/README now describe the
-Assessment Ledger that actually ships. The wrong genre is fixed by the light
-document default (paper canvas, white sheet, teal identity) instead of SOC Dark
-cyan. Tailwind-default status/accent hexes are gone; the serif wordmark is gone
-(sans lockup only); the hero leads with `met/owned` so small-N percents stay
-secondary captions; move Action lines that only restate the title are omitted,
-effort reads as `Hours` (not `~a few hours`), and check IDs stay under technical
-disclosure; sections are open rules instead of cards-in-cards; closed
-disclosures use solid borders; links use teal with underline on hover/focus.
-After-shots: `audit/2026-11/design/after/`.
+report-app foundation, and wizard CSS. The light Assessment Ledger ship (PR #5)
+fixed SOC Dark cyan, Tailwind status hexes, serif wordmark, false-precision %,
+duplicate Action / mono IDs / `~a few hours`, cards-in-cards, and dashed
+disclosures. After-shots for that light default: `audit/2026-11/design/after/`.
+
+## 10. Owner override — dark Exposure Console (2026-11-16)
+
+Owner required the **screen default** to match late-2026 vulnerability /
+exposure / ASPM / CNAPP operator GUIs (Wiz, Tenable, Falcon, Defender XDR,
+Rapid7-class), while keeping LicenseLens trust invariants. Research:
+`dark-vuln-gui-research.md`. Shipped identity: **Exposure Console** — graphite
+canvas `#12141A`, steel accent `#7BA3C4` (rejects `#22D3EE` and Falcon brand
+red), desaturated status on markers/rails/bars only, print remapped to light
+paper. Layout / IA / fraction-first / offline / AA rules unchanged from §9.
+After-dark shots: `audit/2026-11/design/after-dark/`.

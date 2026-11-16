@@ -61,27 +61,35 @@ def test_contrast_ratio_rejects_malformed_input() -> None:
             contrast_ratio(bad, "#ffffff")
 
 
-def test_ledger_accent_on_canvas() -> None:
-    assert contrast_ratio("#0B5F75", "#F3F5F8") >= 4.5
+def test_console_accent_on_canvas() -> None:
+    assert contrast_ratio("#7BA3C4", "#12141A") >= 4.5
 
 
-def test_ledger_focus_on_surface() -> None:
-    assert contrast_ratio("#127A94", "#FFFFFF") >= 3.0
+def test_console_focus_on_surface() -> None:
+    assert contrast_ratio("#B8C9D9", "#1A1D26") >= 3.0
 
 
 def test_print_accent_on_white() -> None:
-    assert contrast_ratio("#0B5F75", "#ffffff") >= 4.5
+    assert contrast_ratio("#2F5A78", "#ffffff") >= 4.5
 
 
-def test_ledger_status_inks_meet_aa_on_white() -> None:
-    """V3 Assessment Ledger status tokens are paper-safe (screen == print)."""
-    for color in ("#B42318", "#B54708", "#087443", "#5B6B7C"):
-        assert contrast_ratio(color, "#ffffff") >= 4.5, (
-            f"ledger status {color} below 4.5:1 on white"
+def test_console_status_inks_meet_aa_on_canvas() -> None:
+    """V3 Exposure Console status tokens meet AA on the dark canvas."""
+    for color in ("#E07070", "#D0A15C", "#6FBA8A", "#8B93A1"):
+        assert contrast_ratio(color, "#12141A") >= 4.5, (
+            f"console status {color} below 4.5:1 on canvas"
         )
 
 
-def test_ledger_text_ramp_on_canvas() -> None:
-    assert contrast_ratio("#15202B", "#F3F5F8") >= 4.5
-    assert contrast_ratio("#3D4D5C", "#F3F5F8") >= 4.5
-    assert contrast_ratio("#5E6E80", "#F3F5F8") >= 4.5
+def test_console_text_ramp_on_canvas() -> None:
+    assert contrast_ratio("#E8EAEF", "#12141A") >= 4.5
+    assert contrast_ratio("#B4BAC6", "#12141A") >= 4.5
+    assert contrast_ratio("#8B93A1", "#12141A") >= 4.5
+
+
+def test_print_status_inks_meet_aa_on_white() -> None:
+    """Print remaps to paper-safe status inks."""
+    for color in ("#B42318", "#B54708", "#087443", "#5B6B7C"):
+        assert contrast_ratio(color, "#ffffff") >= 4.5, (
+            f"print status {color} below 4.5:1 on white"
+        )

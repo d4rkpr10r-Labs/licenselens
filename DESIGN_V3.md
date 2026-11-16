@@ -1,11 +1,13 @@
-# DESIGN_V3 — Security License Lens (Assessment Ledger)
+# DESIGN_V3 — Security License Lens (Exposure Console)
 
 > Status: the binding implementation contract for the v3 GUI.
 > This document **supersedes `DESIGN_V2.md` (SOC Dark) and `DESIGN.md` (v1) in full**.
 > Where an old constraint conflicts with this document, this document wins.
 >
-> Identity: **Assessment Ledger** — a light, document-grade assessment memo for the
-> MSP/IT → CFO/CISO handoff. Not a SOC dashboard. Not Tailwind cyan on near-black.
+> Identity: **Exposure Console** — a dark, operator-grade assessment surface for the
+> MSP/IT → CFO/CISO handoff, informed by late-2026 vuln / ASPM / CNAPP GUIs
+> (Wiz, Tenable, Falcon, Defender XDR, Rapid7). Not Tailwind cyan on near-black.
+> Not Falcon brand red. Print stays light paper.
 >
 > Architecture (unchanged): Jinja2 + hand-written CSS + vanilla JS, offline-first,
 > zero build step for fonts/CDN, zero external resources. No React/Vue/Svelte/Vite/
@@ -15,21 +17,25 @@
 
 ## 0. Decision log
 
-- **Owner pick (2026-11-16):** Direction A — Assessment Ledger (light). Direction B
-  (Quiet Instrument / dark steel) is retained only as a rejected alternative in
-  `audit/2026-11/design/`.
+- **Owner pick (2026-11-16):** Direction A — Assessment Ledger (light) shipped first
+  (PR #5). Layout / IA / trust invariants retained.
+- **Owner override (2026-11-16):** Flip screen default to **dark**, researched from
+  top vulnerability-management / exposure GUIs. Research notes:
+  `audit/2026-11/design/dark-vuln-gui-research.md`. Identity name:
+  **Exposure Console** (steel accent on graphite; Assessment Ledger layout rules).
 - **Critique:** `audit/2026-11/design/critique.md` — contract churn, wrong genre,
   three token systems, Tailwind defaults, serif/sans clash, false-precision %,
-  duplicate Action copy, cards-in-cards, dashed disclosures.
+  duplicate Action copy, cards-in-cards, dashed disclosures. §9 + §10 close out
+  light ship and dark flip.
 - **Shared tokens:** `templates/design/tokens.css` is the single source of color and
   font tokens. Consumed by the single-file foundation, the report-app foundation
   include, and the local wizard CSS handler.
 
 ## 1. Identity and guardrails
 
-**Identity: Assessment Ledger.** Cool paper canvas, white reading sheet, deep teal
-identity accent, desaturated status ramp. Premium, calm, editorial — a memo you would
-email or print, not a monitoring console.
+**Identity: Exposure Console.** Cool graphite canvas, elevated charcoal panes, steel
+identity accent, desaturated status ramp. Calm instrument density — an assessment
+console security operators already live in, not a Tailwind SOC starter kit.
 
 **Architecture guardrails (non-negotiable):**
 
@@ -39,7 +45,8 @@ email or print, not a monitoring console.
 - Semantic HTML: exactly one `<main>`, exactly one `<h1>`, heading levels never skip.
 - WCAG 2.2 AA: keyboard, visible `:focus-visible`, status never color-only,
   `prefers-reduced-motion` honored, `forced-colors` honored.
-- Print stylesheet: predictable expanded content; visualizations get textual fallbacks.
+- Print stylesheet: light paper; predictable expanded content; visualizations get
+  textual fallbacks.
 - Responsive at 900px and 640px.
 - Fully readable with JavaScript disabled.
 
@@ -48,6 +55,8 @@ email or print, not a monitoring console.
 - SOC Dark (`#0B0E14` canvas, `#22D3EE` accent, Tailwind red-400/amber-500/green-500).
 - Warm Charcoal / champagne-ivory (CHANGELOG 0.4.0 naming; never shipped as described).
 - Ink and Verdigris.
+- Light Assessment Ledger as the **screen default** (ledger hexes remain print /
+  optional future `data-theme="light"` only).
 - Serif wordmark (`Palatino` / `Georgia` stacks).
 - Dashed closed `<details>` borders (placeholder craft).
 - Cards-in-cards section chrome (`section` as bordered card wrapping move cards).
@@ -56,12 +65,12 @@ email or print, not a monitoring console.
 - Duplicate Action line when `customer_next_step` equals `title`.
 - `~a few hours` effort phrasing.
 - Integer `%` as the sole hero figure when the denominator is small.
-- Dark-only screen UI (V2 “no light-mode screen”).
 
 **Still forbidden:**
 
 - Pure black `#000000` canvas or surface fill.
 - Violet/purple UI chrome; neon/Tailwind-default cyan/red/amber/green as identity or status.
+- Falcon-brand primary red (`#ec0000` class) as product identity.
 - Glassmorphism except the single sticky-nav blur (optional; opaque fallback required).
 - External font, icon package, image asset, chart library, data-URI, or network request.
 - Emoji for metadata, statuses, labels, or icons.
@@ -74,38 +83,38 @@ Declared once in `templates/design/tokens.css`. Every other stylesheet reference
 by name. Literal hex outside that file is a violation except print media overrides that
 map to `--print-*` names already declared there.
 
-### 2.1 Screen tokens (light-first)
+### 2.1 Screen tokens (dark-first)
 
 | Token | Hex | Role |
 | --- | --- | --- |
-| `--canvas` | `#F3F5F8` | Cool paper page stock |
-| `--surface-1` | `#FFFFFF` | Primary reading sheet |
-| `--surface-2` | `#EEF1F5` | Secondary wells, closed disclosures |
-| `--surface-3` | `#E4E9F0` | Raised / open disclosures |
-| `--surface-4` | `#D8DEE8` | Highest surface (focused panes) |
-| `--border` | `#D5DCE6` | Default 1px rule |
-| `--border-strong` | `#A8B4C4` | Emphasis rule |
-| `--text-1` | `#15202B` | Primary ink |
-| `--text-2` | `#3D4D5C` | Secondary ink (≥ 7:1 on `--canvas`) |
-| `--text-3` | `#5E6E80` | Tertiary ink (≥ 4.5:1 on `--canvas`) |
-| `--accent` | `#0B5F75` | Deep teal identity + interaction |
-| `--accent-hover` | `#094C5E` | Accent hover |
-| `--accent-focus` | `#127A94` | Focus ring |
-| `--accent-print` | `#0B5F75` | Print identity / links |
-| `--state-action` | `#B42318` | Gap / error (≥ 4.5:1 on white) |
-| `--state-incomplete` | `#B54708` | Partial |
-| `--state-ok` | `#087443` | Ok / met |
-| `--state-neutral` | `#5B6B7C` | Not licensed / skipped |
-| `--grad-page` | cool paper wash | Optional page atmosphere (not a hero card wash) |
+| `--canvas` | `#12141A` | Graphite page stock |
+| `--surface-1` | `#1A1D26` | Primary elevated pane |
+| `--surface-2` | `#22262F` | Secondary wells, closed disclosures |
+| `--surface-3` | `#2A2F3A` | Raised / open disclosures |
+| `--surface-4` | `#343A48` | Highest surface (focused panes) |
+| `--border` | `#2E3440` | Default 1px rule |
+| `--border-strong` | `#3D4554` | Emphasis rule |
+| `--text-1` | `#E8EAEF` | Primary ink |
+| `--text-2` | `#B4BAC6` | Secondary ink (≥ 4.5:1 on `--canvas`) |
+| `--text-3` | `#8B93A1` | Tertiary ink (≥ 4.5:1 on `--canvas`) |
+| `--accent` | `#7BA3C4` | Steel identity + interaction |
+| `--accent-hover` | `#9BB4CC` | Accent hover |
+| `--accent-focus` | `#B8C9D9` | Focus ring |
+| `--accent-print` | `#2F5A78` | Print identity / links on paper |
+| `--state-action` | `#E07070` | Gap / error (markers/rails/bars only) |
+| `--state-incomplete` | `#D0A15C` | Partial |
+| `--state-ok` | `#6FBA8A` | Ok / met |
+| `--state-neutral` | `#8B93A1` | Not licensed / skipped |
+| `--grad-page` | graphite wash | Optional page atmosphere (not a hero card wash) |
 | `--grad-raised` | surface-2 → surface-1 | Elevated pane only |
-| `--shadow-1` / `--shadow-2` | soft cool | State elevation only |
+| `--shadow-1` / `--shadow-2` | soft dark | State elevation only |
 | `--blur-nav` | `blur(8px)` | Sticky nav only, with opaque fallback |
-| `--nav-surface` | white 92% | Sticky nav fill |
+| `--nav-surface` | surface-1 92% | Sticky nav fill |
 
 ### 2.2 Print tokens
 
-Print stays light. Use `--print-*` for ink/paper/border/status when a print block must
-re-pin values; default screen tokens already meet paper AA.
+Print stays light paper. `@media print` remaps screen tokens to the Assessment Ledger
+paper ladder; `--print-*` remains available for blocks that must re-pin paper values.
 
 ### 2.3 Usage rules
 
@@ -149,9 +158,9 @@ System-only stacks (locked):
 - Base unit 4px. Stops: 4, 8, 12, 16, 20, 24, 32, 48, 64.
 - Radius: `0` (document rules, hero, tables, dist bar), `2` (inputs), `6` (controls),
   `10` (interactive elevated panes only). **No 16px. No 999px pills on text controls.**
-  Proportion bars may use `0` (preferred for ledger) or `999px` only if a figure truly
-  needs a capsule fill — default is `0`.
-- **Not everything is a card.** Sections are open typography on the sheet with hairline
+  Proportion bars may use `0` (preferred) or `999px` only if a figure truly needs a
+  capsule fill — default is `0`.
+- **Not everything is a card.** Sections are open typography on the canvas with hairline
   rules. Move items are a numbered sequence separated by rules, not nested cards inside
   a section card. Cards only for interactive units that need a bound hit target.
 - Elevation is state: shadows on open disclosures / selected finding only.
@@ -186,7 +195,7 @@ Count-up (motion) may animate the numerator; final state is always the true frac
 ### B / Findings / Evidence
 
 Belief blocks, constellation, charts, filters, and progressive disclosure keep their
-V2 information contracts, restyled to the ledger surfaces and solid disclosure chrome.
+V2 information contracts, restyled to Exposure Console surfaces and solid disclosure chrome.
 
 ## 6. Navigation
 
@@ -235,12 +244,14 @@ wizard-only chrome. `print-color-adjust: exact` on status bars/rails.
 
 ## 17. Wizard
 
-Same identity: paper canvas, teal accent, sans wordmark, profile select, primary button
-filled with `--accent` / white label. Privacy line stays first. No orphan hex palette.
+Same identity: graphite canvas, steel accent, sans wordmark, profile select, primary
+button filled with `--accent` / dark label on steel. Privacy line stays first. No orphan
+hex palette.
 
 ## 18. Acceptance
 
 - Offline render; no external requests.
+- Dark screen default; print light paper.
 - Fraction-first hero; small-N percent is secondary.
 - No SOC Dark / Tailwind cyan signatures in shipped CSS.
 - No Palatino/Georgia wordmark.
@@ -248,3 +259,5 @@ filled with `--accent` / white label. Privacy line stays first. No orphan hex pa
 - Solid disclosure borders; open sections without cards-in-cards.
 - WCAG tests + Playwright report/browser suites pass.
 - `prefers-reduced-motion` and JS-off verified.
+- Research notes present at `audit/2026-11/design/dark-vuln-gui-research.md`.
+- After-dark shots under `audit/2026-11/design/after-dark/`.
