@@ -1,6 +1,6 @@
 """Guard the human-authored docs against stale version/count drift (todo 6, C4).
 
-The authoritative numbers (170 checks, 31 capabilities, 11 profiles, 135 SCuBA
+The authoritative numbers (175 checks, 36 capabilities, 11 profiles, 135 SCuBA
 rows, package version 0.4.0) are maintained by hand in a handful of docs files.
 This test locks those files to the current values so a stale string (e.g. "140
 checks" or "v0.3.0") fails CI instead of shipping.
@@ -25,10 +25,10 @@ HUMAN_DOCS = [
 ]
 
 # Stale strings that must never reappear in the human-authored docs.
-STALE_STRINGS = ["140 declarative", "140 checks", "v0.3.0"]
+STALE_STRINGS = ["140 declarative", "140 checks", "170 checks", "v0.3.0"]
 
 # Current strings that must be present in the human-authored docs.
-CURRENT_STRINGS = ["170"]
+CURRENT_STRINGS = ["175"]
 
 # Files that additionally carry the current package version string.
 VERSION_DOCS = [

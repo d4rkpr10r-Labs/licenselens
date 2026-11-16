@@ -30,6 +30,8 @@ Security License Lens is designed for **read-only** access.
 | `Device.Read.All` | Entra registered devices (bounded inventory for denominators) |
 | `DlpPolicy.Read.All` | Purview DLP policies + apps (direct, `/security/dataLossPreventionPolicies`) |
 | `eDiscovery.Read.All` | Premium eDiscovery cases (direct, `/security/cases/ediscoveryCases`) |
+| `NetworkAccess.Read.All` | Entra Global Secure Access forwarding profiles (Graph **beta** `/networkAccess/forwardingProfiles`) |
+| `SecurityCopilotWorkspaces.Read.All` | Security Copilot workspaces (Graph **beta** `/security/securityCopilot/workspaces`) |
 
 Grant **application** permissions and **admin consent**.
 

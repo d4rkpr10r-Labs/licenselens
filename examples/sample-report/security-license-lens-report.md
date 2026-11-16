@@ -9,13 +9,13 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 ## At a glance
 
-**3 of 8 in-scope capabilities met all assessed criteria (38%).**
+**4 of 9 in-scope capabilities met all assessed criteria (44%).**
 
-- **Activation assessment:** 109 checks · **Configuration hygiene (optional):** 61 checks
-- **Licensed capabilities detected:** 25
-- **Evaluated capabilities:** 8 (priority packs: identity, endpoint)
-- **Met assessed criteria:** 3 of 8 evaluated capabilities (38% realized)
-- **Need attention:** 5 of 8 evaluated capabilities
+- **Activation assessment:** 114 checks · **Configuration hygiene (optional):** 61 checks
+- **Licensed capabilities detected:** 27
+- **Evaluated capabilities:** 9 (priority packs: identity, endpoint)
+- **Met assessed criteria:** 4 of 9 evaluated capabilities (44% realized)
+- **Need attention:** 5 of 9 evaluated capabilities
 
 ### Top things to do first
 
@@ -29,8 +29,8 @@ A plain-language view of security capabilities you already pay for — and wheth
 *Effort is a rough guide, not a quote.*
 
 - **Needs attention** (`gap`): 41
-- **Not in your plan** (`not_licensed`): 6
-- **Looking good** (`ok`): 92
+- **Not in your plan** (`not_licensed`): 9
+- **Looking good** (`ok`): 94
 - **Partly set up** (`partial`): 19
 - **Check pending** (`skipped`): 12
 
@@ -45,6 +45,16 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **If unused:** Your licenses include advanced sign-in rules, but they may still be loose or incomplete.
 - **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** Microsoft Entra ID P2
+
+### Cloud app visibility and session control
+
+*Microsoft name: Microsoft Defender for Cloud Apps*
+
+- **What it does:** Monitor and control risky cloud-app sessions for licensed users.
+- **Why it matters:** Shadow IT and unmanaged SaaS sessions leak data outside your email and endpoint controls.
+- **If unused:** MDCA may be entitled while no Conditional Access App Control session policies exist.
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** Microsoft Defender for Cloud Apps
 
 ### Deep protection and visibility on PCs and devices
 
@@ -270,6 +280,16 @@ A plain-language view of security capabilities you already pay for — and wheth
 - **If unused:** Labels may exist but remain unpublished, unused, or never auto-applied.
 - **Included through license SKU(s):** Microsoft 365 E5
 - **Matching service plan(s):** Microsoft Purview Information Protection P2
+
+### AI assistants for security operations
+
+*Microsoft name: Microsoft Security Copilot*
+
+- **What it does:** Have a provisioned Security Copilot workspace so SOC and security admins can use included SCUs.
+- **Why it matters:** Included Security Copilot capacity is wasted if the workspace was never provisioned after Microsoft enables the tenant.
+- **If unused:** E5/E7 inclusion may be entitled while no Security Copilot workspace is present (confirm phased rollout first).
+- **Included through license SKU(s):** Microsoft 365 E5
+- **Matching service plan(s):** No matching service plan reported
 
 ### Team sites and shared file libraries
 
@@ -626,7 +646,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Confidence:** High confidence
 - **Data sources:** la:usageByTable, azure.arm.securityInsights
 - **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/detect-threats-built-in)
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/sentinel/analytics)
 - **Technical id:** `sen-rule-telemetry-parity`
 - **How this is decided:**
   - OK: Enabled analytics rules query tables that ingested in the last seven days.
@@ -643,7 +663,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Confidence:** High confidence
 - **Data sources:** la:usageByTable, azure.arm.securityInsights
 - **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/connect-data-sources)
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/sentinel/data-connectors)
 - **Technical id:** `sen-telemetry-ingestion-coverage`
 - **How this is decided:**
   - OK: Core tables for owned capabilities ingested in the last seven days.
@@ -915,7 +935,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Confidence:** Medium confidence
 - **Data sources:** azure.arm.securityInsights
 - **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/automate-responses-with-playbooks)
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/sentinel/automation)
 - **Technical id:** `sen-automation-rules`
 - **How this is decided:**
   - OK: Automation rules trigger playbooks for high-value alerts.
@@ -949,7 +969,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Confidence:** Medium confidence
 - **Data sources:** azure.arm.securityInsights
 - **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/enable-entity-behavior-analytics)
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/sentinelSettings/entityBehaviorAnalytics)
 - **Technical id:** `sen-ueba-not-enabled`
 - **How this is decided:**
   - OK: UEBA entity behavior analytics is enabled on the Sentinel workspace.
@@ -1085,7 +1105,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Confidence:** Medium confidence
 - **Data sources:** azure.arm.securityInsights
 - **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/detect-threats-built-in)
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/sentinel/analytics)
 - **Technical id:** `sen-analytics-rule-coverage`
 - **How this is decided:**
   - OK: Enough scheduled analytics rules are enabled across several tactics.
@@ -1102,7 +1122,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 - **Confidence:** Medium confidence
 - **Data sources:** azure.arm.securityInsights
 - **Limitations:** None reported
-- **Admin page:** [Open Microsoft admin page](https://learn.microsoft.com/azure/sentinel/connect-data-sources)
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/sentinel/data-connectors)
 - **Technical id:** `sen-data-connectors`
 - **How this is decided:**
   - OK: Key connectors are connected and at least one table is ingesting.
@@ -1538,6 +1558,23 @@ Dead rules (query tables that are not arriving): Demo rare process.
   - Gap: Identity Protection risk policies are not enforced.
   - Evidence fields: `user_risk_enforced`, `sign_in_risk_enforced`, `risk_policy_count`, `protected_population`
   - Evaluator: `licenselens.evaluators.identity_risk.evaluate_idprotect_off`
+
+### Cloud app sessions may not be monitored or controlled
+
+- **Status:** Looking good
+- **In plain English:** Cloud app sessions are covered by Conditional Access App Control.
+- **Suggested next step:** Create a Conditional Access policy that enables Microsoft Defender for Cloud Apps session control for the apps and users that need monitoring or blocking.
+- **Confidence:** High confidence
+- **Data sources:** graph.identity.conditionalAccess
+- **Limitations:** This check reads Conditional Access sessionControls.cloudAppSecurity only; MDCA portal policy catalogs are not available via Microsoft Graph
+- **Admin page:** [Open Microsoft admin page](https://security.microsoft.com/cloudapps/policies/session)
+- **Technical id:** `id-mdca-ca-session-control`
+- **How this is decided:**
+  - OK: An enabled CA policy uses cloudAppSecurity session control.
+  - Partial: Only report-only CA policies use cloudAppSecurity session control.
+  - Gap: No CA policy uses cloudAppSecurity session control.
+  - Evidence fields: `enabled_session_policies`, `report_only_session_policies`
+  - Evaluator: `licenselens.evaluators.defender_mdca.evaluate_mdca_ca_session_control`
 
 ### Keep powerful admin accounts cloud-only
 
@@ -2049,6 +2086,23 @@ Dead rules (query tables that are not arriving): Demo rare process.
   - Evidence fields: `alert_count`, `capability_operating`, `incident_count`, `service_sources`
   - Evaluator: `licenselens.evaluators.endpoint_mde_xdr.evaluate_xdr_incident_readiness`
 
+### Included Security Copilot capacity may be unused
+
+- **Status:** Looking good
+- **In plain English:** A Security Copilot workspace is available for included capacity.
+- **Suggested next step:** Confirm Message Center eligibility for Security Copilot inclusion, then open the Security Copilot portal and complete any remaining onboarding steps.
+- **Confidence:** High confidence
+- **Data sources:** graph.beta.security.securityCopilot.workspaces
+- **Limitations:** Demo fixture — not a live tenant read; Graph securityCopilot APIs are beta; Security Copilot inclusion for Microsoft 365 E5/E7 is phased; an empty workspace list may mean Microsoft has not enabled the tenant yet
+- **Admin page:** [Open Microsoft admin page](https://securitycopilot.microsoft.com)
+- **Technical id:** `xdr-sec-copilot-workspace-provisioned`
+- **How this is decided:**
+  - OK: At least one Security Copilot workspace exists.
+  - Partial: No workspace yet, or evidence is incomplete (phased rollout possible).
+  - Gap: Not used — empty workspace alone must not become a hard gap.
+  - Evidence fields: `workspace_count`, `workspace_names`, `api_version`
+  - Evaluator: `licenselens.evaluators.security_copilot.evaluate_sec_copilot_workspace_provisioned`
+
 ### Turn on Defender for Cloud protection for your subscription
 
 - **Status:** Not in your plan
@@ -2066,6 +2120,23 @@ Dead rules (query tables that are not arriving): Demo rare process.
   - Evidence fields: `status`
   - Evaluator: `licenselens.evaluators.azure_selective.evaluate_az_defender_plan_enabled`
 
+### Just-enough admin rights on PCs may be unconfigured
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://intune.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/endpointPrivilegeManagement)
+- **Technical id:** `endpoint-epm-policy-present`
+- **How this is decided:**
+  - OK: At least one EPM configuration policy is present.
+  - Partial: EPM evidence was incomplete.
+  - Gap: No EPM configuration policy was found.
+  - Evidence fields: `epm_policy_count`, `epm_policy_names`
+  - Evaluator: `licenselens.evaluators.endpoint_intune_policy.evaluate_intune_epm_policy_present`
+
 ### Apps and service accounts are not protected by risk-based sign-in rules
 
 - **Status:** Not in your plan
@@ -2082,6 +2153,40 @@ Dead rules (query tables that are not arriving): Demo rare process.
   - Gap: No risk-based policy protects workload identities.
   - Evidence fields: `enforced_policies`, `universal_policies`, `scoped_policies`, `scope_gaps_best`, `security_defaults_enabled`, `unjustified_exclusion_issues`
   - Evaluator: `licenselens.evaluators.identity_access.evaluate_ca_workload_identity`
+
+### Identity-aware web gateway may still be off
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IBA/TrafficForwardingMenuBlade)
+- **Technical id:** `id-gsa-internet-access-enabled`
+- **How this is decided:**
+  - OK: An enabled internet forwarding profile exists.
+  - Partial: Profiles were returned but enablement is unclear.
+  - Gap: No enabled internet forwarding profile was found.
+  - Evidence fields: `internet_profiles_enabled`, `internet_profile_count`, `api_version`
+  - Evaluator: `licenselens.evaluators.gsa_network_access.evaluate_gsa_internet_access_enabled`
+
+### Private app Zero Trust access may still be off
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_IBA/TrafficForwardingMenuBlade)
+- **Technical id:** `id-gsa-private-access-enabled`
+- **How this is decided:**
+  - OK: An enabled private forwarding profile exists.
+  - Partial: Profiles were returned but enablement is unclear.
+  - Gap: No enabled private forwarding profile was found.
+  - Evidence fields: `private_profiles_enabled`, `private_profile_count`, `api_version`
+  - Evaluator: `licenselens.evaluators.gsa_network_access.evaluate_gsa_private_access_enabled`
 
 ### Confirm no app or automation account is compromised
 
@@ -2560,6 +2665,6 @@ Dead rules (query tables that are not arriving): Demo rare process.
 
 ## Technical details
 
-- Owned capability ids: conditional_access, defender_endpoint_p2, defender_identity, defender_office_p1, defender_office_p2, defender_xdr, entra_id_p2, exchange_online, exchange_online_protection, identity_protection, intune, log_analytics, microsoft_sentinel, onedrive_for_business, power_bi_pro, power_platform, purview_audit, purview_communication_compliance, purview_dlp, purview_ediscovery, purview_insider_risk, purview_retention, purview_sensitivity_labels, sharepoint_online, teams
+- Owned capability ids: conditional_access, defender_cloud_apps, defender_endpoint_p2, defender_identity, defender_office_p1, defender_office_p2, defender_xdr, entra_id_p2, exchange_online, exchange_online_protection, identity_protection, intune, log_analytics, microsoft_sentinel, onedrive_for_business, power_bi_pro, power_platform, purview_audit, purview_communication_compliance, purview_dlp, purview_ediscovery, purview_insider_risk, purview_retention, purview_sensitivity_labels, security_copilot, sharepoint_online, teams
 
 - SKU Microsoft 365 E5 (`SPE_E5`) (87/100): Microsoft Entra ID P2, Microsoft Entra ID Multifactor Authentication, Microsoft Defender for Cloud Apps, Microsoft 365 Advanced eDiscovery, Microsoft 365 Customer Lockbox, Microsoft Purview Information Protection P2, Microsoft Defender for Office 365 (Plan 2), Microsoft Defender for Endpoint P2

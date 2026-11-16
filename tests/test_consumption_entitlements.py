@@ -258,11 +258,11 @@ def test_merge_consumption_unions_without_unknown() -> None:
     assert "defender_for_cloud_cspm" not in merged
 
 
-def test_demo_owned_capabilities_unchanged_25() -> None:
+def test_demo_owned_capabilities_unchanged_27() -> None:
     from licenselens.engine.runner import run_scan
 
     result = run_scan(AuthContext(mode=AuthMode.DRY_RUN), dry_run=True)
-    assert len(result.owned_capabilities) == 25
+    assert len(result.owned_capabilities) == 27
     assert "microsoft_sentinel" in result.owned_capabilities
     assert "log_analytics" in result.owned_capabilities
     assert "defender_for_cloud_cspm" not in result.owned_capabilities

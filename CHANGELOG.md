@@ -5,6 +5,31 @@ All notable changes to Security License Lens are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [Unreleased]
+
+### Added
+- **Phase 1 feature research (2026-11)** — `audit/2026-11/feature-research.md`
+  with candidates, rejects, and a post-Ignite delta-sweep checklist.
+- **Microsoft Learn MCP tooling** — `.cursor/mcp.json` points at
+  `https://learn.microsoft.com/api/mcp`.
+- **Catalog capabilities** — `entra_internet_access`, `entra_private_access`,
+  `defender_cloud_apps`, `intune_endpoint_privilege_management`, and
+  `security_copilot`, with Learn CSV GUIDs (2026-08-19) and Microsoft 365 E7 /
+  Entra Suite SKU aliases. Agent 365 stays research/SKU-name tracked until a
+  GA read-only activation check exists.
+- **Checks** — `id-gsa-internet-access-enabled`, `id-gsa-private-access-enabled`,
+  `endpoint-epm-policy-present`, `id-mdca-ca-session-control`,
+  `xdr-sec-copilot-workspace-provisioned` (fixtures + unit tests).
+- **Graph permissions** — `NetworkAccess.Read.All` and
+  `SecurityCopilotWorkspaces.Read.All` documented for beta collectors.
+
+### Changed
+- **MDO P1 vs P2 entitlement** — `defender_office_p2` no longer unlocks on
+  `ATP_ENTERPRISE` alone (July 2026 packaging puts MDO P1 in E3). P1 now
+  includes `SPE_E3` / `ENTERPRISEPACK` / E7 aliases.
+- **Sentinel admin deep links** — prefer Microsoft Defender portal destinations
+  ahead of the Azure portal retirement (2027-03-31).
+
 ## [0.4.0] — 2026-08-16
 
 *Status: published to PyPI as 0.4.0.*

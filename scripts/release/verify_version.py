@@ -41,17 +41,18 @@ def version_from_init(repo_root: Path) -> str:
 
 
 def changelog_top_version(repo_root: Path) -> str | None:
-    """Return the version of the CHANGELOG's top ``## [...]`` heading.
+    """Return the first released version heading in CHANGELOG.
 
-    Returns ``None`` when the top section is still ``[Unreleased]`` (the release
-    line has not been cut yet) or when no version heading exists at all.
+    Skips a leading ``## [Unreleased]`` section (Keep a Changelog) so feature
+    branches can document unfinished work without failing the tree check.
+    Returns ``None`` when no released ``## [...]`` heading exists.
     """
     text = (repo_root / "CHANGELOG.md").read_text(encoding="utf-8")
-    match = re.search(r"^## \[([^\]]+)\]", text, re.MULTILINE)
-    if not match:
-        return None
-    heading = match.group(1)
-    return None if heading == "Unreleased" else heading
+    for match in re.finditer(r"^## \[([^\]]+)\]", text, re.MULTILINE):
+        heading = match.group(1)
+        if heading != "Unreleased":
+            return heading
+    return None
 
 
 def check_tag(tag: str) -> int:
@@ -111,9 +112,9 @@ def check_docs_coherence(repo_root: Path) -> list[str]:
         problems.append(
             f"examples/sample-report/README.md does not declare package {package_version}"
         )
-    if not _has_plain("examples/sample-report/README.md", "170 checks"):
+    if not _has_plain("examples/sample-report/README.md", "175 checks"):
         problems.append(
-            "examples/sample-report/README.md check-pack summary does not reference 170 checks"
+            "examples/sample-report/README.md check-pack summary does not reference 175 checks"
         )
 
     # Security / support policies list the current minor line.

@@ -140,7 +140,7 @@ See [docs/mcp.md](docs/mcp.md) for host setup and live-tenant credentials.
 
 ## What's in the pack (v0.4.0)
 
-**170 checks** · **31 capabilities** · **11 profiles** · **135** pinned SCuBA coverage rows
+**175 checks** · **36 capabilities** · **11 profiles** · **135** pinned SCuBA coverage rows
 
 Checks run as **direct**, **proxy**, **manual** (you confirm), or **dynamic**
 (direct first, Secure Score only if direct is missing). The report records

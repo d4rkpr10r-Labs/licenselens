@@ -144,9 +144,9 @@ def test_scan_dry_run_prints_top_card(tmp_path: Path):
     # Dry-run has actionable gaps -> exit 1, report written, summary shown.
     assert result.exit_code == 1, result.output
     assert "Security posture" in result.stdout
-    assert "Licensed capabilities detected: 25" in result.stdout
-    assert "Prioritized now (identity, endpoint): 8" in result.stdout
-    assert "Met assessed criteria (prioritized): 3 of 8" in result.stdout
+    assert "Licensed capabilities detected: 27" in result.stdout
+    assert "Prioritized now (identity, endpoint): 9" in result.stdout
+    assert "Met assessed criteria (prioritized): 4 of 9" in result.stdout
     assert "Need attention (prioritized): 5" in result.stdout
     assert "Priority actions:" in result.stdout
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
@@ -349,7 +349,7 @@ def test_demo_command_prints_html_path(tmp_path: Path):
     result = runner.invoke(app, ["demo", "--output-dir", str(tmp_path / "out")])
     assert result.exit_code == 0, result.output
     assert "offline demo scan" in result.stdout
-    assert "Licensed capabilities detected: 25" in result.stdout
+    assert "Licensed capabilities detected: 27" in result.stdout
     assert "security-license-lens-report.html" in result.stdout.replace("\n", "")
     assert (tmp_path / "out" / "security-license-lens-report.html").is_file()
 
@@ -561,7 +561,7 @@ def test_scan_omitting_profile_matches_legacy_scope(tmp_path: Path):
         (out / "security-license-lens-report.json").read_text(encoding="utf-8")
     )
     assert payload["profile_ids"] == []
-    assert "Prioritized now (identity, endpoint): 8" in result.stdout
+    assert "Prioritized now (identity, endpoint): 9" in result.stdout
 
 
 def test_scan_invalid_profile_exits_2_before_auth(tmp_path: Path, monkeypatch):
