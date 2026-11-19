@@ -9,9 +9,9 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 | Identity (CA, PIM, roles, sign-ins) | Graph (app-only or device code) | Intent of every exclusion group |
 | Endpoint (MDE onboard) | MDE API machine inventory | Full health of every sensor |
 | Email (MDO Safe Links / Safe Attachments / presets) | **Nothing via Graph** | Policy config is Exchange Online PowerShell only |
-| MDI sensors | Secure Score proxy only (if opted) | Direct sensor health API in this tool |
-| Purview DLP | Secure Score proxy (+ best-effort) | Full Purview policy surface app-only |
-| Sentinel | ARM analytics rules + UEBA + 7-day Usage table volume when workspace given | Detection effectiveness, tuning, multi-workspace; parsers (`_Im_` / ASIM) are indeterminate; table-list fallback is existence only |
+| MDI sensors | Direct Graph v1.0 `/security/identities/sensors` + `/security/identities/healthIssues` (falls back to labeled Secure Score proxy when direct read is unavailable) | Domain controller OS/network internals outside sensor health & health issues |
+| Purview DLP | Direct Graph v1.0 `/security/dataLossPreventionPolicies` + `/security/dataLossPreventionApps` plus PowerShell IPPS bridge when available (falls back to labeled Secure Score proxy when direct reads are unavailable) | Portal-only rule internals and GSA "Scan with Purview" network content policies (no documented Graph read API yet) |
+| Sentinel | ARM analytics rules + UEBA + 7-day Usage table volume when workspace given (valid for Defender portal / ISOC workspaces; Azure portal Sentinel retires 2027-03-31) | Detection effectiveness, tuning, multi-workspace, ISOC opt-in / Data Lake tier state without POST KQL; parsers (`_Im_` / ASIM) are indeterminate; table-list fallback is existence only |
 
 ## Conditional Access scope
 
@@ -37,6 +37,7 @@ type. It does not try to add several narrower rules together.
 - Sign-in lookbacks are paged (default ~90 days, page budget). Large tenants may truncate; findings note when the sample looks truncated.
 - MDE machine counts may truncate on very large estates.
 - Intune managed-device inventories are bounded and may truncate on very large estates.
+- Defender XDR custom detections (Graph v1.0), Entra Global Secure Access forwarding profiles (Graph beta), and Security Copilot workspaces (Graph beta) are page-capped; truncation is propagated onto envelopes so partial pages are not flattened into false gaps.
 
 ## Auth / permissions
 

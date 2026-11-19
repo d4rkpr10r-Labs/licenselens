@@ -649,10 +649,10 @@ These strings also appear on the finding JSON and in the report
 
 ### `id-mdca-ca-session-control`
 
-- **OK:** An enabled CA policy uses cloudAppSecurity session control.
-- **Partial:** Only report-only CA policies use cloudAppSecurity session control.
+- **OK:** An enabled CA policy enforces cloudAppSecurity session control (blockDownloads or mcasConfigured) across all users.
+- **Partial:** Session control is monitorOnly, scoped to a subset of users, or only in report-only CA policies.
 - **Gap:** No CA policy uses cloudAppSecurity session control.
-- **Evidence fields:** enabled_session_policies, report_only_session_policies
+- **Evidence fields:** enabled_session_policies, enforcing_session_policies, monitor_only_session_policies, narrow_scope_session_policies, report_only_session_policies
 
 ### `id-number-matching`
 
