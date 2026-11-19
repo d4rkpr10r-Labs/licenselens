@@ -34,10 +34,10 @@ from tests.fake_clients import build_replay_clients, wire_golden_seams
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "golden-tenant.json"
 
-GOLDEN_TOTAL_FINDINGS = 175
+GOLDEN_TOTAL_FINDINGS = 177
 GOLDEN_COUNTS_BY_STATUS = {
     "gap": 39,
-    "not_licensed": 8,
+    "not_licensed": 10,
     "ok": 92,
     "partial": 24,
     "skipped": 12,

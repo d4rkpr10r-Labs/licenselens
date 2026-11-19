@@ -397,6 +397,12 @@
           }
         ]
       },
+      "/identityGovernance/lifecycleWorkflows/lifecyclePolicies": {
+        "value": []
+      },
+      "/identityGovernance/lifecycleWorkflows/workflows": {
+        "value": []
+      },
       "/identityProtection/riskyServicePrincipals": {
         "value": []
       },

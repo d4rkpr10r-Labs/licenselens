@@ -11,9 +11,9 @@ REPO_ROOT = Path(__file__).resolve().parents[1]
 DOCS_DIR = REPO_ROOT / "docs"
 
 # Table rows in the Graph section of permissions.md: | `Permission.Name` | ... |
-_TABLE_ROW = re.compile(r"^\| `([A-Za-z.]+)` \|")
+_TABLE_ROW = re.compile(r"^\| `([A-Za-z0-9.-]+)` \|")
 # Bullet list entries under "**Microsoft Graph (application)**" in app-registration.md.
-_BULLET = re.compile(r"^- `([A-Za-z.]+)`")
+_BULLET = re.compile(r"^- `([A-Za-z0-9.-]+)`")
 
 
 def _graph_permissions_from_permissions_md() -> set[str]:
