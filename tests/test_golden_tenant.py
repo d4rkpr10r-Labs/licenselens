@@ -34,12 +34,12 @@ from tests.fake_clients import build_replay_clients, wire_golden_seams
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "golden-tenant.json"
 
-GOLDEN_TOTAL_FINDINGS = 175
+GOLDEN_TOTAL_FINDINGS = 176
 GOLDEN_COUNTS_BY_STATUS = {
     "gap": 39,
     "not_licensed": 8,
     "ok": 92,
-    "partial": 24,
+    "partial": 25,
     "skipped": 12,
 }
 GOLDEN_CHECK_STATUSES = {
@@ -54,6 +54,9 @@ GOLDEN_CHECK_STATUSES = {
     # PARTIAL (never GAP-as-coverage nor OK).
     "mde-onboard-gap": FindingStatus.PARTIAL,
     "endpoint-enrollment-coverage": FindingStatus.PARTIAL,
+    # Ignite 2026 MDE P2 local AI agent runtime protection: GoldenCo configures
+    # AiAgentProtection=2 (Audit) and AiAgentNetworkInspection=0 (Disabled).
+    "endpoint-mde-ai-agent-runtime-protection": FindingStatus.PARTIAL,
     # WS2-A: eligibility is any()-of required_capabilities. Golden ARM pricings
     # already declare VirtualMachines Standard, so observing consumption owns
     # defender_for_cloud_servers and this check is no longer not_licensed.

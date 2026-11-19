@@ -89,6 +89,7 @@ def test_builtin_profiles_load_deterministically_and_resolve_expected_checks() -
         "endpoint-compliance-policy-assigned",
         "endpoint-enrollment-coverage",
         "endpoint-epm-policy-present",
+        "endpoint-mde-ai-agent-runtime-protection",
         "endpoint-mde-connector",
         "endpoint-security-baseline",
         "endpoint-security-policy-coverage",
