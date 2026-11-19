@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LicenseLens — dashboard IA prototypes</title>
+  <style>
+    :root {
+      --canvas: #12141A;
+      --surface-1: #1A1D26;
+      --border: #2E3440;
+      --text-1: #E8EAEF;
+      --text-2: #B4BAC6;
+      --accent: #7BA3C4;
+      --accent-hover: #9BB4CC;
+      --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-sans);
+      background: linear-gradient(180deg, #181B24 0%, var(--canvas) 40%);
+      color: var(--text-1);
+      padding: 48px 24px;
+    }
+    main { max-width: 40rem; margin: 0 auto; }
+    h1 { margin: 0 0 8px; font-size: 1.75rem; letter-spacing: -0.03em; }
+    p { color: var(--text-2); line-height: 1.55; }
+    .cards { display: grid; gap: 12px; margin-block-start: 28px; }
+    a.card {
+      display: block;
+      padding: 18px 16px;
+      background: var(--surface-1);
+      border: 1px solid var(--border);
+      color: var(--text-1);
+      text-decoration: none;
+    }
+    a.card:hover { border-color: var(--accent); }
+    a.card strong { color: var(--accent); }
+    a.card span { display: block; margin-block-start: 6px; color: var(--text-2); font-size: 0.9375rem; }
+    a:focus-visible { outline: 2px solid #B8C9D9; outline-offset: 2px; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Dashboard + clickthrough</h1>
+    <p>
+      Static prototypes (sample demo content). Exposure Console tokens.
+      Owner picked <strong>A</strong> for production; B remains optional.
+    </p>
+    <div class="cards">
+      <a class="card" href="dashboard-a-panel.html">
+        <strong>A — Summary + panel / drawer</strong>
+        <span>Summary stays mounted; detail opens in a side panel (bottomsheet on narrow). Shipping pattern.</span>
+      </a>
+      <a class="card" href="dashboard-b-routes.html">
+        <strong>B — Summary + full-page hash routes</strong>
+        <span>Optional pattern only. Each drill is a full view (<code>#/priority/1</code>, etc.).</span>
+      </a>
+      <a class="card" href="dashboard-clickthrough-ia.md">
+        <strong>IA notes</strong>
+        <span>Compare scroll-report vs dashboard+drill for MSP→CFO/CISO (markdown; may download).</span>
+      </a>
+    </div>
+  </main>
+</body>
+</html>
