@@ -8,11 +8,19 @@ from licenselens.collectors.access_reviews import (
     collect_access_review_definitions,
     collect_access_review_instances,
 )
+from licenselens.collectors.agent_lifecycle import (
+    DEMO_AGENT_LIFECYCLE_POLICIES_BUNDLE,
+    collect_agent_lifecycle_policies_bundle,
+)
 from licenselens.collectors.conditional_access import DEMO_CA_POLICIES, collect_ca_policies
 from licenselens.collectors.contracts import EvidenceEnvelope
 from licenselens.collectors.entitlement_management import (
     DEMO_ACCESS_PACKAGES,
     collect_access_packages,
+)
+from licenselens.collectors.lifecycle_workflows import (
+    DEMO_LIFECYCLE_WORKFLOWS_BUNDLE,
+    collect_lifecycle_workflows_bundle,
 )
 from licenselens.collectors.privileged_roles import (
     DEMO_PRINCIPAL_DIRECTORY,
@@ -27,7 +35,7 @@ from licenselens.collectors.risky_service_principals import (
     DEMO_RISKY_SERVICE_PRINCIPALS,
     collect_risky_service_principals,
 )
-from licenselens.collectors.runtime_envelopes import envelope_value, graph_failure, ok
+from licenselens.collectors.runtime_envelopes import envelope_value, error, graph_failure, ok
 from licenselens.collectors.security_defaults import (
     DEMO_SECURITY_DEFAULTS,
     collect_security_defaults_policy,
@@ -200,6 +208,68 @@ def collect_access_packages_runtime(
         )
     except GraphError as exc:
         return graph_failure(key, exc, f"Entitlement access packages could not be read: {exc}", ctx)
+
+
+def collect_agent_lifecycle_policies_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "agent_lifecycle_policies"
+    if ctx.is_dry_run:
+        return ok(
+            key,
+            dict(DEMO_AGENT_LIFECYCLE_POLICIES_BUNDLE),
+            source="demo",
+            items=int(DEMO_AGENT_LIFECYCLE_POLICIES_BUNDLE.get("count") or 0),
+        )
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        bundle = collect_agent_lifecycle_policies_bundle(ctx.client)
+        return ok(
+            key,
+            bundle,
+            source="graph.identityGovernance.lifecycleWorkflows.lifecyclePolicies",
+            items=int(bundle.get("count") or 0),
+            truncated=bool(bundle.get("truncated")),
+        )
+    except GraphError as exc:
+        return graph_failure(
+            key,
+            exc,
+            f"Entra Agent ID lifecycle policies could not be read: {exc}",
+            ctx,
+        )
+
+
+def collect_lifecycle_workflows_runtime(
+    ctx: ScanCollectionContext, _pc: CollectionContext
+) -> EvidenceEnvelope:
+    key = "lifecycle_workflows"
+    if ctx.is_dry_run:
+        return ok(
+            key,
+            dict(DEMO_LIFECYCLE_WORKFLOWS_BUNDLE),
+            source="demo",
+            items=int(DEMO_LIFECYCLE_WORKFLOWS_BUNDLE.get("count") or 0),
+        )
+    if ctx.client is None:
+        return error(key, "no Graph client available")
+    try:
+        bundle = collect_lifecycle_workflows_bundle(ctx.client)
+        return ok(
+            key,
+            bundle,
+            source="graph.identityGovernance.lifecycleWorkflows.workflows",
+            items=int(bundle.get("count") or 0),
+            truncated=bool(bundle.get("truncated")),
+        )
+    except GraphError as exc:
+        return graph_failure(
+            key,
+            exc,
+            f"Entra ID Governance lifecycle workflows could not be read: {exc}",
+            ctx,
+        )
 
 
 def collect_access_review_instances_runtime(

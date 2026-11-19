@@ -341,6 +341,8 @@ _GRAPH_PERMISSION_PURPOSES: dict[str, str] = {
     "DeviceManagementManagedDevices.Read.All": "managed device inventory",
     "Directory.Read.All": "directory objects (users, groups, roles)",
     "Domain.Read.All": "registered tenant domains",
+    "LifecyclePolicies-AgentId.Read.All": "Entra Agent ID automated lifecycle policies",
+    "LifecycleWorkflows.Read.All": "Entra ID Governance Lifecycle Workflows",
     "Organization.Read.All": "organization-level settings",
     "Policy.Read.All": "conditional access and identity protection policies",
     "RoleManagement.Read.Directory": "role assignments and PIM settings",

@@ -35,7 +35,7 @@ type JsonValue = str | int | float | bool | None | list["JsonValue"] | dict[str,
 type JsonObject = dict[str, JsonValue]
 
 YAML_OBJECT: Final = TypeAdapter(JsonObject)
-GRAPH_PERMISSION_ROW: Final = re.compile(r"^\| `([A-Za-z.]+)` \|")
+GRAPH_PERMISSION_ROW: Final = re.compile(r"^\| `([A-Za-z0-9.-]+)` \|")
 
 
 def build_reference_model(paths: ReferenceModelPaths | None = None) -> ReferenceModel:

@@ -60,6 +60,8 @@ REQUIRED_GRAPH_APP_PERMISSIONS: tuple[str, ...] = (
     "SecurityIdentitiesSensors.Read.All",
     "User.Read.All",
     "CustomDetection.Read.All",
+    "LifecyclePolicies-AgentId.Read.All",
+    "LifecycleWorkflows.Read.All",
     "NetworkAccess.Read.All",
     "SecurityCopilotWorkspaces.Read.All",
 )
