@@ -112,9 +112,9 @@ def check_docs_coherence(repo_root: Path) -> list[str]:
         problems.append(
             f"examples/sample-report/README.md does not declare package {package_version}"
         )
-    if not _has_plain("examples/sample-report/README.md", "175 checks"):
+    if not _has_plain("examples/sample-report/README.md", "176 checks"):
         problems.append(
-            "examples/sample-report/README.md check-pack summary does not reference 175 checks"
+            "examples/sample-report/README.md check-pack summary does not reference 176 checks"
         )
 
     # Security / support policies list the current minor line.

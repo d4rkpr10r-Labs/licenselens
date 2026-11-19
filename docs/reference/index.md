@@ -5,7 +5,7 @@ Machine-generated from the todo-5 reference model (package version **0.4.0**).
 
 | Artifact | Count |
 |----------|------:|
-| [Checks](checks.md) | 175 |
+| [Checks](checks.md) | 176 |
 | [Capabilities](capabilities.md) | 36 |
 | [Profiles](profiles.md) | 11 |
 | [Graph permissions](permissions.md) | 26 |

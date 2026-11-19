@@ -1,6 +1,6 @@
 # Checks
 
-Security License Lens ships **175 checks** across ten workload directories.
+Security License Lens ships **176 checks** across ten workload directories.
 Each check is a single YAML file under `checks/<workload>/` and evaluates only
 when its required capabilities are licensed.
 
@@ -15,7 +15,7 @@ here:
 ## Workloads
 
 Counts are the number of `checks/<dir>/*.yaml` files in the tree (must sum to
-175):
+176):
 
 | Workload | Checks | Examples |
 |----------|-------:|----------|
@@ -25,7 +25,7 @@ Counts are the number of `checks/<dir>/*.yaml` files in the tree (must sum to
 | exchange | 12 | SPF/DKIM/DMARC, forwarding, SMTP auth, mailbox audit |
 | purview | 13 | DLP policy presence/enforcement, sensitivity labels, retention |
 | power-bi | 10 | Tenant settings, sharing |
-| endpoint | 14 | MDE onboard gaps, Intune policy |
+| endpoint | 15 | MDE onboard gaps, AI agent runtime protection, Intune policy |
 | power-platform | 8 | DLP policies, environment isolation |
 | sentinel | 8 | Analytics rule coverage, UEBA, telemetry ingestion |
 | azure | 2 | Azure resource hygiene |
@@ -34,7 +34,7 @@ Email is a **priority pack**, not a workload directory under `checks/`.
 
 ## Tiers
 
-114 checks are **activation** (paid security products). 61 checks are
+115 checks are **activation** (paid security products). 61 checks are
 **hygiene** (base-workload configuration). See [Two tiers](concepts.md#two-tiers)
 and the classification table in `audit/check-tier-classification.md`.
 
