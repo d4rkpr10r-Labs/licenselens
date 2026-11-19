@@ -977,7 +977,10 @@ capabilities:
   - id: defender_cloud_apps
     name: Microsoft Defender for Cloud Apps
     plain_name: Cloud app visibility and session control
-    description: Defender for Cloud Apps (MDCA) including Conditional Access App Control.
+    description: >-
+      Defender for Cloud Apps (MDCA) including Conditional Access App Control
+      (MDCA file policies retire 2027-01-06 in favor of Microsoft Purview DLP
+      and auto-labeling).
     outcome: Monitor and control risky cloud-app sessions for licensed users.
     why_it_matters: Shadow IT and unmanaged SaaS sessions leak data outside your email and endpoint 
       controls.

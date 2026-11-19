@@ -91,20 +91,73 @@ def test_e7_sku_unlocks_entra_suite_and_agent_caps() -> None:
     assert "security_copilot" in owned
 
 
-def test_mdca_session_control_ok_and_gap() -> None:
+def test_mdca_session_control_enforcing_monitor_only_narrow_and_gap() -> None:
     check = CheckDefinition(
         id="id-mdca-ca-session-control",
         title="t",
         workload=Workload.DEFENDER,
     )
-    ok = evaluate_mdca_ca_session_control(
+    enforced_block = evaluate_mdca_ca_session_control(
         check,
         {
             "ca_policies": [
                 {
                     "id": "1",
-                    "displayName": "MDCA",
+                    "displayName": "MDCA block downloads",
                     "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["Office365"]},
+                    },
+                    "sessionControls": {
+                        "cloudAppSecurity": {
+                            "isEnabled": True,
+                            "cloudAppSecurityType": "blockDownloads",
+                        }
+                    },
+                }
+            ]
+        },
+    )
+    assert enforced_block.status is FindingStatus.OK
+    assert enforced_block.evidence["enforcing_count"] == 1
+
+    enforced_custom = evaluate_mdca_ca_session_control(
+        check,
+        {
+            "ca_policies": [
+                {
+                    "id": "2",
+                    "displayName": "MDCA custom session policy",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["All"]},
+                    },
+                    "sessionControls": {
+                        "cloudAppSecurity": {
+                            "isEnabled": True,
+                            "cloudAppSecurityType": "mcasConfigured",
+                        }
+                    },
+                }
+            ]
+        },
+    )
+    assert enforced_custom.status is FindingStatus.OK
+
+    monitor_only = evaluate_mdca_ca_session_control(
+        check,
+        {
+            "ca_policies": [
+                {
+                    "id": "3",
+                    "displayName": "MDCA monitor",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["All"]},
+                    },
                     "sessionControls": {
                         "cloudAppSecurity": {
                             "isEnabled": True,
@@ -115,7 +168,34 @@ def test_mdca_session_control_ok_and_gap() -> None:
             ]
         },
     )
-    assert ok.status is FindingStatus.OK
+    assert monitor_only.status is FindingStatus.PARTIAL
+    assert monitor_only.evidence["monitor_only_count"] == 1
+
+    narrow_pilot = evaluate_mdca_ca_session_control(
+        check,
+        {
+            "ca_policies": [
+                {
+                    "id": "4",
+                    "displayName": "MDCA pilot group",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeGroups": ["pilot-group-id"]},
+                        "applications": {"includeApplications": ["All"]},
+                    },
+                    "sessionControls": {
+                        "cloudAppSecurity": {
+                            "isEnabled": True,
+                            "cloudAppSecurityType": "blockDownloads",
+                        }
+                    },
+                }
+            ]
+        },
+    )
+    assert narrow_pilot.status is FindingStatus.PARTIAL
+    assert narrow_pilot.evidence["narrow_scope_count"] == 1
+
     gap = evaluate_mdca_ca_session_control(check, {"ca_policies": []})
     assert gap.status is FindingStatus.GAP
 
