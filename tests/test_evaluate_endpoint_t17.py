@@ -642,9 +642,25 @@ def test_collect_bundle_populates_all_depth_surfaces() -> None:
     }
 
 
-def test_collect_bundle_asr_endpoint_security_path_is_preferred() -> None:
+def test_collect_bundle_asr_configuration_policies_is_primary() -> None:
     fake = FakeGraphClient()
     _seed_full_bundle(fake)
+    fake.register_list(
+        "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies",
+        ok({"value": [{"id": "asr-legacy", "displayName": "Legacy ASR rules"}]}),
+    )
+    bundle = collect_intune_evidence_bundle(fake)
+    assert len(bundle["asr_policies"]) == 1
+    asr = bundle["asr_policies"][0]
+    assert asr["source"] == "configurationPolicies"
+    assert asr["assigned"] is True
+    assert asr["rule_count"] == 2
+
+
+def test_collect_bundle_asr_falls_back_to_legacy_endpoint_security_path() -> None:
+    fake = FakeGraphClient()
+    _seed_full_bundle(fake)
+    fake.register_list("/deviceManagement/configurationPolicies", ok({"value": []}))
     fake.register_list(
         "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies",
         ok({"value": [{"id": "asr-direct", "displayName": "ASR rules"}]}),
@@ -673,8 +689,30 @@ def test_collect_bundle_asr_endpoint_security_path_is_preferred() -> None:
     bundle = collect_intune_evidence_bundle(fake)
     asr = bundle["asr_policies"][0]
     assert asr["source"] == "endpointSecurity"
+    assert asr["legacy_fallback"] is True
     assert asr["assigned"] is True
     assert asr["rule_count"] == 1
+
+
+def test_collect_bundle_asr_empty_primary_with_legacy_404_is_clean_empty() -> None:
+    fake = FakeGraphClient()
+    _seed_full_bundle(fake)
+    fake.register_list("/deviceManagement/configurationPolicies", ok({"value": []}))
+    bundle = collect_intune_evidence_bundle(fake)
+    assert bundle["asr_policies"] == []
+    assert bundle["errors"]["asr_policies"] == ""
+
+
+def test_collect_bundle_asr_primary_error_and_legacy_error_surfaces_error() -> None:
+    fake = FakeGraphClient()
+    _seed_full_bundle(fake)
+    fake.register_list(
+        "/deviceManagement/configurationPolicies",
+        error(403, "Forbidden"),
+    )
+    bundle = collect_intune_evidence_bundle(fake)
+    assert bundle["asr_policies"] == []
+    assert "Forbidden" in bundle["errors"]["asr_policies"]
 
 
 def test_collect_bundle_mam_assignment_denied_is_flagged() -> None:

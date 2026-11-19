@@ -248,7 +248,14 @@ def test_happy_path_collectors_and_evidence_envelopes() -> None:
         **collect_intune_evidence(fake),
         **collect_security_alerts_evidence(fake),
     }
-    assert all(env.health is EvidenceHealth.OK for env in envelopes.values())
+    assert envelopes["intune_asr_policies"].health is EvidenceHealth.UNSUPPORTED
+    non_preview = {k: v for k, v in envelopes.items() if k != "intune_asr_policies"}
+    assert all(env.health is EvidenceHealth.OK for env in non_preview.values())
+
+    preview_fake = FakeGraphClient(allow_preview=True)
+    _seed_happy_graph(preview_fake)
+    preview_intune = collect_intune_evidence(preview_fake)
+    assert preview_intune["intune_asr_policies"].health is EvidenceHealth.OK
     assert intune["asr_policies"][0]["id"] == "asr1"
     assert intune["compliance_state_summary"]["compliantDeviceCount"] == 5
     assert intune["mam_app_protections"][0]["id"] == "mam1"
