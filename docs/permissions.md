@@ -20,7 +20,7 @@ Security License Lens is designed for **read-only** access.
 | `SecurityIdentitiesHealth.Read.All` | Defender for Identity health issues (direct) |
 | `SecurityIncident.Read.All` | Defender XDR incidents (capability operation signal) |
 | `SecurityAlert.Read.All` | Defender XDR alerts_v2 (capability operation signal) |
-| `CustomDetection.Read.All` | Defender XDR custom detection rules (Graph beta `/security/rules/detectionRules`) |
+| `CustomDetection.Read.All` | Defender XDR custom detection rules (Graph v1.0 `/security/rules/detectionRules`) |
 | `AccessReview.Read.All` | Access review definitions |
 | `EntitlementManagement.Read.All` | Entitlement Management access packages |
 | `IdentityRiskyServicePrincipal.Read.All` | Risky workload-identity (service principal) detection |

@@ -230,9 +230,8 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             "graph.xdr_custom_detections",
             ("CustomDetection.Read.All",),
             ("CustomDetection.Read.All",),
-            preview=True,
             max_pages=10,
-            description="Defender XDR custom detection rules (Graph beta)",
+            description="Defender XDR custom detection rules",
         ),
         op(
             "gsa_forwarding_profiles",

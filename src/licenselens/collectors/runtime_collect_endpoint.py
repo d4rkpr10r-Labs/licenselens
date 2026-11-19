@@ -236,9 +236,14 @@ def collect_xdr_custom_detections_runtime(
     if ctx.client is None:
         return error(key, "no Graph client available")
     try:
-        preview = _preview_client(ctx, ctx.client)
-        bundle = collect_xdr_custom_detections(preview)
-        return ok(key, bundle, source="graph.beta.security.rules.detectionRules")
+        bundle = collect_xdr_custom_detections(ctx.client)
+        return ok(
+            key,
+            bundle,
+            source="graph.security.rules.detectionRules",
+            items=len(bundle.get("rules") or []),
+            truncated=bool(bundle.get("truncated")),
+        )
     except GraphError as exc:
         return graph_failure(
             key,
