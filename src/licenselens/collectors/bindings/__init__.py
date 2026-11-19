@@ -136,6 +136,22 @@ def register_all_collectors(catalog: RegistrationCatalog) -> None:
         )
         _register_one(
             catalog,
+            collector_id="graph_agent_lifecycle",
+            backend=Backend.GRAPH,
+            permissions=("LifecyclePolicies-AgentId.Read.All",),
+            dependencies=("agent_lifecycle_policies",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
+            collector_id="graph_lifecycle_workflows",
+            backend=Backend.GRAPH,
+            permissions=("LifecycleWorkflows.Read.All",),
+            dependencies=("lifecycle_workflows",),
+            timeout_seconds=30,
+        )
+        _register_one(
+            catalog,
             collector_id="graph_guests",
             backend=Backend.GRAPH,
             permissions=("Policy.Read.All", "User.Read.All"),

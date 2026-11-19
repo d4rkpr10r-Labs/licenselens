@@ -220,6 +220,45 @@ capabilities:
     sku_aliases:
       - MICROSOFT_365_E7
       - Microsoft_Entra_Suite_Step_Up_for_Microsoft_Entra_ID_P2
+  - id: agent_365
+    name: Microsoft Agent 365
+    plain_name: Governance, lifecycle, and security controls for AI agents
+    description: >
+      Agent 365 paid agent governance, automated Entra Agent ID lifecycle
+      policies, and security controls (distinct from free basic usage insights
+      for Microsoft agents).
+    outcome: >
+      Govern AI agent identities across their lifecycle with custom sponsor,
+      attestation, and inactivity policies plus Defender and Purview security
+      controls.
+    why_it_matters: >
+      AI agents hold standing access to business data and apps. Without paid
+      governance and custom lifecycle policies beyond Microsoft's free default
+      inactivity policy or basic usage metrics, orphaned or over-privileged
+      agents accumulate unchecked.
+    if_unused: >
+      Agent 365 or Microsoft 365 E7 may be licensed while custom agent
+      lifecycle governance and security controls are not yet configured.
+    workloads:
+      - identity
+    entitlement_kind: add_on
+    service_plan_names:
+      - AGENT_365
+      - ENTRA_ID_GOV_FOR_ASSISTIVE_AGENTS
+    service_plan_aliases: []
+    service_plan_ids:
+      - d0ce5ebb-9db0-491f-b780-8973a1d815fe
+      - a9e85e05-1687-4958-8a4c-bdacda2943db
+    sku_part_numbers:
+      - AGENT_365
+      - MICROSOFT_365_E7
+    sku_aliases: []
+    clouds:
+      - commercial
+    backends:
+      - graph
+    source_version: "2026-11"
+    docs_url: https://learn.microsoft.com/entra/id-governance/agent-lifecycle-policies
   - id: identity_protection
     name: Microsoft Entra ID Protection
     plain_name: Alerts when a sign-in looks suspicious

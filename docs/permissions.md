@@ -23,6 +23,8 @@ Security License Lens is designed for **read-only** access.
 | `CustomDetection.Read.All` | Defender XDR custom detection rules (Graph beta `/security/rules/detectionRules`) |
 | `AccessReview.Read.All` | Access review definitions |
 | `EntitlementManagement.Read.All` | Entitlement Management access packages |
+| `LifecyclePolicies-AgentId.Read.All` | Entra Agent ID automated lifecycle policies (Graph v1.0 `/identityGovernance/lifecycleWorkflows/lifecyclePolicies`) |
+| `LifecycleWorkflows.Read.All` | Entra ID Governance Lifecycle Workflows (Graph v1.0 `/identityGovernance/lifecycleWorkflows/workflows`) |
 | `IdentityRiskyServicePrincipal.Read.All` | Risky workload-identity (service principal) detection |
 | `DeviceManagementApps.Read.All` | Intune MAM app-protection policies |
 | `DeviceManagementConfiguration.Read.All` | Intune compliance/configuration/endpoint-security policies |

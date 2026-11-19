@@ -52,6 +52,8 @@ check_ids:
   - id-gsa-internet-access-enabled
   - id-gsa-private-access-enabled
   - id-mdca-ca-session-control
+  - id-agent-lifecycle-policy-configured
+  - id-lifecycle-workflows-enabled
 backend_preferences:
   preferred:
     - graph

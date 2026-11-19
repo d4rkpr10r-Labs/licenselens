@@ -93,6 +93,8 @@ def _source_model(source_id: str) -> str:
         "xdr_custom_detections",
         "gsa_network_access",
         "security_copilot",
+        "agent_lifecycle_policies",
+        "lifecycle_workflows",
     }:
         return "JsonObject"
     if source_id.endswith("_policy") or source_id.endswith("_summary"):

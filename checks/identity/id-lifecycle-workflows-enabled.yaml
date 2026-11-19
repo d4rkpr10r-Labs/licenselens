@@ -1,0 +1,53 @@
+id: id-lifecycle-workflows-enabled
+title: Entra ID Governance Lifecycle Workflows enabled and scheduled
+customer_title: Automated employee onboarding and offboarding workflows are not running
+customer_summary: >
+  Your Entra ID Governance license includes Lifecycle Workflows that
+  automatically handle Joiner, Mover, and Leaver account tasks on a schedule.
+  No enabled, scheduled lifecycle workflow was found.
+expected_state: At least one Entra ID Governance Lifecycle Workflow is enabled with scheduled execution turned on.
+customer_next_step: >
+  In Microsoft Entra admin center > Identity governance > Lifecycle workflows,
+  enable and turn on scheduling for a Joiner, Mover, or Leaver workflow (for
+  example, automatically disabling accounts and revoking sessions when an
+  employee leaves).
+description: >
+  Reads Microsoft Graph v1.0 /identityGovernance/lifecycleWorkflows/workflows
+  and verifies that at least one Lifecycle Workflow has both isEnabled=true and
+  isSchedulingEnabled=true so paid Entra ID Governance lifecycle automation runs
+  automatically.
+workload: identity
+required_capabilities:
+  - entitlement_management
+severity: medium
+value_impact: medium
+impact: medium
+effort: half_day
+blast_radius: all_users
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/LifecycleWorkflows
+collector: graph_lifecycle_workflows
+remediation: >
+  Create or enable at least one Lifecycle Workflow covering Joiner, Mover, or
+  Leaver events and enable automatic scheduling (isSchedulingEnabled=true) so
+  account provisioning and offboarding tasks execute without manual intervention.
+references:
+  - https://learn.microsoft.com/entra/id-governance/what-are-lifecycle-workflows
+  - https://learn.microsoft.com/graph/api/identitygovernance-lifecycleworkflowscontainer-list-workflows?view=graph-rest-1.0
+mappings:
+  nist: ["AC-2", "PS-4"]
+  mitre: ["T1078"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: At least one Lifecycle Workflow is enabled with scheduled execution turned on.
+  partial: Enabled Lifecycle Workflows exist without scheduling enabled, or the workflow list was truncated without a scheduled enabled match.
+  gap: No enabled Entra ID Governance Lifecycle Workflows were found.
+  evidence_fields:
+    - scheduled_enabled_workflow_count
+    - enabled_workflow_count
+    - workflow_count
+    - categories_covered
+    - truncated
+    - api_version

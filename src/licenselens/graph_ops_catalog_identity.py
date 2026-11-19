@@ -30,6 +30,7 @@ def identity_operations() -> tuple[GraphOperation, ...]:
         is_collection: bool = True,
         max_pages: int = 30,
         clouds: tuple[CloudEnvironment, ...] = _ALL,
+        preview: bool = False,
         description: str = "",
     ) -> GraphOperation:
         return GraphOperation(
@@ -42,6 +43,7 @@ def identity_operations() -> tuple[GraphOperation, ...]:
             supported_clouds=clouds,
             is_collection=is_collection,
             max_pages=max_pages,
+            preview=preview,
             description=description,
         )
 
@@ -131,6 +133,28 @@ def identity_operations() -> tuple[GraphOperation, ...]:
             entitlement,
             max_pages=10,
             description="Entitlement Management access packages",
+        ),
+        op(
+            "agent_lifecycle_policies",
+            "/identityGovernance/lifecycleWorkflows/lifecyclePolicies",
+            "graph.agent_lifecycle_policies",
+            ("LifecyclePolicies-AgentId.Read.All",),
+            ("LifecyclePolicies-AgentId.Read.All",),
+            max_pages=20,
+            clouds=(CloudEnvironment.PUBLIC,),
+            preview=False,
+            description="Entra Agent ID automated lifecycle policies (v1.0)",
+        ),
+        op(
+            "lifecycle_workflows",
+            "/identityGovernance/lifecycleWorkflows/workflows",
+            "graph.lifecycle_workflows",
+            ("LifecycleWorkflows.Read.All",),
+            ("LifecycleWorkflows.Read.All",),
+            max_pages=20,
+            clouds=(CloudEnvironment.PUBLIC,),
+            preview=False,
+            description="Entra ID Governance Lifecycle Workflows (v1.0)",
         ),
         op(
             "risky_service_principals",

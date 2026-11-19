@@ -36,6 +36,8 @@ ERROR_ALIASES: dict[str, str] = {
     "access_review_definitions": "access_review_definitions_error",
     "access_review_instances": "access_review_instances_error",
     "access_packages": "access_packages_error",
+    "agent_lifecycle_policies": "agent_lifecycle_policies_error",
+    "lifecycle_workflows": "lifecycle_workflows_error",
     "risky_service_principals": "risky_service_principals_error",
     "role_assignments": "role_assignments_error",
     "recent_signin_user_ids": "recent_signin_error",
@@ -82,7 +84,7 @@ def meta(source: str, items: int = 0, *, truncated: bool = False) -> CollectionM
         pagination=PaginationMetadata(
             pages_read=1 if items else 0,
             max_pages=1,
-            next_link_seen=False,
+            next_link_seen=truncated,
         ),
     )
 
@@ -101,6 +103,7 @@ def ok(
             ek,
             reason="page budget exhausted",
             metadata=meta(source, items, truncated=True),
+            value=value,
         )
     return EvidenceEnvelope(
         key=ek,

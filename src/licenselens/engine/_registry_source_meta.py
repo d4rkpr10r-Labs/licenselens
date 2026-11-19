@@ -29,6 +29,18 @@ SOURCE_META: Final[Mapping[str, SourceMeta]] = MappingProxyType(
             "graph:entitlementManagement.accessPackages",
             30,
         ),
+        "agent_lifecycle_policies": (
+            Backend.GRAPH,
+            ("LifecyclePolicies-AgentId.Read.All",),
+            "graph:identityGovernance.lifecycleWorkflows.lifecyclePolicies",
+            30,
+        ),
+        "lifecycle_workflows": (
+            Backend.GRAPH,
+            ("LifecycleWorkflows.Read.All",),
+            "graph:identityGovernance.lifecycleWorkflows.workflows",
+            30,
+        ),
         "admin_consent_request_policy": (
             Backend.GRAPH,
             ("Policy.Read.All",),
@@ -258,6 +270,16 @@ COLLECTOR_META: Final[Mapping[str, CollectorMeta]] = MappingProxyType(
             Backend.GRAPH,
             ("EntitlementManagement.Read.All",),
             ("access_packages",),
+        ),
+        "graph_agent_lifecycle": (
+            Backend.GRAPH,
+            ("LifecyclePolicies-AgentId.Read.All",),
+            ("agent_lifecycle_policies",),
+        ),
+        "graph_lifecycle_workflows": (
+            Backend.GRAPH,
+            ("LifecycleWorkflows.Read.All",),
+            ("lifecycle_workflows",),
         ),
         "graph_applications": (
             Backend.GRAPH,

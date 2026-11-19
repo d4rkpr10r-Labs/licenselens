@@ -48,6 +48,8 @@ _ERROR_ALIASES = {
     "security_defaults_policy": "security_defaults_policy_error",
     "access_review_definitions": "access_review_definitions_error",
     "access_packages": "access_packages_error",
+    "agent_lifecycle_policies": "agent_lifecycle_policies_error",
+    "lifecycle_workflows": "lifecycle_workflows_error",
     "role_assignments": "role_assignments_error",
     "recent_signin_user_ids": "recent_signin_error",
     "principal_directory": "principal_directory_error",

@@ -11,7 +11,7 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 **4 of 9 in-scope capabilities met all assessed criteria (44%).**
 
-- **Activation assessment:** 114 checks · **Configuration hygiene (optional):** 61 checks
+- **Activation assessment:** 116 checks · **Configuration hygiene (optional):** 61 checks
 - **Licensed capabilities detected:** 27
 - **Evaluated capabilities:** 9 (priority packs: identity, endpoint)
 - **Met assessed criteria:** 4 of 9 evaluated capabilities (44% realized)
@@ -19,17 +19,17 @@ A plain-language view of security capabilities you already pay for — and wheth
 
 ### Top things to do first
 
-1. **Restrict user consent so only admins approve non-trivial permissions** *(~a few hours)* — Users can still approve app permissions themselves, which is a common path for consent phishing.
+1. **Restrict user consent so only admins approve non-trivial permissions** *(hours)* — Users can still approve app permissions themselves, which is a common path for consent phishing.
    - Next step: Restrict user consent so only admins approve non-trivial permissions.
-2. **Disable SMS, Voice, and Email OTP authentication methods** *(~a few hours)* — SMS, voice, or email one-time codes are still allowed — these are the easiest multi-factor methods for attackers to abuse.
+2. **Disable SMS, Voice, and Email OTP authentication methods** *(hours)* — SMS, voice, or email one-time codes are still allowed — these are the easiest multi-factor methods for attackers to abuse.
    - Next step: Disable SMS, Voice, and Email OTP authentication methods.
-3. **Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in…** *(~a few hours)* — We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.
+3. **Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in…** *(hours)* — We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.
    - Next step: Create two cloud-only, Global Administrator emergency accounts excluded from Conditional Access, declare them as break-glass principals in your configured settings, and remove any other unexplained exclusions.
 
 *Effort is a rough guide, not a quote.*
 
 - **Needs attention** (`gap`): 41
-- **Not in your plan** (`not_licensed`): 9
+- **Not in your plan** (`not_licensed`): 11
 - **Looking good** (`ok`): 94
 - **Partly set up** (`partial`): 19
 - **Check pending** (`skipped`): 12
@@ -338,6 +338,7 @@ Core tables expected for owned protections, whether they arrived in the last sev
 | Stronger email and file threat protection | `UrlClickEvents` | extended | No | Not assessed | Microsoft Defender for Office 365 connector |
 | Cross-product incident correlation | `SecurityAlert` | core | Yes | 0 | Microsoft Defender XDR connector |
 | Cross-product incident correlation | `SecurityIncident` | core | Yes | 0 | Microsoft Defender XDR connector |
+| Cross-product incident correlation | `AADSignInEventsBeta` | extended | No | Not assessed | Advanced Hunting (not LA Usage parity) |
 | Cross-product incident correlation | `AlertEvidence` | extended | No | Not assessed | Microsoft Defender XDR connector |
 | Cross-product incident correlation | `AlertInfo` | extended | No | Not assessed | Microsoft Defender XDR connector |
 | Alerts when a sign-in looks suspicious | `AADRiskyUsers` | core | Yes | 0 | Entra diagnostic setting: RiskyUsers |
@@ -1664,7 +1665,7 @@ Dead rules (query tables that are not arriving): Demo rare process.
 ### Turn on Safe Links and Safe Attachments for everyone
 
 - **Status:** Looking good
-- **In plain English:** Safe Links and Safe Attachments look enabled from a direct policy read.
+- **In plain English:** Safe Links and Safe Attachments look enabled org-wide with blocking attachment actions from a direct policy read.
 - **Suggested next step:** Turn on Preset security policies (Standard) for all users in the Defender portal — Safe Links and Safe Attachments included.
 - **Confidence:** High confidence
 - **Data sources:** Exchange Online PowerShell (exo_threat_policies)
@@ -2137,6 +2138,23 @@ Dead rules (query tables that are not arriving): Demo rare process.
   - Evidence fields: `epm_policy_count`, `epm_policy_names`
   - Evaluator: `licenselens.evaluators.endpoint_intune_policy.evaluate_intune_epm_policy_present`
 
+### Paid AI agent lifecycle governance is not yet customized
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/LifecycleWorkflows)
+- **Technical id:** `id-agent-lifecycle-policy-configured`
+- **How this is decided:**
+  - OK: At least one enabled customer-authored Entra Agent ID lifecycle policy is active.
+  - Partial: Only Microsoft's free default inactivity policy is enabled, enabled policies lack clear custom source or rule metadata, or the policy list was truncated without a custom match.
+  - Gap: No enabled Entra Agent ID lifecycle policy was found.
+  - Evidence fields: `custom_enabled_policy_count`, `default_enabled_policy_count`, `enabled_agent_policy_count`, `agent_policy_count`, `truncated`, `api_version`
+  - Evaluator: `licenselens.evaluators.agent_lifecycle.evaluate_agent_lifecycle_policy_configured`
+
 ### Apps and service accounts are not protected by risk-based sign-in rules
 
 - **Status:** Not in your plan
@@ -2221,6 +2239,23 @@ Dead rules (query tables that are not arriving): Demo rare process.
   - Gap: The expected state is not met.
   - Evidence fields: `status`
   - Evaluator: `licenselens.evaluators.identity_governance.evaluate_entitlement_access_packages`
+
+### Automated employee onboarding and offboarding workflows are not running
+
+- **Status:** Not in your plan
+- **In plain English:** This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.
+- **Suggested next step:** If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.
+- **Confidence:** High confidence
+- **Data sources:** graph.subscribedSkus
+- **Limitations:** None reported
+- **Admin page:** [Open Microsoft admin page](https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/LifecycleWorkflows)
+- **Technical id:** `id-lifecycle-workflows-enabled`
+- **How this is decided:**
+  - OK: At least one Lifecycle Workflow is enabled with scheduled execution turned on.
+  - Partial: Enabled Lifecycle Workflows exist without scheduling enabled, or the workflow list was truncated without a scheduled enabled match.
+  - Gap: No enabled Entra ID Governance Lifecycle Workflows were found.
+  - Evidence fields: `scheduled_enabled_workflow_count`, `enabled_workflow_count`, `workflow_count`, `categories_covered`, `truncated`, `api_version`
+  - Evaluator: `licenselens.evaluators.lifecycle_workflows.evaluate_lifecycle_workflows_enabled`
 
 ### Review Azure resource posture in Defender for Cloud
 
