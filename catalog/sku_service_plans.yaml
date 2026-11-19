@@ -146,6 +146,7 @@ friendly_plan_names:
   Entra_Premium_Internet_Access: Microsoft Entra Internet Access
   Entra_Premium_Private_Access: Microsoft Entra Private Access
   AGENT_365: Microsoft Agent 365
+  ENTRA_ID_GOV_FOR_ASSISTIVE_AGENTS: Microsoft Entra ID Governance for Assistive Agents
   Intune-EPM: Intune Endpoint Privilege Management
   Intune_AdvancedEA: Intune Advanced Analytics
   REMOTE_HELP: Intune Remote Help
@@ -204,10 +205,12 @@ service_plan_guids:
   f20fedf3-f3c3-43c3-8267-2bfdd51c0939: ATP_ENTERPRISE
   2e2ddb96-6af9-4b1d-a3f0-d6ecfd22edb2: ADALLOM_S_STANDALONE
   8c098270-9dd4-4350-9b30-ba4703f3b36b: ADALLOM_S_O365
+  d0ce5ebb-9db0-491f-b780-8973a1d815fe: AGENT_365
   70d33638-9c74-4d01-bfd3-562de28bd4ba: BI_AZURE_P2
   0bf3c642-7bb5-4ccc-884e-59d09df0266c: BI_AZURE_P3
   326e2b78-9d27-42c9-8509-46c827743a17: EOP_ENTERPRISE
   75badc48-628e-4446-8460-41344d73abd6: EOP_ENTERPRISE_PREMIUM
+  a9e85e05-1687-4958-8a4c-bdacda2943db: ENTRA_ID_GOV_FOR_ASSISTIVE_AGENTS
   e866a266-3cff-43a3-acca-0c90a7e00c8b: Entra_Identity_Governance
   8d23cb83-ab07-418f-8517-d7aca77307dc: Entra_Premium_Internet_Access
   f057aab1-b184-49b2-85c0-881b02a405c5: Entra_Premium_Private_Access

@@ -17,6 +17,7 @@ _SECURITY_PREFIXES: Final = (
     "identity_protection",
     "workload_identities_premium",
     "entitlement_management",
+    "agent_365",
     "defender_",
     "microsoft_sentinel",
     "log_analytics",
