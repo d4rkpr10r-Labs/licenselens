@@ -142,7 +142,9 @@ jobs:
         run: python -m playwright install --with-deps chromium
 
       - name: Run browser report tests
-        run: pytest tests/test_report_browser.py --browser chromium --tracing=retain-on-failure -q
+        run: >
+          pytest tests/test_report_browser.py tests/test_report_app.py
+          --browser chromium --tracing=retain-on-failure -q
 
       - name: Upload browser test artifacts
         if: failure()

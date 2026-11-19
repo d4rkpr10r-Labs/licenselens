@@ -33,6 +33,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   derivable from the ops catalog.
 
 ### Changed
+- **Report dashboard + panel (Direction A)** — first screen is a summary
+  dashboard (fraction, priority title rows, Owned / Findings / Evidence entry
+  tiles). Detail opens in a side panel/drawer; B / Findings / Evidence stay in
+  the DOM for print and no-JS. Binding IA: `DESIGN_V3.md` §5;
+  `audit/2026-11/design/dashboard-clickthrough-ia.md`. Direction B (hash routes)
+  remains optional, not the default.
 - **Report / wizard design (v3, Exposure Console)** — supersedes SOC Dark /
   DESIGN_V2 and the brief light Assessment Ledger default. Dark screen default
   (graphite + steel accent, not Tailwind cyan / Falcon brand red) from one

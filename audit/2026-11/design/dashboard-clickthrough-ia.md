@@ -116,12 +116,10 @@ JS-off screen: same linear block available below the summary (A) or as stacked s
 
 ---
 
-## 9. Owner decision needed (stop line)
+## 9. Owner decision (recorded)
 
-Please pick one:
+**Pick (2026-11-19):** Ship **A — summary + panel/drawer**. Summary dashboard stays visible; detail opens in a panel. Do not ship B as the default.
 
-1. **Ship A** — summary + panel/drawer clickthrough  
-2. **Ship B** — summary + full-page hash/multi-view drills  
-3. **Tweak** — describe changes (e.g. A with bottomsheet-only mobile, B with persistent summary strip, keep scroll for print-only export, etc.)
+**B remains optional:** if a later release wants shareable deep-link routes (`#/priority/1`), revive `dashboard-b-routes.html` as an additive pattern — not the screen default. Prototype kept for reference.
 
-Do **not** rewrite production Jinja/CSS until that pick is recorded.
+Production implementation follows A on the report + report_app surfaces (wizard unchanged beyond shared tokens).

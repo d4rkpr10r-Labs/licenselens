@@ -167,7 +167,13 @@ System-only stacks (locked):
 
 ## 5. Information architecture
 
-Order unchanged: A (posture) → C (priorities) → B (owned) → Findings → Evidence detail.
+**Screen default (owner pick 2026-11-19):** Direction A — **summary dashboard +
+panel/drawer**. Document order for print / no-JS remains A → C → B → Findings →
+Evidence. With JS (`html.js-dashboard`), the first screen is summary-only; B /
+Findings / Evidence open in the detail panel.
+
+Research: `audit/2026-11/design/dashboard-clickthrough-ia.md`. Hash multi-view
+(Direction B) is **optional / not default**.
 
 ### A — Where you stand (fraction-first)
 
@@ -177,14 +183,16 @@ Order unchanged: A (posture) → C (priorities) → B (owned) → Findings → E
    secondary quiet qualifier, never as the only figure.
 4. Distribution bar (status hues on segments only) + legend with markers.
 5. Implication once (`realized_sentence`).
-6. “View prioritized actions” text link.
+6. “View prioritized actions” — with JS opens priority 01 in the panel; no-JS
+   scrolls to `#section-c`.
 7. Closed `<details>` “How we got here” — **solid** border at rest.
 
 Count-up (motion) may animate the numerator; final state is always the true fraction.
 
-### C — What matters most
+### C — What matters most (on the summary screen)
 
-- Numbered sequence; first item dominant by type size / rule weight, not a second card nest.
+- Numbered sequence of **title rows**; with JS, each row opens the detail panel.
+- Full why / effort / admin link live in `.move-body` (panel source + no-JS + print).
 - Title is the action. If `customer_next_step` equals `title` (casefold/strip), **omit**
   the Action line.
 - Effort as plain text meta (`Effort: Hours`) — labels from `EFFORT_PLAIN_LABELS`
@@ -192,15 +200,24 @@ Count-up (motion) may animate the numerator; final state is always the true frac
 - Check IDs **not** in the executive list; they live under finding technical disclosure.
 - Deep link: “Open the admin page”.
 
+### Dashboard entries + panel
+
+Three quiet entry controls after priorities: Owned · Findings · Evidence detail.
+One `#detail-panel` dialog (`role="dialog" aria-modal="true"`); Escape / scrim /
+Close restore focus. `prefers-reduced-motion` → instant open/close.
+
 ### B / Findings / Evidence
 
 Belief blocks, constellation, charts, filters, and progressive disclosure keep their
-V2 information contracts, restyled to Exposure Console surfaces and solid disclosure chrome.
+V2 information contracts. With JS they are `.dashboard-linear` (screen-hidden);
+print and no-JS show them in document order.
 
 ## 6. Navigation
 
-Full-width segmented control under the masthead. Active = accent underline or inset
-indicator + `aria-current`. Bundle sticky nav may use `--blur-nav` with opaque fallback.
+With JS dashboard mode, the multi-section TOC / section nav is suppressed (entry
+tiles + panel replace it). Bundle workload nav may remain for findings filters.
+No-JS keeps the full TOC for linear navigation. Bundle sticky nav may use
+`--blur-nav` with opaque fallback.
 
 ## 7–10. Constellation, disclosure, charts, interactivity
 

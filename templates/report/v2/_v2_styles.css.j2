@@ -1511,3 +1511,189 @@ footer {
 .detection-realization { margin-block: 24px; }
 .detection-realization-table { width: 100%; }
 .detection-realization .status-gap { color: var(--status-gap); }
+
+/* --------------------------------------------------------------------------
+   DESIGN_V3 dashboard + panel (Direction A)
+   Progressive enhancement: without JS the linear report remains fully visible.
+   With html.js-dashboard: summary (A + C titles + entry tiles) stays on screen;
+   B / Findings / Evidence live behind the panel (and still print linearly).
+   -------------------------------------------------------------------------- */
+.section-help--dashboard { display: none; }
+.move-open {
+  display: none;
+  width: 100%;
+  grid-template-columns: 2.5rem 1fr auto;
+  gap: 12px;
+  align-items: baseline;
+  padding: 14px 4px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+  min-height: 52px;
+}
+.move-open .move-title {
+  font-weight: 650;
+  color: var(--text-1);
+  line-height: 1.35;
+}
+.move-open__hint { color: var(--accent); align-self: center; }
+.move-open:hover { background: var(--surface-2); }
+.move-open[aria-expanded="true"] { background: var(--surface-2); }
+
+.dashboard-entries {
+  display: none;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1px;
+  background: var(--border);
+  border: 1px solid var(--border);
+  margin-block: 8px 32px;
+}
+.dashboard-entry {
+  min-height: 72px;
+  padding: 16px 14px;
+  margin: 0;
+  border: 0;
+  background: var(--surface-1);
+  color: inherit;
+  font: inherit;
+  text-align: start;
+  cursor: pointer;
+}
+.dashboard-entry:hover { background: var(--surface-2); }
+.dashboard-entry .label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 650;
+  color: var(--text-1);
+}
+.dashboard-entry .hint {
+  display: block;
+  margin-block-start: 4px;
+  font-size: 0.75rem;
+  color: var(--text-3);
+}
+@media (max-width: 640px) {
+  .dashboard-entries { grid-template-columns: 1fr; }
+}
+
+.detail-scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(8, 10, 14, 0.55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity var(--ll-duration, 180ms) var(--ll-ease, ease);
+  z-index: 40;
+}
+.detail-scrim.is-open { opacity: 1; pointer-events: auto; }
+
+.detail-panel {
+  position: fixed;
+  inset-block: 0;
+  inset-inline-end: 0;
+  width: min(440px, 100%);
+  background: var(--surface-1);
+  border-inline-start: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-2);
+  transform: translateX(104%);
+  transition: transform var(--ll-duration, 180ms) var(--ll-ease, ease);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  outline: none;
+}
+.detail-panel.is-open { transform: translateX(0); }
+.detail-panel.detail-panel--wide {
+  width: min(720px, 100%);
+}
+.detail-panel[hidden] { display: none; }
+.detail-scrim[hidden] { display: none; }
+.detail-panel__head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 18px 18px 12px;
+  border-block-end: 1px solid var(--border);
+}
+.detail-panel__title {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+  line-height: 1.3;
+}
+.detail-panel__close {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+  margin: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-2);
+  font: inherit;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+}
+.detail-panel__close:hover { color: var(--text-1); }
+.detail-panel__body {
+  padding: 16px 18px 28px;
+  overflow: auto;
+  color: var(--text-2);
+}
+.detail-panel__body .move-head--linear { display: none; }
+.detail-panel__body .section-kicker,
+.detail-panel__body .micro-label { margin-block-start: 0; }
+
+@media (max-width: 640px) {
+  .detail-panel {
+    inset-block-start: auto;
+    height: min(78vh, 640px);
+    width: 100%;
+    border-inline-start: 0;
+    border-block-start: 1px solid var(--border-strong);
+    border-radius: 10px 10px 0 0;
+    transform: translateY(104%);
+  }
+  .detail-panel.is-open { transform: translateY(0); }
+}
+
+html.js-dashboard .toc { display: none; }
+html.js-dashboard .app-nav__sections { display: none; }
+html.js-dashboard .section-help--linear { display: none; }
+html.js-dashboard .section-help--dashboard { display: block; }
+html.js-dashboard .move-open { display: grid; }
+html.js-dashboard .move-item { display: block; border-block-end: 1px solid var(--border); padding-block: 0; }
+html.js-dashboard .move-index--linear { display: none; }
+html.js-dashboard .move-body { display: none; }
+html.js-dashboard .move-note { display: none; }
+html.js-dashboard .dashboard-entries { display: grid; }
+html.js-dashboard .dashboard-linear { display: none; }
+html.js-dashboard .dashboard-linear.is-panel-hosted {
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+@media print {
+  html.js-dashboard .dashboard-linear { display: block !important; }
+  html.js-dashboard .move-body { display: block !important; }
+  html.js-dashboard .move-open,
+  html.js-dashboard .dashboard-entries,
+  .detail-scrim,
+  .detail-panel { display: none !important; }
+  html.js-dashboard .section-help--dashboard { display: none !important; }
+  html.js-dashboard .section-help--linear { display: block !important; }
+  html.js-dashboard .move-note { display: block !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .detail-scrim,
+  .detail-panel { transition: none !important; }
+}

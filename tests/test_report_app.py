@@ -34,6 +34,43 @@ from tests.report_fixtures import empty_report
 
 pytestmark = pytest.mark.browser
 
+
+def _open_dashboard_panel(page: Page, panel_id: str = "section-findings") -> None:
+    """Direction A: findings/owned live behind the panel when js-dashboard is on."""
+    if not page.evaluate("() => document.documentElement.classList.contains('js-dashboard')"):
+        return
+    already = page.evaluate(
+        """(id) => {
+          const p = document.getElementById('detail-panel');
+          if (!p || p.hidden) return false;
+          return !!p.querySelector('[data-panel-source="' + id + '"], #' + id);
+        }""",
+        panel_id,
+    )
+    if not already:
+        if page.evaluate(
+            "() => { const p = document.getElementById('detail-panel'); return p && !p.hidden; }"
+        ):
+            page.locator("#detail-panel-close").click()
+            page.wait_for_timeout(200)
+        page.locator(f'[data-panel="{panel_id}"]').first.click()
+    page.wait_for_function(
+        "() => { const p = document.getElementById('detail-panel');"
+        " return p && !p.hidden && p.classList.contains('is-open'); }"
+    )
+    # Skip control scroll when the panel was already open (e.g. hash deep-link).
+    if not already:
+        page.evaluate(
+            """() => {
+              const sort = document.querySelector(
+                '#detail-panel #finding-sort, #detail-panel #finding-search,'
+                + ' #detail-panel [data-filter-bar]'
+              );
+              if (sort) sort.scrollIntoView({ block: 'nearest' });
+            }"""
+        )
+
+
 SCANNED_AT = "2026-01-15T09:30:00+00:00"
 
 _SCROLL_METRICS_JS = (
@@ -197,6 +234,7 @@ def _total_count(page: Page) -> str:
 def test_initial_render_and_navigation(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
     page.wait_for_load_state("load")
+    _open_dashboard_panel(page, "section-findings")
     assert page.locator(".finding-row").count() == 12
     assert _visible_count(page) == "12"
     assert _total_count(page) == "12"
@@ -208,6 +246,7 @@ def test_initial_render_and_navigation(app_uri: str, page: Page) -> None:
 
 def test_status_or_within_group(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     page.locator('[data-filter-group="status"] [data-filter-value="gap"]').click()
     assert _visible_count(page) == "3"
     page.locator('[data-filter-group="status"] [data-filter-value="partial"]').click()
@@ -220,6 +259,7 @@ def test_status_or_within_group(app_uri: str, page: Page) -> None:
 
 def test_and_across_groups(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     page.locator('[data-filter-group="status"] [data-filter-value="gap"]').click()
     assert _visible_count(page) == "3"
     page.locator('[data-filter-group="severity"] [data-filter-value="high"]').click()
@@ -228,6 +268,7 @@ def test_and_across_groups(app_uri: str, page: Page) -> None:
 
 def test_workload_navigation_syncs_filter(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     page.locator('[data-workload-nav] [data-nav="identity"]').click()
     assert _visible_count(page) == "4"
     identity_tab = page.locator('[data-workload-nav] [data-nav="identity"]')
@@ -238,6 +279,7 @@ def test_workload_navigation_syncs_filter(app_uri: str, page: Page) -> None:
 
 def test_search_is_case_insensitive_and_safe(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     search = page.locator("#finding-search")
     search.fill("ALPHA")
     assert _visible_count(page) == "1"
@@ -250,6 +292,7 @@ def test_search_is_case_insensitive_and_safe(app_uri: str, page: Page) -> None:
 
 def test_search_composes_with_filters(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     page.locator("#finding-search").fill("alpha")
     page.locator('[data-filter-group="status"] [data-filter-value="gap"]').click()
     assert _visible_count(page) == "1"
@@ -260,6 +303,7 @@ def test_search_composes_with_filters(app_uri: str, page: Page) -> None:
 
 def test_mode_filter(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     assert page.locator('[data-filter-group="mode"] [data-filter-value="proxy"]').count() == 1
     page.locator('[data-filter-group="mode"] [data-filter-value="proxy"]').click()
     assert _visible_count(page) == "3"
@@ -267,6 +311,7 @@ def test_mode_filter(app_uri: str, page: Page) -> None:
 
 def test_clear_all_resets_everything(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     page.locator("#finding-search").fill("alpha")
     page.locator('[data-filter-group="status"] [data-filter-value="gap"]').click()
     page.locator("[data-clear-filters]").click()
@@ -278,6 +323,7 @@ def test_clear_all_resets_everything(app_uri: str, page: Page) -> None:
 
 def test_empty_result_state_is_clear(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     page.locator("#finding-search").fill("no-such-token-anywhere")
     assert _visible_count(page) == "0"
     assert page.locator("[data-empty-state]").is_visible() is True
@@ -287,6 +333,7 @@ def test_empty_result_state_is_clear(app_uri: str, page: Page) -> None:
 
 def test_empty_report_state(app_uri: str, page: Page) -> None:
     page.goto(app_uri(empty_report()))
+    _open_dashboard_panel(page, "section-findings")
     assert page.locator(".finding-row").count() == 0
     assert page.locator("[data-empty-state]").is_visible() is True
     assert "No findings were produced" in page.locator("[data-empty-state]").inner_text()
@@ -302,6 +349,7 @@ def test_empty_report_state(app_uri: str, page: Page) -> None:
 
 def test_pagination_25_50_100(app_uri: str, page: Page) -> None:
     page.goto(app_uri(thousand_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     assert page.locator(".finding-row").count() == 25
     assert page.locator("[data-page-indicator]").inner_text() == "Page 1 of 40"
     assert page.locator('[data-pager="prev"]').is_disabled() is True
@@ -321,6 +369,7 @@ def test_pagination_25_50_100(app_uri: str, page: Page) -> None:
 def test_single_scroll_owner_no_document_overflow(app_uri: str, page: Page) -> None:
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(app_uri(thousand_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     metrics = page.evaluate(
         "() => ({ docScroll: document.documentElement.scrollHeight,"
         " docClient: document.documentElement.clientHeight,"
@@ -335,6 +384,7 @@ def test_single_scroll_owner_no_document_overflow(app_uri: str, page: Page) -> N
 def test_responsive_375_no_overflow(app_uri: str, page: Page) -> None:
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     metrics = page.evaluate(_SCROLL_METRICS_JS)
     assert metrics["scrollWidth"] <= metrics["innerWidth"]
 
@@ -342,6 +392,7 @@ def test_responsive_375_no_overflow(app_uri: str, page: Page) -> None:
 def test_long_labels_no_overflow(app_uri: str, page: Page) -> None:
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(app_uri(long_labels_report()))
+    _open_dashboard_panel(page, "section-findings")
     metrics = page.evaluate(_SCROLL_METRICS_JS)
     assert metrics["scrollWidth"] <= metrics["innerWidth"]
     assert page.locator(".finding-row").count() == 3
@@ -354,6 +405,7 @@ def test_long_labels_no_overflow(app_uri: str, page: Page) -> None:
 
 def test_keyboard_only_filter_flow(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     gap = page.locator('[data-filter-group="status"] [data-filter-value="gap"]')
     gap.focus()
     page.keyboard.press("Enter")
@@ -367,6 +419,9 @@ def test_keyboard_only_filter_flow(app_uri: str, page: Page) -> None:
 
 def test_focus_outline_on_chips(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
+    # Panel open is a pointer gesture; restore keyboard modality for :focus-visible.
+    page.keyboard.press("Tab")
     chip = page.locator('[data-filter-group="status"] [data-filter-value="gap"]')
     chip.focus()
     outline = chip.evaluate(
@@ -380,6 +435,7 @@ def test_focus_outline_on_chips(app_uri: str, page: Page) -> None:
 def test_reduced_motion_no_transitions(app_uri: str, page: Page) -> None:
     page.emulate_media(reduced_motion="reduce")
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     offenders = []
     for element in page.locator("button, a, summary, input").all():
         duration = element.evaluate("el => getComputedStyle(el).transitionDuration")
@@ -391,12 +447,26 @@ def test_reduced_motion_no_transitions(app_uri: str, page: Page) -> None:
 def test_hash_deep_link_scrolls_to_finding(app_uri: str, page: Page) -> None:
     page.goto(app_uri(thousand_findings_report()) + "#finding-bulk-0100")
     page.wait_for_load_state("load")
+    _open_dashboard_panel(page, "section-findings")
+    page.wait_for_function(
+        """() => {
+          const el = document.getElementById('finding-bulk-0100');
+          const p = document.getElementById('detail-panel');
+          const host = document.querySelector('#detail-panel .detail-panel__body')
+            || document.querySelector('main.app-main');
+          if (!el || !p || p.hidden || !p.classList.contains('is-open') || !host) return false;
+          const r = el.getBoundingClientRect();
+          const m = host.getBoundingClientRect();
+          return r.top >= m.top - 1 && r.bottom <= m.bottom + 1;
+        }"""
+    )
     state = page.evaluate(
         "() => { const el = document.getElementById('finding-bulk-0100');"
         " if (!el) return { found: false };"
-        " const main = document.querySelector('main.app-main');"
+        " const host = document.querySelector('#detail-panel .detail-panel__body')"
+        "   || document.querySelector('main.app-main');"
         " const r = el.getBoundingClientRect();"
-        " const m = main.getBoundingClientRect();"
+        " const m = host.getBoundingClientRect();"
         " return { found: true, open: el.open,"
         "   inView: r.top >= m.top - 1 && r.bottom <= m.bottom + 1 }; }"
     )
@@ -407,6 +477,7 @@ def test_hash_deep_link_scrolls_to_finding(app_uri: str, page: Page) -> None:
 
 def test_no_persisted_tenant_data(app_uri: str, page: Page) -> None:
     page.goto(app_uri(app_findings_report()))
+    _open_dashboard_panel(page, "section-findings")
     page.locator("#finding-search").fill("alpha")
     page.locator('[data-filter-group="status"] [data-filter-value="gap"]').click()
     storage = page.evaluate("() => [window.localStorage.length, window.sessionStorage.length]")
