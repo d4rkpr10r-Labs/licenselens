@@ -1144,8 +1144,7 @@
     state.selectedCapability = next;
     updateCapabilitySelection();
     if (next) {
-      var section = document.getElementById("section-findings");
-      if (section) section.scrollIntoView({ block: "start" });
+      openDetailPanel("section-findings");
     }
   }
 
@@ -1516,9 +1515,127 @@
   }
 
   // -------------------------------------------------------------------------
+  // Dashboard panel (Direction A) — summary stays; detail opens in drawer.
+  // -------------------------------------------------------------------------
+
+  document.documentElement.classList.add("js-dashboard");
+
+  var panel = document.getElementById("detail-panel");
+  var panelBody = document.getElementById("detail-panel-body");
+  var panelTitle = document.getElementById("detail-panel-title");
+  var panelClose = document.getElementById("detail-panel-close");
+  var panelScrim = document.getElementById("detail-scrim");
+  var panelLastFocus = null;
+  var PANEL_TITLES = {
+    "section-b": "What you already own",
+    "section-findings": "Findings",
+    "section-detection-realization": "Evidence detail"
+  };
+
+  function setPanelExpanded(id, on) {
+    document.querySelectorAll("[data-panel]").forEach(function (el) {
+      if (el.getAttribute("aria-expanded") !== null) {
+        el.setAttribute(
+          "aria-expanded",
+          el.getAttribute("data-panel") === id && on ? "true" : "false"
+        );
+      }
+    });
+  }
+
+  var panelHosted = null;
+  var panelHostHome = null;
+
+  function restorePanelHost() {
+    if (panelHosted && panelHostHome) {
+      panelHostHome.appendChild(panelHosted);
+      panelHosted.classList.remove("is-panel-hosted");
+    }
+    panelHosted = null;
+    panelHostHome = null;
+  }
+
+  function openDetailPanel(id, afterOpen) {
+    var source = document.querySelector('[data-panel-source="' + id + '"]');
+    if (!source || !panel || !panelBody) return;
+    panelLastFocus = document.activeElement;
+    restorePanelHost();
+    panelBody.replaceChildren();
+    var titleEl = source.querySelector(".move-title, h2, .tech-title");
+    panelTitle.textContent =
+      PANEL_TITLES[id] || (titleEl ? titleEl.textContent.trim() : "Detail");
+    if (id.indexOf("section-") === 0) {
+      panelHostHome = source.parentNode;
+      panelHosted = source;
+      source.classList.add("is-panel-hosted");
+      panelBody.appendChild(source);
+    } else {
+      var clone = source.cloneNode(true);
+      clone.removeAttribute("id");
+      clone.removeAttribute("data-panel-source");
+      clone.style.display = "block";
+      panelBody.appendChild(clone);
+    }
+    panel.classList.toggle("detail-panel--wide", id === "section-findings");
+    panel.hidden = false;
+    panelScrim.hidden = false;
+    var show = function () {
+      panel.classList.add("is-open");
+      panelScrim.classList.add("is-open");
+      if (typeof afterOpen === "function") afterOpen();
+    };
+    if (REDUCED_MOTION) show();
+    else requestAnimationFrame(show);
+    setPanelExpanded(id, true);
+    panelClose.focus();
+  }
+
+  function closeDetailPanel() {
+    if (!panel || panel.hidden) return;
+    panel.classList.remove("is-open");
+    panelScrim.classList.remove("is-open");
+    setPanelExpanded("", false);
+    var finish = function () {
+      restorePanelHost();
+      panel.hidden = true;
+      panelScrim.hidden = true;
+      panelBody.replaceChildren();
+      if (panelLastFocus && panelLastFocus.focus) panelLastFocus.focus();
+    };
+    if (REDUCED_MOTION) finish();
+    else window.setTimeout(finish, 180);
+  }
+
+  function initDashboardPanel() {
+    document.querySelectorAll("[data-panel]").forEach(function (el) {
+      el.addEventListener("click", function () {
+        openDetailPanel(el.getAttribute("data-panel"));
+      });
+    });
+    if (panelClose) panelClose.addEventListener("click", closeDetailPanel);
+    if (panelScrim) panelScrim.addEventListener("click", closeDetailPanel);
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && panel && !panel.hidden) {
+        e.preventDefault();
+        closeDetailPanel();
+      }
+    });
+    var heroActions = document.querySelector('.hero-action a[href="#section-c"]');
+    if (heroActions) {
+      heroActions.addEventListener("click", function (e) {
+        var firstMove = document.querySelector(".move-open[data-panel]");
+        if (!firstMove) return;
+        e.preventDefault();
+        openDetailPanel(firstMove.getAttribute("data-panel"));
+      });
+    }
+  }
+
+  // -------------------------------------------------------------------------
   // Boot — build controls, render charts, restore the hash, reveal.
   // -------------------------------------------------------------------------
 
+  initDashboardPanel();
   buildNav();
   buildFilters();
   buildPagination();
@@ -1559,12 +1676,21 @@
   refresh();
 
   if (initialHash.indexOf("#finding-") === 0) {
-    var row = listEl ? listEl.querySelector('[data-finding="' + checkId + '"]') : null;
-    if (row) {
+    openDetailPanel("section-findings", function () {
+      var row = listEl ? listEl.querySelector('[data-finding="' + checkId + '"]') : null;
+      if (!row) return;
       row.open = true;
       revealSectionOf(row);
-      row.scrollIntoView();
-    }
+      // Wait a frame so the open panel's transform/layout settle, then scroll
+      // the drawer body (scrollIntoView alone is unreliable while off-canvas).
+      requestAnimationFrame(function () {
+        var host = panelBody;
+        if (!host) return;
+        var r = row.getBoundingClientRect();
+        var m = host.getBoundingClientRect();
+        host.scrollTop += r.top - m.top - 8;
+      });
+    });
   }
 
   initScrollSpy();

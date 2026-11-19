@@ -400,12 +400,27 @@ body.revealed .reveal-target.is-revealed {
        ====================================================================== #}
     {% include "report/v2/_v2_moves.html.j2" %}
 
+    <div class="dashboard-entries" role="group" aria-label="More detail">
+      <button type="button" class="dashboard-entry" data-panel="section-b" aria-controls="detail-panel">
+        <span class="label">What you own</span>
+        <span class="hint">{{ result.owned_capabilities | length }} licensed · {{ _rollup.you_own }} prioritized</span>
+      </button>
+      <button type="button" class="dashboard-entry" data-panel="section-findings" aria-controls="detail-panel">
+        <span class="label">Findings</span>
+        <span class="hint">Evidence-backed gaps</span>
+      </button>
+      <button type="button" class="dashboard-entry" data-panel="section-detection-realization" aria-controls="detail-panel">
+        <span class="label">Evidence detail</span>
+        <span class="hint">Method &amp; realization</span>
+      </button>
+    </div>
+
     {# ======================================================================
        B - What you already own: the denominator behind the headline.
        Technical telemetry evidence comes after Findings, not between the
        decision and its entitlement context.
        ====================================================================== #}
-    <section id="section-b" class="reveal-target" style="--reveal-delay: 40ms">
+    <section id="section-b" class="reveal-target dashboard-linear" style="--reveal-delay: 40ms" data-panel-source="section-b">
       <p class="micro-label section-kicker">Context</p>
       <h2>What you already own</h2>
       <p class="section-help">
@@ -456,7 +471,7 @@ body.revealed .reveal-target.is-revealed {
        collapsed <details> row per finding. Expanding a row reveals the
        full belief block (the former section D content).
        ====================================================================== #}
-    <section id="section-findings" class="reveal-target" style="--reveal-delay: 80ms">
+    <section id="section-findings" class="reveal-target dashboard-linear" style="--reveal-delay: 80ms" data-panel-source="section-findings">
       <p class="micro-label section-kicker">Findings</p>
       <h2>Findings</h2>
       <p class="section-help">
@@ -714,6 +729,22 @@ body.revealed .reveal-target.is-revealed {
 {%- include "report/v2/_v2_detection_realization.html.j2" -%}
   </main>
 
+  <div class="detail-scrim" id="detail-scrim" hidden></div>
+  <aside
+    class="detail-panel"
+    id="detail-panel"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="detail-panel-title"
+    hidden
+  >
+    <div class="detail-panel__head">
+      <h2 class="detail-panel__title" id="detail-panel-title">Detail</h2>
+      <button type="button" class="detail-panel__close" id="detail-panel-close" aria-label="Close detail">×</button>
+    </div>
+    <div class="detail-panel__body" id="detail-panel-body"></div>
+  </aside>
+
   <footer class="report-footer">
     <div class="report-footer__grid">
       <div class="report-footer__block">
@@ -778,7 +809,121 @@ body.revealed .reveal-target.is-revealed {
     (function () {
       'use strict';
 
+      document.documentElement.classList.add('js-dashboard');
+
       var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+      /* ---- Dashboard panel (Direction A) -------------------------------- */
+      var panel = document.getElementById('detail-panel');
+      var panelBody = document.getElementById('detail-panel-body');
+      var panelTitle = document.getElementById('detail-panel-title');
+      var panelClose = document.getElementById('detail-panel-close');
+      var panelScrim = document.getElementById('detail-scrim');
+      var panelLastFocus = null;
+      var PANEL_TITLES = {
+        'section-b': 'What you already own',
+        'section-findings': 'Findings',
+        'section-detection-realization': 'Evidence detail'
+      };
+
+      function setPanelExpanded(id, on) {
+        document.querySelectorAll('[data-panel]').forEach(function (el) {
+          if (el.getAttribute('aria-expanded') !== null) {
+            el.setAttribute(
+              'aria-expanded',
+              el.getAttribute('data-panel') === id && on ? 'true' : 'false'
+            );
+          }
+        });
+      }
+
+      var panelHosted = null;
+      var panelHostHome = null;
+
+      function restorePanelHost() {
+        if (panelHosted && panelHostHome) {
+          panelHostHome.appendChild(panelHosted);
+          panelHosted.classList.remove('is-panel-hosted');
+        }
+        panelHosted = null;
+        panelHostHome = null;
+      }
+
+      function openDetailPanel(id, afterOpen) {
+        var source = document.querySelector('[data-panel-source="' + id + '"]');
+        if (!source || !panel || !panelBody) return;
+        panelLastFocus = document.activeElement;
+        restorePanelHost();
+        panelBody.replaceChildren();
+        var titleEl = source.querySelector('.move-title, h2, .tech-title');
+        panelTitle.textContent =
+          PANEL_TITLES[id] ||
+          (titleEl ? titleEl.textContent.trim() : 'Detail');
+        if (id.indexOf('section-') === 0) {
+          panelHostHome = source.parentNode;
+          panelHosted = source;
+          source.classList.add('is-panel-hosted');
+          panelBody.appendChild(source);
+        } else {
+          var clone = source.cloneNode(true);
+          clone.removeAttribute('id');
+          clone.removeAttribute('data-panel-source');
+          clone.style.display = 'block';
+          panelBody.appendChild(clone);
+        }
+        panel.classList.toggle('detail-panel--wide', id === 'section-findings');
+        panel.hidden = false;
+        panelScrim.hidden = false;
+        var show = function () {
+          panel.classList.add('is-open');
+          panelScrim.classList.add('is-open');
+          if (typeof afterOpen === 'function') afterOpen();
+        };
+        if (reduceMotion) show();
+        else requestAnimationFrame(show);
+        setPanelExpanded(id, true);
+        panelClose.focus();
+      }
+
+      function closeDetailPanel() {
+        if (!panel || panel.hidden) return;
+        panel.classList.remove('is-open');
+        panelScrim.classList.remove('is-open');
+        setPanelExpanded('', false);
+        var finish = function () {
+          restorePanelHost();
+          panel.hidden = true;
+          panelScrim.hidden = true;
+          panelBody.replaceChildren();
+          if (panelLastFocus && panelLastFocus.focus) panelLastFocus.focus();
+        };
+        if (reduceMotion) finish();
+        else window.setTimeout(finish, 180);
+      }
+
+      document.querySelectorAll('[data-panel]').forEach(function (el) {
+        el.addEventListener('click', function () {
+          openDetailPanel(el.getAttribute('data-panel'));
+        });
+      });
+      if (panelClose) panelClose.addEventListener('click', closeDetailPanel);
+      if (panelScrim) panelScrim.addEventListener('click', closeDetailPanel);
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape' && panel && !panel.hidden) {
+          e.preventDefault();
+          closeDetailPanel();
+        }
+      });
+
+      var heroActions = document.querySelector('.hero-action a[href="#section-c"]');
+      if (heroActions) {
+        heroActions.addEventListener('click', function (e) {
+          var firstMove = document.querySelector('.move-open[data-panel]');
+          if (!firstMove) return;
+          e.preventDefault();
+          openDetailPanel(firstMove.getAttribute('data-panel'));
+        });
+      }
 
       // Data: capability id -> related check ids (server-rendered, deterministic).
       var CAP_RELATED = {{ _related_map | tojson }};
@@ -1042,8 +1187,12 @@ body.revealed .reveal-target.is-revealed {
         state.page = 1;
         apply();
         if (state.related !== null) {
-          var d = document.getElementById('section-findings');
-          if (d) d.scrollIntoView({ block: 'start' });
+          if (typeof openDetailPanel === 'function') {
+            openDetailPanel('section-findings');
+          } else {
+            var d = document.getElementById('section-findings');
+            if (d) d.scrollIntoView({ block: 'start' });
+          }
         }
       }
 
@@ -1079,8 +1228,17 @@ body.revealed .reveal-target.is-revealed {
       function handleHash() {
         var hash = window.location.hash;
         if (hash && hash.indexOf('#section-') === 0) {
-          setNavCurrent(hash.slice(1));
-          var section = document.getElementById(hash.slice(1));
+          var sectionId = hash.slice(1);
+          setNavCurrent(sectionId);
+          if (
+            sectionId === 'section-b' ||
+            sectionId === 'section-findings' ||
+            sectionId === 'section-detection-realization'
+          ) {
+            openDetailPanel(sectionId);
+            return;
+          }
+          var section = document.getElementById(sectionId);
           if (section) section.scrollIntoView({ block: 'start' });
           return;
         }
@@ -1096,8 +1254,16 @@ body.revealed .reveal-target.is-revealed {
           syncControls();
           reorderConstellation();
           apply();
-          selectFinding(article);
-          article.scrollIntoView({ block: 'start' });
+          openDetailPanel('section-findings', function () {
+            selectFinding(article);
+            requestAnimationFrame(function () {
+              var host = panelBody;
+              if (!host) return;
+              var r = article.getBoundingClientRect();
+              var m = host.getBoundingClientRect();
+              host.scrollTop += r.top - m.top - 8;
+            });
+          });
           setNavCurrent('section-findings');
         }
       }

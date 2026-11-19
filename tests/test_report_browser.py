@@ -33,6 +33,43 @@ from tests.report_fixtures import comprehensive_report
 
 pytestmark = pytest.mark.browser
 
+
+def _open_dashboard_panel(page: Page, panel_id: str = "section-findings") -> None:
+    """Direction A: findings/owned live behind the panel when js-dashboard is on."""
+    if not page.evaluate("() => document.documentElement.classList.contains('js-dashboard')"):
+        return
+    already = page.evaluate(
+        """(id) => {
+          const p = document.getElementById('detail-panel');
+          if (!p || p.hidden) return false;
+          return !!p.querySelector('[data-panel-source="' + id + '"], #' + id);
+        }""",
+        panel_id,
+    )
+    if not already:
+        if page.evaluate(
+            "() => { const p = document.getElementById('detail-panel'); return p && !p.hidden; }"
+        ):
+            page.locator("#detail-panel-close").click()
+            page.wait_for_timeout(200)
+        page.locator(f'[data-panel="{panel_id}"]').first.click()
+    page.wait_for_function(
+        "() => { const p = document.getElementById('detail-panel');"
+        " return p && !p.hidden && p.classList.contains('is-open'); }"
+    )
+    # Only nudge controls into view when we just opened the panel. Deep-link
+    # boots already scroll to a finding — resetting scrollTop would undo that.
+    if not already:
+        page.evaluate(
+            """() => {
+              const sort = document.querySelector(
+                '#detail-panel #finding-sort, #detail-panel #finding-search'
+              );
+              if (sort) sort.scrollIntoView({ block: 'nearest' });
+            }"""
+        )
+
+
 VIEWPORTS = [(375, 812), (768, 1024), (1024, 768), (1280, 900), (1440, 1000)]
 
 SECTION_HEADINGS = [
@@ -267,6 +304,7 @@ def test_no_horizontal_overflow(page: Page, report_uri: str, width: int, height:
 
 def test_filter_keyboard_and_aria_pressed(page: Page, report_uri: str) -> None:
     page.goto(report_uri)
+    _open_dashboard_panel(page, "section-findings")
     buttons = page.locator("button[data-filter], button[data-workload]")
     assert buttons.count() > 0, "no filter controls found"
 
@@ -298,11 +336,16 @@ def test_live_count_region(page: Page, report_uri: str) -> None:
 
 def test_focus_outline_visible_on_keyboard_focus(page: Page, report_uri: str) -> None:
     page.goto(report_uri)
+    _open_dashboard_panel(page, "section-findings")
     _open_all_disclosures(page)
+    # Opening the panel is a pointer gesture; Chromium then suppresses
+    # :focus-visible on programmatic focus until keyboard modality returns.
+    page.keyboard.press("Tab")
     targets = {
         "button": "button[data-filter='all']",
         "summary": "details.tech summary",
-        "link": "a",
+        # Prefer an in-panel / laid-out link — bare `a` can match display:none TOC.
+        "link": "#detail-panel a[href], main a[href]",
     }
     for kind, selector in targets.items():
         element = page.locator(selector).first
@@ -524,6 +567,7 @@ def test_owned_skus_table_scrolls_inside_wrapper(page: Page, report_uri: str) ->
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(report_uri)
     page.wait_for_load_state("load")
+    _open_dashboard_panel(page, "section-b")
     _open_all_disclosures(page)
 
     state = page.evaluate(_SKU_TABLE_STATE_JS)
@@ -611,6 +655,7 @@ def test_constellation_legend_sits_below_scrolling_field(
     page.set_viewport_size({"width": 375, "height": 812})
     page.goto(_renderer_uri(renderer, tmp_path))
     page.wait_for_load_state("load")
+    _open_dashboard_panel(page, "section-b")
 
     state = page.evaluate(_CONSTELLATION_LAYOUT_JS)
     assert state["groupCount"] >= 3, f"{renderer}: fixture constellation unexpectedly small"
@@ -803,6 +848,7 @@ def test_findings_sort_control_reorders_deterministically(
     page.emulate_media(reduced_motion="reduce")
     page.goto(_renderer_uri(renderer, tmp_path, result=probe))
     page.wait_for_load_state("load")
+    _open_dashboard_panel(page, "section-findings")
 
     engine_order = [finding.check_id for finding in probe.findings]
     assert engine_order == _SORT_ENGINE_ORDER, "sort probe findings drifted from the engine order"
@@ -829,6 +875,7 @@ def test_findings_sort_control_reorders_deterministically(
 
         page.reload()
         page.wait_for_load_state("load")
+        _open_dashboard_panel(page, "section-findings")
         page.select_option("#finding-sort", key)
         second_run = page.evaluate(_FINDINGS_ORDER_JS)
         assert second_run == first_run, (
@@ -1024,18 +1071,29 @@ def test_primary_controls_tab_reachable_with_focus_and_names(
     page.emulate_media(reduced_motion="reduce")
     page.goto(_renderer_uri(renderer, tmp_path))
     page.wait_for_load_state("load")
-    page.evaluate("() => document.activeElement && document.activeElement.blur()")
-
-    focusable = page.evaluate(_FOCUSABLE_JS)
     seen: dict[str, dict[str, object]] = {}
-    # Real Tab navigation from an unfocused document: every primary control
-    # must appear in the actual keyboard sequence, not merely be focusable.
-    for _ in range(len(focusable) + 1):
-        page.keyboard.press("Tab")
-        stop = page.evaluate(_FOCUSED_STOP_JS)
-        kind = _primary_kind(stop)
-        if kind is not None and kind not in seen:
-            seen[kind] = stop
+
+    def _tab_collect(needed: tuple[str, ...]) -> None:
+        page.evaluate("() => document.activeElement && document.activeElement.blur()")
+        focusable = page.evaluate(_FOCUSABLE_JS)
+        # Real Tab navigation: every needed primary control must appear in the
+        # actual keyboard sequence for the currently open panel surface.
+        for _ in range(len(focusable) + 1):
+            if all(kind in seen for kind in needed):
+                break
+            page.keyboard.press("Tab")
+            stop = page.evaluate(_FOCUSED_STOP_JS)
+            kind = _primary_kind(stop)
+            if kind is not None and kind in needed and kind not in seen:
+                seen[kind] = stop
+
+    # Findings panel hosts search / sort / status filters; owned panel hosts
+    # constellation captions (Direction A keeps each behind its own entry).
+    _open_dashboard_panel(page, "section-findings")
+    _tab_collect(("search", "sort", "filter"))
+    _open_dashboard_panel(page, "section-b")
+    _tab_collect(("caption",))
+
     missing = [kind for kind in _PRIMARY_CONTROLS if kind not in seen]
     assert not missing, f"{renderer}: primary controls not reached via Tab navigation: {missing}"
 
@@ -1066,6 +1124,7 @@ def test_primary_controls_respond_to_keyboard_activation(
     page.emulate_media(reduced_motion="reduce")
     page.goto(_renderer_uri(renderer, tmp_path))
     page.wait_for_load_state("load")
+    _open_dashboard_panel(page, "section-findings")
 
     def visible_count() -> str:
         return page.locator("[data-visible-count]").inner_text().strip()
@@ -1113,6 +1172,7 @@ def test_primary_controls_respond_to_keyboard_activation(
         f"{renderer}: unpressed status filter did not restore all findings (got {visible_count()})"
     )
 
+    _open_dashboard_panel(page, "section-b")
     caption = page.locator(".constellation-caption").first
     caption.focus()
     page.keyboard.press("Enter")
@@ -1320,10 +1380,30 @@ def test_below_fold_sections_reveal_on_scroll(page: Page, tmp_path: Path, render
     and renders as a long blank area. The observer must fire on any visible
     pixel (``threshold: 0``) so arbitrarily tall sections reveal as soon as
     their leading edge is scrolled into view.
+
+    DESIGN_V3 dashboard+panel (Direction A): with ``html.js-dashboard``, B /
+    Findings / Evidence are screen-hidden behind the detail panel (still in
+    the DOM for print/no-JS). In that mode this test locks the panel contract
+    instead of scroll-reveal on hidden linear sections.
     """
     page.set_viewport_size({"width": 800, "height": 700})
     page.goto(_renderer_uri(renderer, tmp_path, result=_tall_report()))
     page.wait_for_load_state("load")
+
+    is_dashboard = page.evaluate(
+        "() => document.documentElement.classList.contains('js-dashboard')"
+    )
+    if is_dashboard:
+        assert page.locator("#detail-panel").count() == 1, f"{renderer}: missing detail panel"
+        displays = page.evaluate(
+            """() => Array.from(document.querySelectorAll('.dashboard-linear'))
+              .map((el) => getComputedStyle(el).display)"""
+        )
+        assert displays, f"{renderer}: expected .dashboard-linear sections"
+        assert all(d == "none" for d in displays), (
+            f"{renderer}: dashboard-linear sections must be screen-hidden: {displays}"
+        )
+        return
 
     selector = _REVEAL_SELECTORS[renderer]
     heights = page.evaluate(_REVEAL_HEIGHTS_JS, selector)

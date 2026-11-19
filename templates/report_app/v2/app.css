@@ -211,7 +211,9 @@ main.app-main {
 .app-nav {
   position: sticky;
   top: 0;
-  z-index: 10;
+  /* Above the detail scrim (40) so workload chrome stays usable while the
+     findings panel is open; below the panel itself (50). */
+  z-index: 45;
   background: var(--surface-3);
   border-block-end: 1px solid var(--border-strong);
   transition: box-shadow 150ms ease-out;

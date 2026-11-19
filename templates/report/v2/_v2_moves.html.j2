@@ -11,10 +11,8 @@
    TopMove payload fields: title, why, effort_label, check_ids,
    customer_next_step, deep_link.
 
-   DESIGN_V2.md section 5C: a numbered sequence, not equal cards — the first
-   item is visually dominant (`move-item--lead`: larger title, key shadow).
-   Each item: bold title, effort label, a "Why" line, an action line, and the
-   admin deep link as the visible text link "Open the admin page".
+   DESIGN_V3 dashboard+panel: title rows open the detail panel when JS is on;
+   full why/effort/link stay in `.move-body` for no-JS + print + panel source.
 
    Retained v1 rules (section 9): no emoji, no <img>, no external URLs except
    deep_link, empty optional fields omit their row without crashing.
@@ -26,8 +24,11 @@
     <section id="section-c" class="reveal-target" style="--reveal-delay: 0ms">
       <p class="micro-label section-kicker">Priorities</p>
       <h2>What matters most</h2>
-      <p class="section-help">
+      <p class="section-help section-help--linear">
         Ranked by security impact, evidence confidence, and estimated effort.
+      </p>
+      <p class="section-help section-help--dashboard">
+        Open a row for why, effort, and the admin path. Summary stays put.
       </p>
       <ol class="move-list">
         {% for move in move_list %}
@@ -35,9 +36,20 @@
         {%- set _title = (move.title or '') | trim | trim('.') -%}
         {%- set _show_action = _action and _action | lower != _title | lower -%}
         <li class="move-item{% if loop.first %} move-item--lead{% endif %}" id="move-{{ loop.index }}">
-          <span class="move-index">{{ '%02d' | format(loop.index) }}</span>
-          <div class="move-body">
-            <div class="move-head">
+          <span class="move-index move-index--linear">{{ '%02d' | format(loop.index) }}</span>
+          <button
+            type="button"
+            class="move-open"
+            data-panel="move-{{ loop.index }}"
+            aria-controls="detail-panel"
+            aria-expanded="false"
+          >
+            <span class="move-index">{{ '%02d' | format(loop.index) }}</span>
+            <strong class="move-title">{{ move.title }}</strong>
+            <span class="move-open__hint" aria-hidden="true">→</span>
+          </button>
+          <div class="move-body" data-panel-source="move-{{ loop.index }}">
+            <div class="move-head move-head--linear">
               <strong class="move-title">{{ move.title }}</strong>
             </div>
             {% if move.effort_label %}<p class="move-meta effort-label">Effort: {{ move.effort_label }}</p>{% endif %}

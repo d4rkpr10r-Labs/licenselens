@@ -172,6 +172,11 @@ def test_html_first_screen_is_the_story(tmp_path: Path):
     assert "View prioritized actions" in first
     assert result.capability_rollup.realized_sentence in first
     assert "How we got here" in first
+    # Direction A chrome: entry tiles + detail panel exist in the document
+    # (JS shows the summary; print/no-JS keep linear sections).
+    assert 'id="detail-panel"' in html
+    assert "dashboard-entries" in html
+    assert "dashboard-linear" in html
     # Accounting copy exists, but only inside the closed details.
     details_start = html.index("How we got here")
     assert "licensed capabilities detected" in html[details_start:]
