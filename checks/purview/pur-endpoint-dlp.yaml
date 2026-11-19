@@ -19,10 +19,10 @@ effort: hours
 blast_radius: devices
 pack: email
 exposure_class: none
-deep_link: https://compliance.microsoft.com/datalossprevention
+deep_link: https://purview.microsoft.com/datalossprevention
 collector: exchange_collector
 remediation: >
-  In the Microsoft Purview compliance portal, create a DLP policy and include
+  In the Microsoft Purview portal, create a DLP policy and include
   the Devices location, then onboard devices to Microsoft Defender for Endpoint
   so endpoint DLP is enforced.
 references:

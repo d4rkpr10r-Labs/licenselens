@@ -18,7 +18,7 @@ effort: hours
 blast_radius: all_users
 pack: email
 exposure_class: none
-deep_link: https://compliance.microsoft.com/auditlogsearch
+deep_link: https://purview.microsoft.com/audit
 collector: noop
 remediation: >
   Confirm at least 3 months searchable and 12 months retrievable audit retention.

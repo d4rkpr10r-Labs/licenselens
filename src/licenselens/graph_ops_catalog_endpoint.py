@@ -100,7 +100,11 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             "graph.intune_asr_policies",
             dmg_cfg,
             dmg_cfg,
-            description="Intune attack surface reduction policies",
+            preview=True,
+            description=(
+                "Legacy Intune attack surface reduction policies "
+                "(Graph beta fallback; prefer intune_configuration_policies)"
+            ),
         ),
         op(
             "intune_device_state_summary",
@@ -230,9 +234,8 @@ def endpoint_operations() -> tuple[GraphOperation, ...]:
             "graph.xdr_custom_detections",
             ("CustomDetection.Read.All",),
             ("CustomDetection.Read.All",),
-            preview=True,
             max_pages=10,
-            description="Defender XDR custom detection rules (Graph beta)",
+            description="Defender XDR custom detection rules",
         ),
         op(
             "gsa_forwarding_profiles",

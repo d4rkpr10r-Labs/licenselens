@@ -91,20 +91,73 @@ def test_e7_sku_unlocks_entra_suite_and_agent_caps() -> None:
     assert "security_copilot" in owned
 
 
-def test_mdca_session_control_ok_and_gap() -> None:
+def test_mdca_session_control_enforcing_monitor_only_narrow_and_gap() -> None:
     check = CheckDefinition(
         id="id-mdca-ca-session-control",
         title="t",
         workload=Workload.DEFENDER,
     )
-    ok = evaluate_mdca_ca_session_control(
+    enforced_block = evaluate_mdca_ca_session_control(
         check,
         {
             "ca_policies": [
                 {
                     "id": "1",
-                    "displayName": "MDCA",
+                    "displayName": "MDCA block downloads",
                     "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["Office365"]},
+                    },
+                    "sessionControls": {
+                        "cloudAppSecurity": {
+                            "isEnabled": True,
+                            "cloudAppSecurityType": "blockDownloads",
+                        }
+                    },
+                }
+            ]
+        },
+    )
+    assert enforced_block.status is FindingStatus.OK
+    assert enforced_block.evidence["enforcing_count"] == 1
+
+    enforced_custom = evaluate_mdca_ca_session_control(
+        check,
+        {
+            "ca_policies": [
+                {
+                    "id": "2",
+                    "displayName": "MDCA custom session policy",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["All"]},
+                    },
+                    "sessionControls": {
+                        "cloudAppSecurity": {
+                            "isEnabled": True,
+                            "cloudAppSecurityType": "mcasConfigured",
+                        }
+                    },
+                }
+            ]
+        },
+    )
+    assert enforced_custom.status is FindingStatus.OK
+
+    monitor_only = evaluate_mdca_ca_session_control(
+        check,
+        {
+            "ca_policies": [
+                {
+                    "id": "3",
+                    "displayName": "MDCA monitor",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeUsers": ["All"]},
+                        "applications": {"includeApplications": ["All"]},
+                    },
                     "sessionControls": {
                         "cloudAppSecurity": {
                             "isEnabled": True,
@@ -115,7 +168,34 @@ def test_mdca_session_control_ok_and_gap() -> None:
             ]
         },
     )
-    assert ok.status is FindingStatus.OK
+    assert monitor_only.status is FindingStatus.PARTIAL
+    assert monitor_only.evidence["monitor_only_count"] == 1
+
+    narrow_pilot = evaluate_mdca_ca_session_control(
+        check,
+        {
+            "ca_policies": [
+                {
+                    "id": "4",
+                    "displayName": "MDCA pilot group",
+                    "state": "enabled",
+                    "conditions": {
+                        "users": {"includeGroups": ["pilot-group-id"]},
+                        "applications": {"includeApplications": ["All"]},
+                    },
+                    "sessionControls": {
+                        "cloudAppSecurity": {
+                            "isEnabled": True,
+                            "cloudAppSecurityType": "blockDownloads",
+                        }
+                    },
+                }
+            ]
+        },
+    )
+    assert narrow_pilot.status is FindingStatus.PARTIAL
+    assert narrow_pilot.evidence["narrow_scope_count"] == 1
+
     gap = evaluate_mdca_ca_session_control(check, {"ca_policies": []})
     assert gap.status is FindingStatus.GAP
 
@@ -170,3 +250,75 @@ def test_security_copilot_workspace_ok_and_empty_is_partial() -> None:
     )
     assert empty.status is FindingStatus.PARTIAL
     assert empty.confidence.name == "LOW"
+
+
+def test_gsa_and_security_copilot_propagate_truncation_to_envelopes(
+    monkeypatch: object,
+) -> None:
+    from licenselens.auth import AuthContext, AuthMode
+    from licenselens.collectors.contracts import EvidenceHealth
+    from licenselens.collectors.gsa_network_access import collect_gsa_network_access_bundle
+    from licenselens.collectors.runtime_collect_endpoint import (
+        collect_gsa_network_access_runtime,
+        collect_security_copilot_runtime,
+    )
+    from licenselens.collectors.security_copilot import collect_security_copilot_bundle
+    from licenselens.engine.collection_context import ScanCollectionContext
+    from licenselens.engine.planner import CollectionContext
+    from tests.fake_clients import FakeGraphClient, paginated
+
+    fake_gsa = FakeGraphClient(allow_preview=True)
+    fake_gsa.register_list(
+        "/networkAccess/forwardingProfiles",
+        paginated(*[[{"id": f"p{i}", "trafficForwardingType": "internet"}] for i in range(12)]),
+    )
+    gsa_bundle = collect_gsa_network_access_bundle(fake_gsa)
+    assert gsa_bundle["truncated"] is True
+    assert gsa_bundle["pages_read"] == 10
+    assert len(gsa_bundle["forwarding_profiles"]) == 10
+
+    fake_cop = FakeGraphClient(allow_preview=True)
+    fake_cop.register_list(
+        "/security/securityCopilot/workspaces",
+        paginated(*[[{"id": f"w{i}", "displayName": f"WS {i}"}] for i in range(7)]),
+    )
+    cop_bundle = collect_security_copilot_bundle(fake_cop)
+    assert cop_bundle["truncated"] is True
+    assert cop_bundle["pages_read"] == 5
+    assert len(cop_bundle["workspaces"]) == 5
+
+    ctx = ScanCollectionContext(
+        scan_mode="live",
+        auth=AuthContext(
+            mode=AuthMode.CLIENT_SECRET,
+            tenant_id="00000000-0000-0000-0000-000000000000",
+        ),
+        client=fake_gsa,  # type: ignore[arg-type]
+        skus=[],
+        warnings=[],
+    )
+    monkeypatch.setattr(  # type: ignore[attr-defined]
+        "licenselens.collectors.runtime_collect_endpoint._preview_client",
+        lambda _ctx, _base: fake_gsa,
+    )
+    gsa_env = collect_gsa_network_access_runtime(ctx, CollectionContext(envelopes={}))
+    assert gsa_env.health is EvidenceHealth.TRUNCATED
+    assert gsa_env.metadata.pagination.truncated is True
+    assert isinstance(gsa_env.value, dict) and gsa_env.value["truncated"] is True
+
+    monkeypatch.setattr(  # type: ignore[attr-defined]
+        "licenselens.collectors.runtime_collect_endpoint._preview_client",
+        lambda _ctx, _base: fake_cop,
+    )
+    cop_env = collect_security_copilot_runtime(ctx, CollectionContext(envelopes={}))
+    assert cop_env.health is EvidenceHealth.TRUNCATED
+    assert cop_env.metadata.pagination.truncated is True
+    assert isinstance(cop_env.value, dict) and cop_env.value["truncated"] is True
+
+    # Truncated GSA without an assigned match demotes GAP -> PARTIAL.
+    check_i = CheckDefinition(
+        id="id-gsa-internet-access-enabled", title="t", workload=Workload.IDENTITY
+    )
+    res = evaluate_gsa_internet_access_enabled(check_i, {"gsa_network_access": gsa_bundle})
+    assert res.status is FindingStatus.PARTIAL
+    assert res.evidence["truncated"] is True

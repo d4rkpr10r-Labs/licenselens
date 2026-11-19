@@ -5,14 +5,19 @@ customer_summary: >
   Defender for Cloud Apps can inspect and control risky SaaS sessions through
   Conditional Access App Control. Owning MDCA without any session-control policy
   leaves cloud apps outside that guardrail.
-expected_state: An enabled Conditional Access policy uses cloudAppSecurity session control.
+expected_state: An enabled Conditional Access policy enforces cloudAppSecurity session control (blockDownloads or mcasConfigured) across all users.
 customer_next_step: >
-  Create a Conditional Access policy that enables Microsoft Defender for Cloud
-  Apps session control for the apps and users that need monitoring or blocking.
+  Create or update a Conditional Access policy that enforces Microsoft Defender
+  for Cloud Apps session control (block downloads or custom session policy)
+  across all users rather than monitor-only or a small pilot group.
 description: >
   MDCA Conditional Access App Control is realized when at least one enabled CA
-  policy sets sessionControls.cloudAppSecurity. Deep MDCA portal policies are
-  not readable via Graph and are out of scope for this check.
+  policy sets an enforcing sessionControls.cloudAppSecurity control
+  (blockDownloads or mcasConfigured) with broad user scope. Monitor-only or
+  narrow pilot policies are capped at partial. Deep MDCA portal policies are
+  not readable via Graph and are out of scope for this check; note that MDCA
+  file policies retire on 2027-01-06 in favor of Microsoft Purview DLP and
+  auto-labeling.
 workload: defender
 required_capabilities:
   - defender_cloud_apps
@@ -26,22 +31,29 @@ exposure_class: none
 deep_link: https://security.microsoft.com/cloudapps/policies/session
 collector: graph_ca
 remediation: >
-  In Entra Conditional Access, add a session control that uses Defender for
-  Cloud Apps (monitor only or block downloads as appropriate), then confirm the
-  matching session policy appears under Cloud Apps in the Defender portal.
+  In Entra Conditional Access, add an enforcing Defender for Cloud Apps session
+  control (blockDownloads or mcasConfigured custom policy) scoped to all users
+  and your targeted cloud apps, then confirm the matching session policy appears
+  under Cloud Apps in the Defender portal. Note: MDCA file policies retire on
+  2027-01-06; migrate file-governance rules to Microsoft Purview DLP and
+  auto-labeling.
 references:
   - https://learn.microsoft.com/entra/identity/conditional-access/concept-session-control
   - https://learn.microsoft.com/graph/api/resources/cloudappsecuritysessioncontrol?view=graph-rest-1.0
   - https://learn.microsoft.com/defender-cloud-apps/session-policy-aad
+  - https://learn.microsoft.com/defender-cloud-apps/release-notes
 mappings:
   nist: ["AC-2", "AC-3"]
   mitre: ["T1078"]
 enabled: true
 tier: activation
 pass_criteria:
-  ok: An enabled CA policy uses cloudAppSecurity session control.
-  partial: Only report-only CA policies use cloudAppSecurity session control.
+  ok: An enabled CA policy enforces cloudAppSecurity session control (blockDownloads or mcasConfigured) across all users.
+  partial: Session control is monitorOnly, scoped to a subset of users, or only in report-only CA policies.
   gap: No CA policy uses cloudAppSecurity session control.
   evidence_fields:
     - enabled_session_policies
+    - enforcing_session_policies
+    - monitor_only_session_policies
+    - narrow_scope_session_policies
     - report_only_session_policies

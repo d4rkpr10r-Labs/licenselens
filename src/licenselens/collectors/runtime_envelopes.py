@@ -82,7 +82,7 @@ def meta(source: str, items: int = 0, *, truncated: bool = False) -> CollectionM
         pagination=PaginationMetadata(
             pages_read=1 if items else 0,
             max_pages=1,
-            next_link_seen=False,
+            next_link_seen=truncated,
         ),
     )
 
@@ -99,6 +99,7 @@ def ok(
     if truncated:
         return EvidenceEnvelope.truncated(
             ek,
+            value=value,
             reason="page budget exhausted",
             metadata=meta(source, items, truncated=True),
         )

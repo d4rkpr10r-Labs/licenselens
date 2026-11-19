@@ -2894,7 +2894,7 @@
       "blast_radius": "data",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://purview.microsoft.com/policiespage",
+      "deep_link": "https://purview.microsoft.com/datalossprevention",
       "summary": "Secure Score suggests DLP is largely unused (2 controls, ~10% completion).",
       "evidence": {
         "dlp_secure_score": {
@@ -2928,7 +2928,7 @@
       "entitlements_used": [
         "purview_dlp"
       ],
-      "remediation": "Deploy core DLP policies for Exchange, SharePoint, OneDrive, Teams, and endpoints; move from simulation to enforce after tuning.",
+      "remediation": "Deploy core DLP policies for Exchange, SharePoint, OneDrive, Teams, and endpoints; move from simulation to enforce after tuning. If you still rely on Defender for Cloud Apps file policies (retiring 2027-01-06), migrate them to Purview DLP and auto-labeling.",
       "references": [
         "https://learn.microsoft.com/purview/dlp-learn-about-dlp"
       ],
@@ -3032,7 +3032,7 @@
       "blast_radius": "data",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive",
+      "deep_link": "https://security.microsoft.com/sentinel/settings",
       "summary": "Log Analytics retention is only 30 day(s).",
       "evidence": {
         "retention_in_days": 30,
@@ -3044,8 +3044,10 @@
         "microsoft_sentinel",
         "log_analytics"
       ],
-      "remediation": "Increase interactive retention to at least 90 days and configure archive tiers where long-term storage is required.",
+      "remediation": "Increase interactive retention to at least 90 days and configure archive or data-lake tiers where long-term storage is required, using Microsoft Sentinel settings in the Microsoft Defender portal (Integrated Security Operations Center navigation; Azure portal Sentinel experience retires 2027-03-31).",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
+        "https://learn.microsoft.com/defender-xdr/isoc-overview",
         "https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive"
       ],
       "customer_title": "Keep security logs long enough to investigate",
@@ -3615,6 +3617,89 @@
       "tier": "activation"
     },
     {
+      "check_id": "id-mdca-ca-session-control",
+      "title": "Defender for Cloud Apps Conditional Access App Control",
+      "workload": "defender",
+      "status": "partial",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://security.microsoft.com/cloudapps/policies/session",
+      "summary": "1 enabled Conditional Access policy(ies) use Defender for Cloud Apps session control in monitor-only or unconfirmed mode.",
+      "evidence": {
+        "enabled_session_policies": [
+          "Demo: Monitor cloud apps with Defender for Cloud Apps"
+        ],
+        "enforcing_session_policies": [],
+        "monitor_only_session_policies": [
+          "Demo: Monitor cloud apps with Defender for Cloud Apps"
+        ],
+        "narrow_scope_session_policies": [],
+        "report_only_session_policies": [],
+        "enabled_count": 1,
+        "enforcing_count": 0,
+        "monitor_only_count": 1,
+        "narrow_scope_count": 0,
+        "report_only_count": 0
+      },
+      "entitlements_used": [
+        "defender_cloud_apps"
+      ],
+      "remediation": "In Entra Conditional Access, add an enforcing Defender for Cloud Apps session control (blockDownloads or mcasConfigured custom policy) scoped to all users and your targeted cloud apps, then confirm the matching session policy appears under Cloud Apps in the Defender portal. Note: MDCA file policies retire on 2027-01-06; migrate file-governance rules to Microsoft Purview DLP and auto-labeling.",
+      "references": [
+        "https://learn.microsoft.com/entra/identity/conditional-access/concept-session-control",
+        "https://learn.microsoft.com/graph/api/resources/cloudappsecuritysessioncontrol?view=graph-rest-1.0",
+        "https://learn.microsoft.com/defender-cloud-apps/session-policy-aad",
+        "https://learn.microsoft.com/defender-cloud-apps/release-notes"
+      ],
+      "customer_title": "Cloud app sessions may not be monitored or controlled",
+      "customer_summary": "Cloud App Security session control is monitor-only and does not block risky actions.",
+      "customer_next_step": "Create or update a Conditional Access policy that enforces Microsoft Defender for Cloud Apps session control (block downloads or custom session policy) across all users rather than monitor-only or a small pilot group.",
+      "status_label": "Partly set up",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.identity.conditionalAccess"
+      ],
+      "limitations": [
+        "This check reads Conditional Access sessionControls.cloudAppSecurity only.",
+        "MDCA portal policy catalogs are not available via Microsoft Graph.",
+        "MDCA file policies retire on 2027-01-06; migrate file protection to Microsoft Purview DLP and auto-labeling.",
+        "cloudAppSecurityType=monitorOnly observes sessions without blocking downloads or enforcing custom MDCA session policies."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "AC-3"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "An enabled CA policy enforces cloudAppSecurity session control (blockDownloads or mcasConfigured) across all users.",
+        "partial": "Session control is monitorOnly, scoped to a subset of users, or only in report-only CA policies.",
+        "gap": "No CA policy uses cloudAppSecurity session control.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "enabled_session_policies",
+          "enforcing_session_policies",
+          "monitor_only_session_policies",
+          "narrow_scope_session_policies",
+          "report_only_session_policies"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.defender_mdca.evaluate_mdca_ca_session_control",
+      "tier": "activation"
+    },
+    {
       "check_id": "mde-onboard-gap",
       "title": "Defender for Endpoint licensed seats vs onboarded devices gap",
       "workload": "endpoint",
@@ -3766,7 +3851,7 @@
       "blast_radius": "all_users",
       "pack": "email",
       "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/datalossprevention",
+      "deep_link": "https://purview.microsoft.com/datalossprevention",
       "summary": "DLP policies cover only 1 workload location(s).",
       "evidence": {
         "workloads": [
@@ -3983,7 +4068,7 @@
       "blast_radius": "all_users",
       "pack": "starter",
       "exposure_class": "none",
-      "deep_link": "https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings",
+      "deep_link": "https://security.microsoft.com/sentinel/data-connectors",
       "summary": "Entra tables are present in workspace usage; confirm diagnostic settings in the Entra admin center (proxy evidence, never fully OK).",
       "evidence": {
         "tables_checked": [
@@ -4003,8 +4088,10 @@
       "entitlements_used": [
         "microsoft_sentinel"
       ],
-      "remediation": "Configure Entra diagnostic settings to send SignInLogs, UserRiskEvents, and RiskyUsers to the Sentinel workspace.",
+      "remediation": "Configure the Microsoft Entra ID data connector in the Microsoft Defender portal (Integrated Security Operations Center / Sentinel; Azure portal Sentinel experience retires 2027-03-31) and Entra diagnostic settings to send SignInLogs, UserRiskEvents, and RiskyUsers to the workspace.",
       "references": [
+        "https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal",
+        "https://learn.microsoft.com/defender-xdr/isoc-overview",
         "https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings",
         "https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id"
       ],
@@ -4839,7 +4926,7 @@
       "blast_radius": "all_users",
       "pack": "email",
       "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/auditlogsearch",
+      "deep_link": "https://purview.microsoft.com/audit",
       "summary": "Unified audit retention depends on license tier and is not fully automated.",
       "evidence": {
         "manual": true,
@@ -6495,75 +6582,6 @@
       "tier": "activation"
     },
     {
-      "check_id": "id-mdca-ca-session-control",
-      "title": "Defender for Cloud Apps Conditional Access App Control",
-      "workload": "defender",
-      "status": "ok",
-      "severity": "high",
-      "value_impact": "high",
-      "impact": "high",
-      "effort": "hours",
-      "blast_radius": "all_users",
-      "pack": "identity",
-      "exposure_class": "none",
-      "deep_link": "https://security.microsoft.com/cloudapps/policies/session",
-      "summary": "1 enabled Conditional Access policy(ies) use Defender for Cloud Apps session control.",
-      "evidence": {
-        "enabled_session_policies": [
-          "Demo: Monitor cloud apps with Defender for Cloud Apps"
-        ],
-        "report_only_session_policies": [],
-        "enabled_count": 1,
-        "report_only_count": 0
-      },
-      "entitlements_used": [
-        "defender_cloud_apps"
-      ],
-      "remediation": "In Entra Conditional Access, add a session control that uses Defender for Cloud Apps (monitor only or block downloads as appropriate), then confirm the matching session policy appears under Cloud Apps in the Defender portal.",
-      "references": [
-        "https://learn.microsoft.com/entra/identity/conditional-access/concept-session-control",
-        "https://learn.microsoft.com/graph/api/resources/cloudappsecuritysessioncontrol?view=graph-rest-1.0",
-        "https://learn.microsoft.com/defender-cloud-apps/session-policy-aad"
-      ],
-      "customer_title": "Cloud app sessions may not be monitored or controlled",
-      "customer_summary": "Cloud app sessions are covered by Conditional Access App Control.",
-      "customer_next_step": "Create a Conditional Access policy that enables Microsoft Defender for Cloud Apps session control for the apps and users that need monitoring or blocking.",
-      "status_label": "Looking good",
-      "confidence": "high",
-      "confidence_label": "High confidence",
-      "data_sources": [
-        "graph.identity.conditionalAccess"
-      ],
-      "limitations": [
-        "This check reads Conditional Access sessionControls.cloudAppSecurity only.",
-        "MDCA portal policy catalogs are not available via Microsoft Graph."
-      ],
-      "evaluation_mode": "direct",
-      "source_references": [],
-      "accepted_risks": [],
-      "mappings": {
-        "nist": [
-          "AC-2",
-          "AC-3"
-        ],
-        "mitre": [
-          "T1078"
-        ]
-      },
-      "pass_criteria": {
-        "ok": "An enabled CA policy uses cloudAppSecurity session control.",
-        "partial": "Only report-only CA policies use cloudAppSecurity session control.",
-        "gap": "No CA policy uses cloudAppSecurity session control.",
-        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
-        "evidence_fields": [
-          "enabled_session_policies",
-          "report_only_session_policies"
-        ]
-      },
-      "evaluator_ref": "licenselens.evaluators.defender_mdca.evaluate_mdca_ca_session_control",
-      "tier": "activation"
-    },
-    {
       "check_id": "id-priv-cloud-only",
       "title": "Privileged accounts synced from on-premises",
       "workload": "identity",
@@ -7743,7 +7761,7 @@
       "blast_radius": "all_users",
       "pack": "email",
       "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/auditlogsearch",
+      "deep_link": "https://purview.microsoft.com/audit",
       "summary": "Unified audit logging is enabled.",
       "evidence": {
         "adapter": "scc_compliance",
@@ -8286,7 +8304,7 @@
       "blast_radius": "all_users",
       "pack": "email",
       "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/datalossprevention",
+      "deep_link": "https://purview.microsoft.com/datalossprevention",
       "summary": "1 DLP rule(s) block sharing sensitive information.",
       "evidence": {
         "dlp_rules": 1,
@@ -8339,7 +8357,7 @@
       "blast_radius": "all_users",
       "pack": "email",
       "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/datalossprevention",
+      "deep_link": "https://purview.microsoft.com/datalossprevention",
       "summary": "1 DLP rule(s) notify users about sensitive data.",
       "evidence": {
         "dlp_rules": 1,
@@ -8392,7 +8410,7 @@
       "blast_radius": "all_users",
       "pack": "email",
       "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/datalossprevention",
+      "deep_link": "https://purview.microsoft.com/datalossprevention",
       "summary": "2 DLP polic(y/ies) are enforced.",
       "evidence": {
         "dlp_policy_count": 2,
@@ -8446,7 +8464,7 @@
       "blast_radius": "devices",
       "pack": "email",
       "exposure_class": "none",
-      "deep_link": "https://compliance.microsoft.com/datalossprevention",
+      "deep_link": "https://purview.microsoft.com/datalossprevention",
       "summary": "1 DLP policy(ies) cover endpoint devices.",
       "evidence": {
         "dlp_policy_count": 2,
@@ -8457,7 +8475,7 @@
       "entitlements_used": [
         "purview_dlp"
       ],
-      "remediation": "In the Microsoft Purview compliance portal, create a DLP policy and include the Devices location, then onboard devices to Microsoft Defender for Endpoint so endpoint DLP is enforced.",
+      "remediation": "In the Microsoft Purview portal, create a DLP policy and include the Devices location, then onboard devices to Microsoft Defender for Endpoint so endpoint DLP is enforced.",
       "references": [
         "https://learn.microsoft.com/purview/endpoint-dlp-learn-about"
       ],
@@ -10571,7 +10589,8 @@
         "workspace_names": [
           "SecurityCopilot_Workspace"
         ],
-        "api_version": "beta"
+        "api_version": "beta",
+        "truncated": false
       },
       "entitlements_used": [
         "security_copilot"
@@ -11591,13 +11610,13 @@
   ],
   "capability_rollup": {
     "you_own": 9,
-    "fully_working": 4,
+    "fully_working": 3,
     "needs_attention": 4,
-    "partly_set_up": 1,
+    "partly_set_up": 2,
     "assessment_incomplete": 0,
     "not_licensed": 6,
     "entitlement_unknown": 0,
-    "realized_percent": 44
+    "realized_percent": 33
   },
   "capability_outcomes": [
     {
@@ -11763,6 +11782,16 @@
       ]
     },
     {
+      "id": "defender_cloud_apps",
+      "name": "Microsoft Defender for Cloud Apps",
+      "plain_name": "Cloud app visibility and session control",
+      "status": "partly_set_up",
+      "status_label": "Partly set up",
+      "related_check_ids": [
+        "id-mdca-ca-session-control"
+      ]
+    },
+    {
       "id": "defender_endpoint_p2",
       "name": "Microsoft Defender for Endpoint P2",
       "plain_name": "Deep protection and visibility on PCs and devices",
@@ -11881,16 +11910,6 @@
         "mdo-quarantine-policy",
         "mdo-spam-phish-not-inbox",
         "mdo-transport-rule-external-forward"
-      ]
-    },
-    {
-      "id": "defender_cloud_apps",
-      "name": "Microsoft Defender for Cloud Apps",
-      "plain_name": "Cloud app visibility and session control",
-      "status": "fully_working",
-      "status_label": "Met assessed criteria",
-      "related_check_ids": [
-        "id-mdca-ca-session-control"
       ]
     },
     {

@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 ## [Unreleased]
 
 ### Added
+- **Ignite 2026 delta-sweep addendum (2026-11-19)** — appended verified Ignite
+  2026 GA/preview findings, Product Terms packaging notes, and wait-list
+  guardrails to `audit/2026-11/feature-research.md`.
 - **Phase 1 feature research (2026-11)** — `audit/2026-11/feature-research.md`
   with candidates, rejects, and a post-Ignite delta-sweep checklist.
 - **Phase 2 architect review (2026-11)** — `audit/2026-11/architect-review.md`
@@ -33,6 +36,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   derivable from the ops catalog.
 
 ### Changed
+- **Defender XDR custom detections on Graph v1.0** — promoted
+  `graph_xdr_detection_rules` (`/security/rules/detectionRules`,
+  `CustomDetection.Read.All`) from Graph beta/preview to Graph v1.0 with
+  pagination truncation propagation.
+- **Intune ASR primary path (M5)** — made settings-catalog
+  `configurationPolicies` primary for ASR policy discovery and marked legacy
+  `/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies` as a
+  preview/beta fallback.
+- **Purview & Sentinel deep links (M4, L2)** — migrated remaining
+  `compliance.microsoft.com` Purview/audit links to `purview.microsoft.com`,
+  updated residual Sentinel links (`sen-entra-diagnostics-routed`,
+  `sen-log-analytics-retention`) to `security.microsoft.com` with ISOC and
+  2027-03-31 Azure portal retirement notes, and noted the 2027-01-06 MDCA
+  file-policy retirement in MDCA/Purview DLP copy.
+- **Limitations documentation** — updated `docs/limitations.md` to reflect
+  direct Graph v1.0 reads for Defender for Identity sensors and Purview DLP
+  (with labeled Secure Score proxy fallback only).
 - **Report dashboard + panel (Direction A)** — first screen is a summary
   dashboard (fraction, priority title rows, Owned / Findings / Evidence entry
   tiles). Detail opens in a side panel/drawer; B / Findings / Evidence stay in
@@ -70,6 +90,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 - **UI wizard copy** — browser wizard is offline-demo only; live scans are CLI.
 
 ### Fixed
+- **MDCA CA session control (M1)** — capped `id-mdca-ca-session-control` at
+  `PARTIAL` when `cloudAppSecurityType` is `monitorOnly` or scoped to a narrow
+  user/app subset; `OK` now requires `blockDownloads` or `mcasConfigured`
+  across all users.
+- **GSA & Security Copilot truncation (M6)** — switched
+  `collectors/gsa_network_access.py` and `collectors/security_copilot.py` to
+  `get_list_result(...)`, propagated `truncated` onto envelopes (preserving
+  collected payloads and pagination metadata), and prevented truncated GSA
+  reads from emitting false gaps.
 - False `not_licensed` risk for GCC High / G5 Insider Risk when only the
   modern plan GUID is present.
 - False OK paths for Security Defaults (any CA), MDO (Allow/pilot), GSA

@@ -22,11 +22,13 @@ effort: hours
 blast_radius: data
 pack: starter
 exposure_class: none
-deep_link: https://purview.microsoft.com/policiespage
+deep_link: https://purview.microsoft.com/datalossprevention
 collector: purview_dlp
 remediation: >
   Deploy core DLP policies for Exchange, SharePoint, OneDrive, Teams,
-  and endpoints; move from simulation to enforce after tuning.
+  and endpoints; move from simulation to enforce after tuning. If you still
+  rely on Defender for Cloud Apps file policies (retiring 2027-01-06), migrate
+  them to Purview DLP and auto-labeling.
 references:
   - https://learn.microsoft.com/purview/dlp-learn-about-dlp
 flagship: true

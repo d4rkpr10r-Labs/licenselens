@@ -21,12 +21,16 @@ effort: hours
 blast_radius: all_users
 pack: starter
 exposure_class: none
-deep_link: https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings
+deep_link: https://security.microsoft.com/sentinel/data-connectors
 collector: la_usage_collector
 remediation: >-
-  Configure Entra diagnostic settings to send SignInLogs, UserRiskEvents, and
-  RiskyUsers to the Sentinel workspace.
+  Configure the Microsoft Entra ID data connector in the Microsoft Defender
+  portal (Integrated Security Operations Center / Sentinel; Azure portal
+  Sentinel experience retires 2027-03-31) and Entra diagnostic settings to send
+  SignInLogs, UserRiskEvents, and RiskyUsers to the workspace.
 references:
+  - https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal
+  - https://learn.microsoft.com/defender-xdr/isoc-overview
   - https://learn.microsoft.com/entra/identity/monitoring-health/howto-configure-diagnostic-settings
   - https://learn.microsoft.com/azure/sentinel/data-connectors/microsoft-entra-id
 flagship: false

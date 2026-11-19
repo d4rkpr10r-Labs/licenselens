@@ -1,4 +1,4 @@
-"""Collect Defender XDR custom detection rules (Graph beta)."""
+"""Collect Defender XDR custom detection rules (Graph v1.0)."""
 
 from __future__ import annotations
 
@@ -18,15 +18,20 @@ DETECTION_RULES_PATH = "/security/rules/detectionRules"
 DEMO_XDR_CUSTOM_DETECTIONS: dict[str, Any] = {
     "rules": [],
     "enabled_count": 0,
+    "truncated": False,
 }
 
 
-def collect_xdr_custom_detections(client: GraphClient) -> dict[str, Any]:
-    """List custom detection rules. Requires a preview-enabled Graph client."""
-    raw = client.get_list(DETECTION_RULES_PATH, max_pages=10)
+def collect_xdr_custom_detections(
+    client: GraphClient,
+    *,
+    max_pages: int = 10,
+) -> dict[str, Any]:
+    """List custom detection rules via Microsoft Graph v1.0."""
+    result = client.get_list_result(DETECTION_RULES_PATH, max_pages=max_pages)
     rules: list[dict[str, Any]] = []
     enabled_count = 0
-    for item in raw:
+    for item in result.items:
         if not isinstance(item, dict):
             continue
         status = str(item.get("status") or "")
@@ -48,4 +53,10 @@ def collect_xdr_custom_detections(client: GraphClient) -> dict[str, Any]:
         )
         if is_enabled:
             enabled_count += 1
-    return {"rules": rules, "enabled_count": enabled_count}
+    return {
+        "rules": rules,
+        "enabled_count": enabled_count,
+        "truncated": result.truncated,
+        "pages_read": result.pages_read,
+        "max_pages": result.max_pages,
+    }

@@ -59,9 +59,22 @@ def collect_intune_managed_devices(client: GraphClient) -> list[dict[str, Any]]:
 
 
 def collect_intune_asr_policies(client: GraphClient) -> list[dict[str, Any]]:
+    """Legacy fallback for ASR policies (prefer ``configurationPolicies``)."""
     return client.get_list(
         "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies", max_pages=30
     )
+
+
+def _asr_from_configuration_policies(
+    config_policies: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    out: list[dict[str, Any]] = []
+    for policy in config_policies:
+        ref = policy.get("templateReference") or {}
+        family = str(ref.get("templateFamily") or "") if isinstance(ref, dict) else ""
+        if "attacksurfacereduction" in family.lower():
+            out.append(policy)
+    return out
 
 
 def collect_intune_compliance_state_summary(client: GraphClient) -> dict[str, Any]:
@@ -91,12 +104,16 @@ def collect_intune_evidence(client: SupportsGraphReads) -> dict[str, EvidenceEnv
 
 
 def collect_intune_bundle(client: GraphClient) -> dict[str, Any]:
+    config_policies = collect_intune_configuration_policies(client)
+    asr_policies = _asr_from_configuration_policies(config_policies)
+    if not asr_policies:
+        asr_policies = collect_intune_asr_policies(client)
     return {
         "compliance_policies": collect_intune_compliance_policies(client),
         "configuration_profiles": collect_intune_configuration_profiles(client),
-        "configuration_policies": collect_intune_configuration_policies(client),
+        "configuration_policies": config_policies,
         "managed_devices": collect_intune_managed_devices(client),
-        "asr_policies": collect_intune_asr_policies(client),
+        "asr_policies": asr_policies,
         "compliance_state_summary": collect_intune_compliance_state_summary(client),
         "mam_app_protections": collect_intune_mam_app_protections(client),
     }

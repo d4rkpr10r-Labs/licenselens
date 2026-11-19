@@ -22,12 +22,16 @@ effort: half_day
 blast_radius: data
 pack: starter
 exposure_class: none
-deep_link: https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive
+deep_link: https://security.microsoft.com/sentinel/settings
 collector: sentinel_workspace_collector
 remediation: >
-  Increase interactive retention to at least 90 days and configure archive
-  tiers where long-term storage is required.
+  Increase interactive retention to at least 90 days and configure archive or
+  data-lake tiers where long-term storage is required, using Microsoft Sentinel
+  settings in the Microsoft Defender portal (Integrated Security Operations
+  Center navigation; Azure portal Sentinel experience retires 2027-03-31).
 references:
+  - https://learn.microsoft.com/azure/sentinel/microsoft-sentinel-defender-portal
+  - https://learn.microsoft.com/defender-xdr/isoc-overview
   - https://learn.microsoft.com/azure/azure-monitor/logs/data-retention-archive
 enabled: true
 tier: activation

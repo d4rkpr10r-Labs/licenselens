@@ -124,7 +124,12 @@ def collect_intune_evidence_bundle(
     except GraphError as exc:
         errors["atp_onboarding_state"] = str(exc)
 
-    asr_policy_entries, asr_error = _collect_asr_policies(client, config, max_policy_detail)
+    asr_policy_entries, asr_error = _collect_asr_policies(
+        client,
+        config,
+        max_policy_detail,
+        config_error=errors["configuration_policies"],
+    )
     if asr_error:
         errors["asr_policies"] = asr_error
 
@@ -249,20 +254,67 @@ _EMPTY_TAMPER_STATE: dict[str, Any] = {
 }
 
 
-def _is_asr_family(policy: dict[str, Any]) -> bool:
-    ref = policy.get("templateReference") or {}
-    family = str(ref.get("templateFamily") or "") if isinstance(ref, dict) else ""
-    return "attacksurfacereduction" in family.lower()
+def _configuration_policies_by_family(
+    config: list[dict[str, Any]],
+    family_token: str,
+) -> list[dict[str, Any]]:
+    """Filter settings-catalog ``configurationPolicies`` by templateFamily token."""
+    token = family_token.lower()
+    out: list[dict[str, Any]] = []
+    for policy in config:
+        ref = policy.get("templateReference") or {}
+        family = str(ref.get("templateFamily") or "") if isinstance(ref, dict) else ""
+        if token in family.lower():
+            out.append(policy)
+    return out
+
+
+def _read_configuration_policy_assignment(
+    client: GraphClient,
+    policy: dict[str, Any],
+) -> tuple[bool, list[dict[str, Any]], bool]:
+    """Resolve assignment state for a settings-catalog configuration policy."""
+    pid = str(policy.get("id") or "")
+    if "isAssigned" in policy:
+        return bool(policy.get("isAssigned")), [], False
+    if not pid:
+        return False, [], False
+    assignments = _safe_list(client, f"/deviceManagement/configurationPolicies/{pid}/assignments")
+    if assignments is None:
+        return False, [], True
+    return bool(assignments), assignments, False
+
+
+def _read_configuration_policy_settings(
+    client: GraphClient,
+    pid: str,
+) -> list[dict[str, Any]] | None:
+    """Read settings entries for one settings-catalog configuration policy."""
+    if not pid:
+        return []
+    return _safe_list(client, f"/deviceManagement/configurationPolicies/{pid}/settings")
 
 
 def _collect_asr_policies(
     client: GraphClient,
     config: list[dict[str, Any]],
     max_policy_detail: int,
+    *,
+    config_error: str = "",
 ) -> tuple[list[dict[str, Any]], str]:
-    """Unified ASR policy list from the endpointSecurity path, falling back to
-    settings-catalog ASR configuration policies when the legacy path is empty
-    or unreadable (the newer policy infrastructure hosts ASR there)."""
+    """Collect ASR policies from settings-catalog ``configurationPolicies`` first,
+    falling back to legacy preview ``endpointSecurity/attackSurfaceReductionPolicies``
+    only when no settings-catalog ASR policies are present."""
+    asr_candidates = _configuration_policies_by_family(config, "attacksurfacereduction")
+    if asr_candidates:
+        return (
+            [
+                _enrich_configuration_asr_policy(client, policy)
+                for policy in asr_candidates[:max_policy_detail]
+            ],
+            "",
+        )
+
     asr_raw: list[dict[str, Any]] | None = None
     read_error = ""
     try:
@@ -282,17 +334,9 @@ def _collect_asr_policies(
             "",
         )
 
-    asr_candidates = [policy for policy in config if _is_asr_family(policy)]
-    if asr_candidates:
-        return (
-            [
-                _enrich_configuration_asr_policy(client, policy)
-                for policy in asr_candidates[:max_policy_detail]
-            ],
-            "",
-        )
-    if asr_raw is None:
-        return [], f"ASR policy surfaces unreadable: {read_error}"
+    if config_error:
+        detail = f"; legacy fallback: {read_error}" if read_error else ""
+        return [], f"ASR policy surfaces unreadable: {config_error}{detail}"
     return [], ""
 
 
@@ -304,6 +348,7 @@ def _enrich_endpoint_security_asr_policy(
         "id": pid,
         "displayName": str(policy.get("displayName") or pid),
         "source": "endpointSecurity",
+        "legacy_fallback": True,
         "assigned": False,
         "assignments": [],
         "assignments_error": False,
@@ -330,26 +375,20 @@ def _enrich_endpoint_security_asr_policy(
 
 def _enrich_configuration_asr_policy(client: GraphClient, policy: dict[str, Any]) -> dict[str, Any]:
     pid = str(policy.get("id") or "")
+    assigned, assignments, assignments_error = _read_configuration_policy_assignment(client, policy)
     entry: dict[str, Any] = {
         "id": pid,
         "displayName": str(policy.get("name") or pid),
         "source": "configurationPolicies",
-        "assigned": bool(policy.get("isAssigned")),
-        "assignments": [],
-        "assignments_error": False,
+        "assigned": assigned,
+        "assignments": assignments,
+        "assignments_error": assignments_error,
         "rule_count": 0,
         "rules_error": False,
     }
-    if "isAssigned" not in policy and pid:
-        entry["assignments"] = _safe_list(
-            client, f"/deviceManagement/configurationPolicies/{pid}/assignments"
-        )
-        entry["assignments_error"] = entry["assignments"] is None
-        entry["assignments"] = entry["assignments"] or []
-        entry["assigned"] = bool(entry["assignments"])
     if not pid:
         return entry
-    settings = _safe_list(client, f"/deviceManagement/configurationPolicies/{pid}/settings")
+    settings = _read_configuration_policy_settings(client, pid)
     if settings is None:
         entry["rules_error"] = True
     else:
@@ -357,22 +396,25 @@ def _enrich_configuration_asr_policy(client: GraphClient, policy: dict[str, Any]
     return entry
 
 
-def _count_asr_rules(settings: list[dict[str, Any]]) -> int:
-    """Count distinct ASR rule setting definitions inside a policy's settings."""
-    seen: set[str] = set()
+def _iter_setting_instances(settings: list[dict[str, Any]]):
+    """Yield every setting instance dict (top-level and nested children)."""
     for setting in settings:
         if not isinstance(setting, dict):
             continue
         instance = setting.get("settingInstance")
         for candidate in (instance, setting):
             if isinstance(candidate, dict):
-                definition_id = str(candidate.get("settingDefinitionId") or "").lower()
-                if _is_asr_rule_definition(definition_id):
-                    seen.add(definition_id)
-            for child in _iter_setting_children(candidate):
-                definition_id = str(child.get("settingDefinitionId") or "").lower()
-                if _is_asr_rule_definition(definition_id):
-                    seen.add(definition_id)
+                yield candidate
+                yield from _iter_setting_children(candidate)
+
+
+def _count_asr_rules(settings: list[dict[str, Any]]) -> int:
+    """Count distinct ASR rule setting definitions inside a policy's settings."""
+    seen: set[str] = set()
+    for node in _iter_setting_instances(settings):
+        definition_id = str(node.get("settingDefinitionId") or "").lower()
+        if _is_asr_rule_definition(definition_id):
+            seen.add(definition_id)
     return len(seen)
 
 
@@ -579,7 +621,7 @@ DEMO_INTUNE_EVIDENCE_BUNDLE: dict[str, Any] = {
         {
             "id": "asr-1",
             "displayName": "Endpoint security - ASR rules",
-            "source": "endpointSecurity",
+            "source": "configurationPolicies",
             "assigned": True,
             "assignments": [{"id": "aa1", "target": {"groupId": "g-all"}}],
             "assignments_error": False,

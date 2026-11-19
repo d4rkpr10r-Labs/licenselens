@@ -18,7 +18,7 @@ effort: hours
 blast_radius: all_users
 pack: email
 exposure_class: none
-deep_link: https://compliance.microsoft.com/datalossprevention
+deep_link: https://purview.microsoft.com/datalossprevention
 collector: exchange_collector
 remediation: >
   Set DLP rule actions to block access for sensitive information.
