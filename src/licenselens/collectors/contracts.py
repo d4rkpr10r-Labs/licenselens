@@ -98,10 +98,12 @@ class EvidenceEnvelope:
         *,
         reason: str,
         metadata: CollectionMetadata,
+        value: JsonValue = None,
     ) -> EvidenceEnvelope:
         return cls(
             key=key,
             health=EvidenceHealth.TRUNCATED,
+            value=value,
             metadata=metadata,
             reason=reason,
         )

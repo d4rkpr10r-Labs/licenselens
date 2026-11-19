@@ -47,16 +47,20 @@ def evaluate_sec_copilot_workspace_provisioned(
         )
 
     workspaces = [w for w in (bundle.get("workspaces") or []) if isinstance(w, dict)]
+    truncated = bool(bundle.get("truncated"))
     names = [str(w.get("displayName") or w.get("id") or "?") for w in workspaces]
     evidence_out = {
         "workspace_count": len(workspaces),
         "workspace_names": names,
         "api_version": bundle.get("api_version") or "beta",
+        "truncated": truncated,
     }
     limitations = list(bundle.get("limitations") or []) + [
         "Graph securityCopilot APIs are beta.",
         _PHASED,
     ]
+    if truncated:
+        limitations.append("Workspace inventory was truncated by the page cap.")
 
     if workspaces:
         return Evaluation(
@@ -64,7 +68,7 @@ def evaluate_sec_copilot_workspace_provisioned(
             summary=f"{len(workspaces)} Security Copilot workspace(s) present.",
             evidence=evidence_out,
             customer_summary="A Security Copilot workspace is available for included capacity.",
-            confidence=Confidence.HIGH,
+            confidence=Confidence.MEDIUM if truncated else Confidence.HIGH,
             data_sources=["graph.beta.security.securityCopilot.workspaces"],
             limitations=limitations,
         )

@@ -264,7 +264,13 @@ def collect_gsa_network_access_runtime(
     try:
         preview = _preview_client(ctx, ctx.client)
         bundle = collect_gsa_network_access_bundle(preview)
-        return ok(key, bundle, source="graph.beta.networkAccess.forwardingProfiles")
+        return ok(
+            key,
+            bundle,
+            source="graph.beta.networkAccess.forwardingProfiles",
+            items=len(bundle.get("forwarding_profiles") or []),
+            truncated=bool(bundle.get("truncated")),
+        )
     except GraphError as exc:
         return graph_failure(
             key,
@@ -285,7 +291,13 @@ def collect_security_copilot_runtime(
     try:
         preview = _preview_client(ctx, ctx.client)
         bundle = collect_security_copilot_bundle(preview)
-        return ok(key, bundle, source="graph.beta.security.securityCopilot.workspaces")
+        return ok(
+            key,
+            bundle,
+            source="graph.beta.security.securityCopilot.workspaces",
+            items=len(bundle.get("workspaces") or []),
+            truncated=bool(bundle.get("truncated")),
+        )
     except GraphError as exc:
         return graph_failure(
             key,

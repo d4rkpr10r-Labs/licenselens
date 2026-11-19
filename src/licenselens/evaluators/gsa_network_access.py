@@ -79,6 +79,7 @@ def _evaluate_forwarding_type(
     ]
     enabled = [p for p in matching if _is_enabled(p)]
     assigned = [p for p in enabled if _has_assignment(p)]
+    truncated = bool(bundle.get("truncated"))
     count_key = f"{traffic_type}_profile_count"
     enabled_key = f"{traffic_type}_profiles_enabled"
     evidence_out = {
@@ -86,11 +87,14 @@ def _evaluate_forwarding_type(
         enabled_key: len(enabled),
         f"{traffic_type}_profiles_assigned": len(assigned),
         "api_version": bundle.get("api_version") or "beta",
+        "truncated": truncated,
         "matching_profile_names": [
             str(p.get("name") or p.get("displayName") or p.get("id") or "?") for p in matching
         ],
     }
     limitations = list(_BETA_LIMITATIONS) + list(bundle.get("limitations") or [])
+    if truncated:
+        limitations.append("Forwarding profile inventory was truncated by the page cap.")
 
     if assigned:
         return Evaluation(
@@ -101,7 +105,7 @@ def _evaluate_forwarding_type(
             ),
             evidence=evidence_out,
             customer_summary=f"Entra {label} traffic forwarding is enabled and assigned.",
-            confidence=Confidence.HIGH,
+            confidence=Confidence.MEDIUM if truncated else Confidence.HIGH,
             data_sources=["graph.beta.networkAccess.forwardingProfiles"],
             limitations=limitations,
         )
@@ -117,12 +121,28 @@ def _evaluate_forwarding_type(
                 f"Entra {label} is turned on, but nobody appears assigned yet — "
                 "traffic will not be acquired until users or groups are assigned."
             ),
-            confidence=Confidence.MEDIUM,
+            confidence=Confidence.LOW if truncated else Confidence.MEDIUM,
             data_sources=["graph.beta.networkAccess.forwardingProfiles"],
             limitations=limitations
             + [
                 "Enabled without associations does not prove traffic acquisition.",
             ],
+        )
+    if truncated:
+        return Evaluation(
+            status=FindingStatus.PARTIAL,
+            summary=(
+                f"Entra {label} forwarding profile list was truncated before an enabled, "
+                "assigned profile was confirmed."
+            ),
+            evidence=evidence_out,
+            customer_summary=(
+                f"We could not read all Entra {label} forwarding profiles, so activation "
+                "cannot be ruled out."
+            ),
+            confidence=Confidence.LOW,
+            data_sources=["graph.beta.networkAccess.forwardingProfiles"],
+            limitations=limitations,
         )
     if matching:
         return Evaluation(
