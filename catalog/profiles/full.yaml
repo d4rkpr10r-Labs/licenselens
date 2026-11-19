@@ -64,6 +64,7 @@ check_ids:
   - id-mdca-ca-session-control
   - xdr-sec-copilot-workspace-provisioned
   - endpoint-epm-policy-present
+  - endpoint-mde-ai-agent-runtime-protection
   - id-gsa-internet-access-enabled
   - id-gsa-private-access-enabled
   - sen-analytics-rule-coverage
