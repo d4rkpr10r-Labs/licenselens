@@ -17,16 +17,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   downloads/diffs catalog GUIDs and SKU String_Ids against the official CSV.
 - **Microsoft Learn MCP tooling** — `.cursor/mcp.json` points at
   `https://learn.microsoft.com/api/mcp`.
-- **Catalog capabilities** — `entra_internet_access`, `entra_private_access`,
+- **Catalog capabilities** — `agent_365` (`AGENT_365` /
+  `ENTRA_ID_GOV_FOR_ASSISTIVE_AGENTS` CSV-verified GUIDs; `AGENT_365` and
+  `MICROSOFT_365_E7` SKUs; commercial cloud; scoped to paid agent governance,
+  lifecycle, and security), plus `entra_internet_access`, `entra_private_access`,
   `defender_cloud_apps`, `intune_endpoint_privilege_management`, and
   `security_copilot`, with Learn CSV GUIDs (2026-08-19) and Microsoft 365 E7 /
-  Entra Suite SKU aliases. Agent 365 stays research/SKU-name tracked until a
-  GA read-only activation check exists.
-- **Checks** — `id-gsa-internet-access-enabled`, `id-gsa-private-access-enabled`,
-  `endpoint-epm-policy-present`, `id-mdca-ca-session-control`,
-  `xdr-sec-copilot-workspace-provisioned` (fixtures + unit tests).
-- **Graph permissions** — `NetworkAccess.Read.All` and
-  `SecurityCopilotWorkspaces.Read.All` documented for beta collectors.
+  Entra Suite SKU aliases.
+- **Checks** — `id-agent-lifecycle-policy-configured` (`agent_365`, Graph v1.0
+  direct) and `id-lifecycle-workflows-enabled` (`entitlement_management`, Graph
+  v1.0 direct), plus `id-gsa-internet-access-enabled`,
+  `id-gsa-private-access-enabled`, `endpoint-epm-policy-present`,
+  `id-mdca-ca-session-control`, `xdr-sec-copilot-workspace-provisioned`
+  (fixtures + unit tests).
+- **Graph permissions** — `LifecyclePolicies-AgentId.Read.All` and
+  `LifecycleWorkflows.Read.All` (Graph v1.0, read-only, app + delegated) for
+  Entra Agent ID lifecycle policies and Entra ID Governance Lifecycle Workflows,
+  plus `NetworkAccess.Read.All` and `SecurityCopilotWorkspaces.Read.All`
+  documented for beta collectors.
 - **graph_ops coverage** — AccessReview, AuditLog sign-ins, Organization /
   subscribedSkus, Secure Score, DLP, eDiscovery, and Insider Risk (beta
   delegated) operations registered so REQUIRED Graph app permissions are

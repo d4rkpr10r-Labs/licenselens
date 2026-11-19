@@ -10789,6 +10789,67 @@
       "tier": "activation"
     },
     {
+      "check_id": "id-agent-lifecycle-policy-configured",
+      "title": "Entra Agent ID custom lifecycle policy configured",
+      "workload": "identity",
+      "status": "not_licensed",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "data",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/LifecycleWorkflows",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "Configure and enable at least one customer-authored Entra Agent ID lifecycle policy covering sponsor presence, periodic attestation, or custom inactivity thresholds so orphaned or stale AI agent identities are automatically disabled or removed.",
+      "references": [
+        "https://learn.microsoft.com/entra/id-governance/agent-lifecycle-policies",
+        "https://learn.microsoft.com/entra/id-governance/agent-default-inactivity-policy",
+        "https://learn.microsoft.com/graph/whats-new-overview"
+      ],
+      "customer_title": "Paid AI agent lifecycle governance is not yet customized",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "IA-4"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "At least one enabled customer-authored Entra Agent ID lifecycle policy is active.",
+        "partial": "Only Microsoft's free default inactivity policy is enabled, enabled policies lack clear custom source or rule metadata, or the policy list was truncated without a custom match.",
+        "gap": "No enabled Entra Agent ID lifecycle policy was found.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "custom_enabled_policy_count",
+          "default_enabled_policy_count",
+          "enabled_agent_policy_count",
+          "agent_policy_count",
+          "truncated",
+          "api_version"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.agent_lifecycle.evaluate_agent_lifecycle_policy_configured",
+      "tier": "activation"
+    },
+    {
       "check_id": "id-ca-workload-identity",
       "title": "No Conditional Access policy covers service-principal risk",
       "workload": "identity",
@@ -11073,6 +11134,66 @@
       "tier": "activation"
     },
     {
+      "check_id": "id-lifecycle-workflows-enabled",
+      "title": "Entra ID Governance Lifecycle Workflows enabled and scheduled",
+      "workload": "identity",
+      "status": "not_licensed",
+      "severity": "medium",
+      "value_impact": "medium",
+      "impact": "medium",
+      "effort": "half_day",
+      "blast_radius": "all_users",
+      "pack": "identity",
+      "exposure_class": "none",
+      "deep_link": "https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/LifecycleWorkflows",
+      "summary": "Required capability not detected in tenant entitlements; check skipped.",
+      "evidence": {},
+      "entitlements_used": [],
+      "remediation": "Create or enable at least one Lifecycle Workflow covering Joiner, Mover, or Leaver events and enable automatic scheduling (isSchedulingEnabled=true) so account provisioning and offboarding tasks execute without manual intervention.",
+      "references": [
+        "https://learn.microsoft.com/entra/id-governance/what-are-lifecycle-workflows",
+        "https://learn.microsoft.com/graph/api/identitygovernance-lifecycleworkflowscontainer-list-workflows?view=graph-rest-1.0"
+      ],
+      "customer_title": "Automated employee onboarding and offboarding workflows are not running",
+      "customer_summary": "This protection does not appear to be included in the licenses we detected, so there is nothing to configure for it yet.",
+      "customer_next_step": "If you expected this capability, confirm the correct Microsoft plan is assigned, or talk to your licensing partner.",
+      "status_label": "Not in your plan",
+      "confidence": "high",
+      "confidence_label": "High confidence",
+      "data_sources": [
+        "graph.subscribedSkus"
+      ],
+      "limitations": [],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "AC-2",
+          "PS-4"
+        ],
+        "mitre": [
+          "T1078"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "At least one Lifecycle Workflow is enabled with scheduled execution turned on.",
+        "partial": "Enabled Lifecycle Workflows exist without scheduling enabled, or the workflow list was truncated without a scheduled enabled match.",
+        "gap": "No enabled Entra ID Governance Lifecycle Workflows were found.",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "scheduled_enabled_workflow_count",
+          "enabled_workflow_count",
+          "workflow_count",
+          "categories_covered",
+          "truncated",
+          "api_version"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.lifecycle_workflows.evaluate_lifecycle_workflows_enabled",
+      "tier": "activation"
+    },
+    {
       "check_id": "pbi-premium-capacity-governance",
       "title": "Power BI Premium capacity governance",
       "workload": "power_bi",
@@ -11190,6 +11311,14 @@
       "status": "success",
       "source": "demo",
       "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "collector": "agent_lifecycle_policies",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 2,
       "warnings": [],
       "errors": []
     },
@@ -11318,6 +11447,14 @@
       "status": "success",
       "source": "demo",
       "items_collected": 0,
+      "warnings": [],
+      "errors": []
+    },
+    {
+      "collector": "lifecycle_workflows",
+      "status": "success",
+      "source": "demo",
+      "items_collected": 1,
       "warnings": [],
       "errors": []
     },
@@ -11595,7 +11732,7 @@
     "needs_attention": 4,
     "partly_set_up": 1,
     "assessment_incomplete": 0,
-    "not_licensed": 6,
+    "not_licensed": 7,
     "entitlement_unknown": 0,
     "realized_percent": 44
   },
