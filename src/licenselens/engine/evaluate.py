@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from licenselens.evaluators.agent_lifecycle import (
+    evaluate_agent_lifecycle_policy_configured,
+)
 from licenselens.evaluators.azure_selective import (
     evaluate_az_cspm_out_of_scope,
     evaluate_az_defender_plan_enabled,
@@ -157,6 +160,9 @@ from licenselens.evaluators.identity_privileged_extra import (
 from licenselens.evaluators.identity_risk import (
     evaluate_identity_protection_workload,
     evaluate_idprotect_off,
+)
+from licenselens.evaluators.lifecycle_workflows import (
+    evaluate_lifecycle_workflows_enabled,
 )
 from licenselens.evaluators.power_bi import (
     evaluate_pbi_export_controls,
@@ -326,7 +332,9 @@ __all__ = [
     "evaluate_ca_high_risk_users",
     "evaluate_access_reviews_unused",
     "evaluate_access_reviews_scope",
+    "evaluate_agent_lifecycle_policy_configured",
     "evaluate_entitlement_access_packages",
+    "evaluate_lifecycle_workflows_enabled",
     "evaluate_security_defaults_on",
     "evaluate_cross_tenant_defaults",
     "evaluate_cross_tenant_mfa_trust",

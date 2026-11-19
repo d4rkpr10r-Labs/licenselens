@@ -1,0 +1,55 @@
+id: id-agent-lifecycle-policy-configured
+title: Entra Agent ID custom lifecycle policy configured
+customer_title: Paid AI agent lifecycle governance is not yet customized
+customer_summary: >
+  Your Agent 365 or Microsoft 365 E7 license includes automated lifecycle
+  governance for AI agents (sponsor oversight, periodic attestation, and custom
+  inactivity rules) beyond Microsoft's free default inactivity policy. No
+  enabled customer-authored agent lifecycle policy was found.
+expected_state: At least one enabled customer-authored Entra Agent ID lifecycle policy is active.
+customer_next_step: >
+  In Microsoft Entra admin center > Identity governance > Lifecycle policies,
+  create and enable a custom agent lifecycle policy enforcing sponsor checks,
+  periodic attestation, or tailored inactivity cleanup for your AI agents.
+description: >
+  Reads Microsoft Graph v1.0 /identityGovernance/lifecycleWorkflows/lifecyclePolicies
+  for agentIdentityLifecyclePolicy objects and verifies that at least one
+  customer-authored policy is enabled beyond Microsoft's free built-in default
+  agent inactivity policy.
+workload: identity
+required_capabilities:
+  - agent_365
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: data
+pack: identity
+exposure_class: none
+deep_link: https://entra.microsoft.com/#view/Microsoft_AAD_ERM/DashboardBlade/~/LifecycleWorkflows
+collector: graph_agent_lifecycle
+remediation: >
+  Configure and enable at least one customer-authored Entra Agent ID lifecycle
+  policy covering sponsor presence, periodic attestation, or custom inactivity
+  thresholds so orphaned or stale AI agent identities are automatically
+  disabled or removed.
+references:
+  - https://learn.microsoft.com/entra/id-governance/agent-lifecycle-policies
+  - https://learn.microsoft.com/entra/id-governance/agent-default-inactivity-policy
+  - https://learn.microsoft.com/graph/whats-new-overview
+mappings:
+  nist: ["AC-2", "IA-4"]
+  mitre: ["T1078"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: At least one enabled customer-authored Entra Agent ID lifecycle policy is active.
+  partial: Only Microsoft's free default inactivity policy is enabled, enabled policies lack clear custom source or rule metadata, or the policy list was truncated without a custom match.
+  gap: No enabled Entra Agent ID lifecycle policy was found.
+  evidence_fields:
+    - custom_enabled_policy_count
+    - default_enabled_policy_count
+    - enabled_agent_policy_count
+    - agent_policy_count
+    - truncated
+    - api_version
