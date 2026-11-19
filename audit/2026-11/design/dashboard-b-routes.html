@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Direction B — Summary + routes · LicenseLens dashboard IA</title>
+  <style>
+    :root {
+      --canvas: #12141A;
+      --surface-1: #1A1D26;
+      --surface-2: #22262F;
+      --surface-3: #2A2F3A;
+      --border: #2E3440;
+      --border-strong: #3D4554;
+      --text-1: #E8EAEF;
+      --text-2: #B4BAC6;
+      --text-3: #8B93A1;
+      --accent: #7BA3C4;
+      --accent-hover: #9BB4CC;
+      --accent-focus: #B8C9D9;
+      --state-action: #E07070;
+      --state-incomplete: #D0A15C;
+      --state-ok: #6FBA8A;
+      --font-sans: "Segoe UI Variable Text", "Segoe UI", ui-sans-serif, system-ui, -apple-system, sans-serif;
+      --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --ease: cubic-bezier(0.22, 1, 0.36, 1);
+      --duration: 180ms;
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-sans);
+      font-size: 1rem;
+      line-height: 1.55;
+      color: var(--text-1);
+      background: linear-gradient(180deg, #181B24 0%, var(--canvas) 28%);
+    }
+    a { color: var(--accent); text-decoration: none; }
+    a:hover { color: var(--accent-hover); text-decoration: underline; }
+    a:focus-visible, button:focus-visible, summary:focus-visible {
+      outline: 2px solid var(--accent-focus);
+      outline-offset: 2px;
+    }
+    button {
+      font: inherit;
+      cursor: pointer;
+      color: inherit;
+      background: none;
+      border: 0;
+    }
+
+    .banner {
+      margin: 0;
+      padding: 10px 20px;
+      background: var(--surface-2);
+      border-block-end: 1px solid var(--border);
+      color: var(--text-2);
+      font-size: 0.875rem;
+    }
+    .banner strong { color: var(--text-1); }
+
+    .shell {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 28px 24px 72px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-block-end: 28px;
+    }
+    .mark { width: 34px; height: 38px; color: var(--accent); flex-shrink: 0; }
+    .mark svg { width: 100%; height: 100%; display: block; }
+    .brand h1 {
+      margin: 0;
+      font-size: clamp(1.65rem, 3vw, 2.125rem);
+      font-weight: 650;
+      letter-spacing: -0.03em;
+      line-height: 1.1;
+    }
+    .tagline { margin: 4px 0 0; color: var(--text-2); font-size: 0.9375rem; }
+
+    .kicker {
+      margin: 0 0 10px;
+      font-size: 0.6875rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 44px;
+      margin-block-end: 18px;
+      padding: 0;
+      color: var(--accent);
+      font-weight: 600;
+      font-size: 0.9375rem;
+    }
+    .back:hover { color: var(--accent-hover); text-decoration: underline; }
+
+    /* Views: with JS, only .is-active shows. Without JS, all stack. */
+    .view { display: none; }
+    .view.is-active { display: block; animation: fade-in var(--duration) var(--ease) both; }
+    html:not(.js-on) .view { display: block; margin-block-end: 48px; }
+    html:not(.js-on) .view + .view {
+      padding-block-start: 32px;
+      border-block-start: 1px solid var(--border);
+    }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: none; }
+    }
+
+    .hero { margin-block-end: 36px; }
+    .fraction {
+      font-size: clamp(2.75rem, 8vw, 4rem);
+      font-weight: 650;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      font-variant-numeric: tabular-nums;
+    }
+    .fraction .slash { color: var(--text-3); font-weight: 500; margin-inline: 0.06em; }
+    .hero-lead {
+      margin: 14px 0 0;
+      max-width: 42ch;
+      color: var(--text-2);
+      font-size: 1.0625rem;
+    }
+    .hero-lead .quiet { color: var(--text-3); font-size: 0.9375rem; }
+
+    .dist { margin-block-start: 22px; }
+    .dist-bar {
+      display: flex;
+      height: 8px;
+      background: var(--surface-2);
+      overflow: hidden;
+    }
+    .dist-seg { display: block; height: 100%; }
+    .dist-seg.gap { background: var(--state-action); }
+    .dist-seg.partial { background: var(--state-incomplete); }
+    .dist-seg.ok { background: var(--state-ok); }
+    .dist-legend {
+      list-style: none;
+      margin: 12px 0 0;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 18px;
+      color: var(--text-2);
+      font-size: 0.875rem;
+    }
+    .dist-legend li { display: flex; align-items: center; gap: 8px; }
+    .rail { width: 3px; height: 14px; border-radius: 1px; flex-shrink: 0; }
+    .rail.gap { background: var(--state-action); }
+    .rail.partial { background: var(--state-incomplete); }
+    .rail.ok { background: var(--state-ok); }
+
+    .priorities { margin-block: 40px 28px; }
+    .priorities h2, .view-title {
+      margin: 0 0 6px;
+      font-size: 1.25rem;
+      font-weight: 650;
+      letter-spacing: -0.02em;
+    }
+    .help { margin: 0 0 16px; color: var(--text-3); font-size: 0.9375rem; }
+
+    .prio-list { list-style: none; margin: 0; padding: 0; border-block-start: 1px solid var(--border); }
+    .prio-list li { border-block-end: 1px solid var(--border); }
+    .prio-link {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 2.5rem 1fr auto;
+      gap: 12px;
+      align-items: baseline;
+      padding: 16px 4px;
+      text-align: start;
+      min-height: 56px;
+      color: inherit;
+      text-decoration: none;
+      transition: background var(--duration) var(--ease);
+    }
+    .prio-link:hover {
+      background: rgba(123, 163, 196, 0.06);
+      text-decoration: none;
+      color: inherit;
+    }
+    .prio-index {
+      color: var(--text-3);
+      font-variant-numeric: tabular-nums;
+      font-weight: 650;
+      font-size: 0.9375rem;
+    }
+    .prio-title {
+      margin: 0;
+      font-size: 1.02rem;
+      font-weight: 600;
+      color: var(--text-1);
+      line-height: 1.35;
+    }
+    .prio-chevron { color: var(--accent); font-size: 0.875rem; align-self: center; }
+
+    .entries {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+    }
+    .entry {
+      min-height: 72px;
+      padding: 16px 14px;
+      background: var(--surface-1);
+      color: inherit;
+      text-decoration: none;
+      transition: background var(--duration) var(--ease);
+    }
+    .entry:hover {
+      background: var(--surface-2);
+      text-decoration: none;
+      color: inherit;
+    }
+    .entry .label {
+      display: block;
+      font-size: 0.8125rem;
+      font-weight: 650;
+      color: var(--text-1);
+    }
+    .entry .hint {
+      display: block;
+      margin-block-start: 4px;
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
+    @media (max-width: 640px) {
+      .entries { grid-template-columns: 1fr; }
+      .shell { padding-inline: 16px; }
+    }
+
+    .detail-meta {
+      margin: 0 0 12px;
+      font-size: 0.875rem;
+      color: var(--text-3);
+    }
+    .detail-body { color: var(--text-2); max-width: 52ch; }
+    .detail-body p { margin: 0 0 12px; }
+    .status-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      color: var(--text-1);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .status-marker { display: inline-flex; align-items: center; gap: 6px; }
+    .status-marker .tick {
+      width: 10px;
+      height: 10px;
+      border-radius: 1px;
+      background: var(--state-action);
+    }
+    .tech {
+      margin-block-start: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      padding: 0 12px;
+      max-width: 52ch;
+    }
+    .tech summary {
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      color: var(--text-2);
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    .tech-body { padding-block: 0 12px; font-size: 0.875rem; color: var(--text-2); }
+    .tech-body code { font-family: var(--font-mono); color: var(--text-1); }
+
+    .noscript {
+      margin-block-start: 20px;
+      padding: 14px 16px;
+      border: 1px solid var(--border);
+      background: var(--surface-2);
+      color: var(--text-2);
+      font-size: 0.875rem;
+    }
+    .js-on .noscript { display: none; }
+
+    /* Print: show every view linearly */
+    @media print {
+      .banner, .prio-chevron, .noscript, .back { display: none !important; }
+      html.js-on .view, html:not(.js-on) .view {
+        display: block !important;
+        margin-block-end: 28px;
+        padding-block-start: 20px;
+        border-block-start: 1px solid #D5DCE6;
+        animation: none !important;
+      }
+      html.js-on .view#view-summary { border-block-start: 0; padding-block-start: 0; }
+      body { background: #F3F5F8; color: #15202B; }
+      .fraction, .prio-title, .brand h1, .view-title { color: #15202B; }
+      .tagline, .help, .hero-lead, .dist-legend, .detail-body { color: #3D4D5C; }
+      a { color: #2F5A78; }
+      .dist-seg.gap, .rail.gap, .status-marker .tick { background: #B42318 !important; }
+      .dist-seg.partial, .rail.partial { background: #B54708 !important; }
+      .dist-seg.ok, .rail.ok { background: #087443 !important; }
+      .shell { max-width: none; padding: 0; }
+      .entries { display: none !important; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        transition: none !important;
+        animation: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <p class="banner"><strong>Direction B — Summary + full-page routes.</strong> Hash multi-view prototype. Exposure Console tokens. Not shipped. Pick A or B before production work.</p>
+
+  <div class="shell">
+    <header class="brand">
+      <span class="mark" aria-hidden="true">
+        <svg viewBox="0 0 40 45" fill="none">
+          <path d="M8 6h24v33H8z" stroke="currentColor" stroke-width="2"/>
+          <path d="M8 18h24M8 28h24" stroke="currentColor" stroke-width="2"/>
+          <circle cx="20" cy="23" r="5" stroke="currentColor" stroke-width="2"/>
+        </svg>
+      </span>
+      <div>
+        <h1>Security License Lens</h1>
+        <p class="tagline">Entitlements, controls, and configuration gaps.</p>
+      </div>
+    </header>
+
+    <noscript>
+      <p class="noscript">JavaScript is off. All views appear in order below (same as print). With JS, hash routes swap one view at a time.</p>
+    </noscript>
+
+    <main>
+      <!-- Summary -->
+      <section class="view is-active" id="view-summary" data-route="/" aria-label="Summary">
+        <div class="hero">
+          <p class="kicker">Where you stand</p>
+          <div class="fraction" aria-label="4 of 9 in-scope capabilities met">4<span class="slash">/</span>9</div>
+          <p class="hero-lead">
+            In-scope capabilities met assessed criteria.
+            <span class="quiet">About 44% of this prioritized set — read the fraction, not the percent.</span>
+          </p>
+          <div class="dist">
+            <div class="dist-bar" role="img" aria-label="Distribution: 4 action required, 1 incomplete, 4 met">
+              <span class="dist-seg gap" style="flex:4"></span>
+              <span class="dist-seg partial" style="flex:1"></span>
+              <span class="dist-seg ok" style="flex:4"></span>
+            </div>
+            <ul class="dist-legend">
+              <li><span class="rail gap" aria-hidden="true"></span>4 action required</li>
+              <li><span class="rail partial" aria-hidden="true"></span>1 incomplete</li>
+              <li><span class="rail ok" aria-hidden="true"></span>4 met</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="priorities">
+          <p class="kicker">Priorities</p>
+          <h2>What matters most</h2>
+          <p class="help">Each row opens a full-page detail view. Back returns here.</p>
+          <ul class="prio-list">
+            <li>
+              <a class="prio-link" href="#/priority/1">
+                <span class="prio-index">01</span>
+                <span class="prio-title">Restrict user consent so only admins approve non-trivial permissions</span>
+                <span class="prio-chevron" aria-hidden="true">→</span>
+              </a>
+            </li>
+            <li>
+              <a class="prio-link" href="#/priority/2">
+                <span class="prio-index">02</span>
+                <span class="prio-title">Disable SMS, Voice, and Email OTP authentication methods</span>
+                <span class="prio-chevron" aria-hidden="true">→</span>
+              </a>
+            </li>
+            <li>
+              <a class="prio-link" href="#/priority/3">
+                <span class="prio-index">03</span>
+                <span class="prio-title">Create two cloud-only Global Administrator emergency accounts</span>
+                <span class="prio-chevron" aria-hidden="true">→</span>
+              </a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="entries" role="navigation" aria-label="More detail">
+          <a class="entry" href="#/owned">
+            <span class="label">What you own</span>
+            <span class="hint">27 licensed · 9 prioritized</span>
+          </a>
+          <a class="entry" href="#/findings">
+            <span class="label">Findings</span>
+            <span class="hint">Evidence-backed gaps</span>
+          </a>
+          <a class="entry" href="#/method">
+            <span class="label">How we got here</span>
+            <span class="hint">Method &amp; accounting</span>
+          </a>
+        </div>
+      </section>
+
+      <!-- Priority 1 -->
+      <section class="view" id="view-priority-1" data-route="/priority/1" aria-label="Priority 01">
+        <a class="back" href="#/">← Summary</a>
+        <p class="kicker">Priority 01</p>
+        <h2 class="view-title">Restrict user consent so only admins approve non-trivial permissions</h2>
+        <p class="detail-meta">Effort: Hours</p>
+        <div class="detail-body">
+          <p>Users can still approve app permissions themselves, which is a common path for consent phishing.</p>
+          <p><a href="#">Open the admin page</a></p>
+          <details class="tech">
+            <summary>Check detail</summary>
+            <div class="tech-body">
+              <p><strong>Check:</strong> <code>id-app-user-consent-restricted</code></p>
+              <p><strong>Evidence:</strong> direct · <strong>Confidence:</strong> high</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Priority 2 -->
+      <section class="view" id="view-priority-2" data-route="/priority/2" aria-label="Priority 02">
+        <a class="back" href="#/">← Summary</a>
+        <p class="kicker">Priority 02</p>
+        <h2 class="view-title">Disable SMS, Voice, and Email OTP authentication methods</h2>
+        <p class="detail-meta">Effort: Hours</p>
+        <div class="detail-body">
+          <p>SMS, voice, or email one-time codes are still allowed — these are the easiest multi-factor methods for attackers to abuse.</p>
+          <p><a href="#">Open the admin page</a></p>
+        </div>
+      </section>
+
+      <!-- Priority 3 -->
+      <section class="view" id="view-priority-3" data-route="/priority/3" aria-label="Priority 03">
+        <a class="back" href="#/">← Summary</a>
+        <p class="kicker">Priority 03</p>
+        <h2 class="view-title">Create two cloud-only Global Administrator emergency accounts</h2>
+        <p class="detail-meta">Effort: Hours</p>
+        <div class="detail-body">
+          <p>We could not confirm a dedicated emergency admin account. Without one, an outage or lockout can lock you out of your own tenant.</p>
+          <p><a href="#">Open the admin page</a></p>
+        </div>
+      </section>
+
+      <!-- Owned -->
+      <section class="view" id="view-owned" data-route="/owned" aria-label="What you own">
+        <a class="back" href="#/">← Summary</a>
+        <p class="kicker">Entitlements</p>
+        <h2 class="view-title">What you already own</h2>
+        <div class="detail-body">
+          <p>27 licensed capabilities detected. 9 are in the prioritized identity + endpoint set.</p>
+          <p>The instrument focuses attention on what you already pay for that still needs configuration — it does not invent a second scoreboard.</p>
+        </div>
+      </section>
+
+      <!-- Findings -->
+      <section class="view" id="view-findings" data-route="/findings" aria-label="Findings">
+        <a class="back" href="#/">← Summary</a>
+        <p class="kicker">Findings</p>
+        <h2 class="view-title">Evidence-backed gaps</h2>
+        <div class="detail-body">
+          <p class="status-row">
+            <span class="status-marker"><span class="tick" aria-hidden="true"></span> Action required</span>
+          </p>
+          <p><strong style="color:var(--text-1)">User consent for non-trivial permissions is still allowed</strong></p>
+          <p>You pay for stronger app-consent controls. We expected admin-only approval for non-trivial permissions. We observed user consent still permitted.</p>
+          <details class="tech">
+            <summary>Evidence and check detail</summary>
+            <div class="tech-body">
+              <p><strong>Check:</strong> <code>id-app-user-consent-restricted</code></p>
+              <p><strong>Evidence:</strong> direct · <strong>Confidence:</strong> high</p>
+            </div>
+          </details>
+        </div>
+      </section>
+
+      <!-- Method -->
+      <section class="view" id="view-method" data-route="/method" aria-label="How we got here">
+        <a class="back" href="#/">← Summary</a>
+        <p class="kicker">Method</p>
+        <h2 class="view-title">How we got here</h2>
+        <div class="detail-body">
+          <p>9 owned (prioritized) · 4 met · 4 action required · 1 partly set up · 6 not licensed.</p>
+          <p>Verdicts are deterministic from read-only evidence. Missing evidence stays missing. Color never carries status alone.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      document.documentElement.classList.add("js-on");
+      var views = Array.prototype.slice.call(document.querySelectorAll(".view[data-route]"));
+
+      function normalize(hash) {
+        var h = (hash || "#/").replace(/^#/, "");
+        if (!h || h === "/") return "/";
+        if (h.charAt(0) !== "/") h = "/" + h;
+        return h;
+      }
+
+      function show(route) {
+        var matched = false;
+        views.forEach(function (view) {
+          var on = view.getAttribute("data-route") === route;
+          view.classList.toggle("is-active", on);
+          if (on) matched = true;
+        });
+        if (!matched) {
+          views.forEach(function (view) {
+            view.classList.toggle("is-active", view.getAttribute("data-route") === "/");
+          });
+        }
+        var active = document.querySelector(".view.is-active");
+        if (active) {
+          var heading = active.querySelector("h1, h2, .view-title");
+          if (heading) heading.setAttribute("tabindex", "-1"), heading.focus({ preventScroll: true });
+        }
+        window.scrollTo(0, 0);
+      }
+
+      function sync() {
+        show(normalize(location.hash));
+      }
+
+      window.addEventListener("hashchange", sync);
+      if (!location.hash || location.hash === "#") {
+        history.replaceState(null, "", "#/");
+      }
+      sync();
+    })();
+  </script>
+</body>
+</html>
