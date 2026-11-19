@@ -277,9 +277,34 @@ def _apply_after_remediation_overlay(evidence: dict[str, Any]) -> None:
 
     bundle = evidence.get("intune_bundle")
     if isinstance(bundle, dict):
-        bundle["managed_devices"] = [{"id": "dev-1"}]
+        bundle["managed_devices"] = [{"id": "dev-1", "operatingSystem": "Windows"}]
         bundle["eligible_devices"] = len(bundle["managed_devices"])
         bundle["truncated"] = False
+        bundle["antivirus_policies_truncated"] = False
+        bundle["configuration_policies_truncated"] = False
+        bundle["managed_devices_truncated"] = False
+        bundle["antivirus_policies"] = [
+            {
+                "id": "ep-av",
+                "displayName": "Endpoint security - Antivirus",
+                "source": "configurationPolicies",
+                "api_version": "beta",
+                "isAssigned": True,
+                "assigned": True,
+                "assignments": [{"id": "ava1", "target": {"groupId": "g-all"}}],
+                "assignments_error": False,
+                "ai_agent_protection": 1,
+                "ai_agent_network_inspection": 1,
+                "ai_agent_protection_mode": "block",
+                "ai_agent_network_inspection_mode": "block",
+                "matched_setting_definition_ids": [
+                    "device_vendor_msft_defender_configuration_aiagentprotection",
+                    "device_vendor_msft_defender_configuration_aiagentnetworkinspection",
+                ],
+                "settings_error": False,
+                "settings_truncated": False,
+            }
+        ]
         bundle["asr_policies"] = [
             {
                 "id": "asr-1",

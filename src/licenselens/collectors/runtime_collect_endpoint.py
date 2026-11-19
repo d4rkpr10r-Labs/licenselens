@@ -127,7 +127,12 @@ def collect_intune_bundle_runtime(
         bundle = collect_intune_evidence_bundle(
             ctx.client, licensed_units=intune_licensed_units(ctx.skus)
         )
-        return ok(key, bundle, source="graph.deviceManagement")
+        return ok(
+            key,
+            bundle,
+            source="graph.deviceManagement",
+            truncated=bool(bundle.get("truncated")),
+        )
     except (AuthError, GraphError) as exc:
         return graph_failure(
             key, exc, f"Intune device management state could not be read: {exc}", ctx

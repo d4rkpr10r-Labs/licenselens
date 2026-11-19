@@ -44,11 +44,20 @@ _MAX_POLICY_DETAIL = 15
 _MAX_TAMPER_DEVICES = 10
 
 _ASR_RULE_KEY = "attacksurfacereductionrules"
+_ANTIVIRUS_FAMILY_TOKEN = "endpointsecurityantivirus"
+_AI_AGENT_PROTECTION_KEY = "aiagentprotection"
+_AI_AGENT_NETWORK_INSPECTION_KEY = "aiagentnetworkinspection"
+_AI_AGENT_MODE_LABELS: dict[int, str] = {
+    0: "disabled",
+    1: "block",
+    2: "audit",
+}
 
 _SURFACES = (
     "managed_devices",
     "compliance_policies",
     "configuration_policies",
+    "antivirus_policies",
     "atp_onboarding_state",
     "device_configurations",
     "asr_policies",
@@ -91,11 +100,29 @@ def collect_intune_evidence_bundle(
         for surface in _SURFACES:
             errors[surface] = "Intune device management is not supported in this cloud."
         return _bundle(
-            [], [], [], None, [], [], None, [], _EMPTY_TAMPER_STATE, licensed_units, False, errors
+            [],
+            [],
+            [],
+            [],
+            None,
+            [],
+            [],
+            None,
+            [],
+            _EMPTY_TAMPER_STATE,
+            licensed_units,
+            False,
+            errors,
+            antivirus_policies_truncated=False,
+            configuration_policies_truncated=False,
+            managed_devices_truncated=False,
         )
 
+    devices_truncated = False
     try:
-        devices = client.get_list("/deviceManagement/managedDevices", max_pages=20)
+        devices, devices_truncated = _get_list_with_truncation(
+            client, "/deviceManagement/managedDevices", max_pages=20
+        )
     except GraphError as exc:
         devices = []
         errors["managed_devices"] = str(exc)
@@ -106,8 +133,11 @@ def collect_intune_evidence_bundle(
         compliance = []
         errors["compliance_policies"] = str(exc)
 
+    config_truncated = False
     try:
-        config = client.get_list("/deviceManagement/configurationPolicies", max_pages=30)
+        config, config_truncated = _get_list_with_truncation(
+            client, "/deviceManagement/configurationPolicies", max_pages=30
+        )
     except GraphError as exc:
         config = []
         errors["configuration_policies"] = str(exc)
@@ -123,6 +153,16 @@ def collect_intune_evidence_bundle(
         atp = collect_intune_atp_onboarding_state(client)
     except GraphError as exc:
         errors["atp_onboarding_state"] = str(exc)
+
+    antivirus_policy_entries, antivirus_truncated, antivirus_error = _collect_antivirus_policies(
+        client,
+        config,
+        max_policy_detail,
+        config_truncated=config_truncated,
+        config_error=errors["configuration_policies"],
+    )
+    if antivirus_error:
+        errors["antivirus_policies"] = antivirus_error
 
     asr_policy_entries, asr_error = _collect_asr_policies(
         client,
@@ -159,11 +199,17 @@ def collect_intune_evidence_bundle(
     enriched_app_protections = [
         _enrich_app_protection(client, policy) for policy in app_protections[:max_policy_detail]
     ]
-    truncated = len(compliance) > max_policy_detail
+    truncated = (
+        len(compliance) > max_policy_detail
+        or devices_truncated
+        or config_truncated
+        or antivirus_truncated
+    )
     return _bundle(
         devices,
         enriched,
         config,
+        antivirus_policy_entries,
         atp,
         enriched_configs,
         asr_policy_entries,
@@ -173,6 +219,9 @@ def collect_intune_evidence_bundle(
         licensed_units,
         truncated,
         errors,
+        antivirus_policies_truncated=antivirus_truncated,
+        configuration_policies_truncated=config_truncated,
+        managed_devices_truncated=devices_truncated,
     )
 
 
@@ -180,6 +229,7 @@ def _bundle(
     devices: list[dict[str, Any]],
     compliance: list[dict[str, Any]],
     config: list[dict[str, Any]],
+    antivirus_policies: list[dict[str, Any]],
     atp: dict[str, Any] | None,
     device_configs: list[dict[str, Any]],
     asr_policies: list[dict[str, Any]],
@@ -189,11 +239,16 @@ def _bundle(
     licensed_units: int | None,
     truncated: bool,
     errors: dict[str, str],
+    *,
+    antivirus_policies_truncated: bool = False,
+    configuration_policies_truncated: bool = False,
+    managed_devices_truncated: bool = False,
 ) -> dict[str, Any]:
     return {
         "managed_devices": devices,
         "compliance_policies": compliance,
         "configuration_policies": config,
+        "antivirus_policies": antivirus_policies,
         "atp_onboarding_state": atp,
         "device_configurations": device_configs,
         "asr_policies": asr_policies,
@@ -202,6 +257,9 @@ def _bundle(
         "tamper_device_state": tamper_state,
         "licensed_units": licensed_units,
         "truncated": truncated,
+        "antivirus_policies_truncated": antivirus_policies_truncated,
+        "configuration_policies_truncated": configuration_policies_truncated,
+        "managed_devices_truncated": managed_devices_truncated,
         "errors": errors,
     }
 
@@ -237,12 +295,36 @@ def _enrich_compliance_policy(client: GraphClient, policy: dict[str, Any]) -> di
     return entry
 
 
+def _get_list_with_truncation(
+    client: GraphClient,
+    path: str,
+    *,
+    max_pages: int = 30,
+) -> tuple[list[dict[str, Any]], bool]:
+    """Read a paged Graph collection and return ``(items, truncated)``."""
+    if hasattr(client, "get_list_result"):
+        result = client.get_list_result(path, max_pages=max_pages)
+        return list(result.items), bool(result.truncated)
+    return client.get_list(path, max_pages=max_pages), False
+
+
+def _safe_list_with_truncation(
+    client: GraphClient,
+    path: str,
+    *,
+    max_pages: int = 5,
+) -> tuple[list[dict[str, Any]] | None, bool]:
+    """Return ``(items, truncated)``, or ``(None, False)`` when the read failed."""
+    try:
+        return _get_list_with_truncation(client, path, max_pages=max_pages)
+    except GraphError:
+        return None, False
+
+
 def _safe_list(client: GraphClient, path: str) -> list[dict[str, Any]] | None:
     """Return the list, or ``None`` when the read failed (unreadable detail)."""
-    try:
-        return client.get_list(path, max_pages=5)
-    except GraphError:
-        return None
+    items, _ = _safe_list_with_truncation(client, path, max_pages=5)
+    return items
 
 
 _EMPTY_TAMPER_STATE: dict[str, Any] = {
@@ -288,11 +370,165 @@ def _read_configuration_policy_assignment(
 def _read_configuration_policy_settings(
     client: GraphClient,
     pid: str,
+    *,
+    truncated_flag: list[bool] | None = None,
 ) -> list[dict[str, Any]] | None:
     """Read settings entries for one settings-catalog configuration policy."""
     if not pid:
         return []
-    return _safe_list(client, f"/deviceManagement/configurationPolicies/{pid}/settings")
+    items, is_truncated = _safe_list_with_truncation(
+        client, f"/deviceManagement/configurationPolicies/{pid}/settings"
+    )
+    if truncated_flag is not None and is_truncated:
+        truncated_flag.append(True)
+    return items
+
+
+def _collect_antivirus_policies(
+    client: GraphClient,
+    config: list[dict[str, Any]],
+    max_policy_detail: int,
+    *,
+    config_truncated: bool = False,
+    config_error: str = "",
+) -> tuple[list[dict[str, Any]], bool, str]:
+    """Enrich settings-catalog ``endpointSecurityAntivirus`` policies with
+    Defender local AI agent runtime protection settings (Graph beta)."""
+    if config_error:
+        return [], False, config_error
+    candidates = _configuration_policies_by_family(config, _ANTIVIRUS_FAMILY_TOKEN)
+    entries = [
+        _enrich_configuration_antivirus_policy(client, policy)
+        for policy in candidates[:max_policy_detail]
+    ]
+    truncated = (
+        config_truncated
+        or len(candidates) > max_policy_detail
+        or any(bool(entry.get("settings_truncated")) for entry in entries)
+    )
+    return entries, truncated, ""
+
+
+def _enrich_configuration_antivirus_policy(
+    client: GraphClient,
+    policy: dict[str, Any],
+) -> dict[str, Any]:
+    pid = str(policy.get("id") or "")
+    assigned, assignments, assignments_error = _read_configuration_policy_assignment(client, policy)
+    entry: dict[str, Any] = {
+        "id": pid,
+        "displayName": str(policy.get("name") or policy.get("displayName") or pid),
+        "source": "configurationPolicies",
+        "api_version": "beta",
+        "isAssigned": assigned,
+        "assigned": assigned,
+        "assignments": assignments,
+        "assignments_error": assignments_error,
+        "ai_agent_protection": None,
+        "ai_agent_network_inspection": None,
+        "ai_agent_protection_mode": None,
+        "ai_agent_network_inspection_mode": None,
+        "matched_setting_definition_ids": [],
+        "settings_error": False,
+        "settings_truncated": False,
+    }
+    if not pid:
+        return entry
+    truncated_flag: list[bool] = []
+    settings = _read_configuration_policy_settings(client, pid, truncated_flag=truncated_flag)
+    if settings is None:
+        entry["settings_error"] = True
+        return entry
+    entry["settings_truncated"] = bool(truncated_flag)
+    entry.update(_extract_ai_agent_runtime_settings(settings))
+    return entry
+
+
+def _extract_ai_agent_runtime_settings(settings: list[dict[str, Any]]) -> dict[str, Any]:
+    """Extract Defender CSP AiAgentProtection & AiAgentNetworkInspection modes.
+
+    Values follow the documented Defender CSP / Set-MpPreference enum:
+    ``0=Disabled``, ``1=Block``, ``2=Audit``.
+    """
+    protection: int | None = None
+    network_inspection: int | None = None
+    matched_defs: set[str] = set()
+
+    for node in _iter_setting_instances(settings):
+        raw_def = str(node.get("settingDefinitionId") or "").strip()
+        if not raw_def:
+            continue
+        lowered_def = raw_def.lower()
+        if _matches_setting_key(lowered_def, _AI_AGENT_PROTECTION_KEY):
+            matched_defs.add(raw_def)
+            parsed = _extract_ai_agent_mode_from_node(node)
+            if parsed is not None:
+                protection = _merge_mode(protection, parsed)
+        elif _matches_setting_key(lowered_def, _AI_AGENT_NETWORK_INSPECTION_KEY):
+            matched_defs.add(raw_def)
+            parsed = _extract_ai_agent_mode_from_node(node)
+            if parsed is not None:
+                network_inspection = _merge_mode(network_inspection, parsed)
+
+    return {
+        "ai_agent_protection": protection,
+        "ai_agent_network_inspection": network_inspection,
+        "ai_agent_protection_mode": _AI_AGENT_MODE_LABELS.get(protection)
+        if protection is not None
+        else None,
+        "ai_agent_network_inspection_mode": _AI_AGENT_MODE_LABELS.get(network_inspection)
+        if network_inspection is not None
+        else None,
+        "matched_setting_definition_ids": sorted(matched_defs),
+    }
+
+
+def _matches_setting_key(definition_id: str, key: str) -> bool:
+    return (
+        definition_id == key
+        or definition_id.endswith(f"_{key}")
+        or definition_id.endswith(f"/{key}")
+    )
+
+
+def _extract_ai_agent_mode_from_node(node: dict[str, Any]) -> int | None:
+    choice = node.get("choiceSettingValue")
+    if isinstance(choice, dict):
+        parsed = _parse_ai_agent_mode_value(choice.get("value"))
+        if parsed is not None:
+            return parsed
+    simple = node.get("simpleSettingValue")
+    if isinstance(simple, dict):
+        parsed = _parse_ai_agent_mode_value(simple.get("value"))
+        if parsed is not None:
+            return parsed
+    if "value" in node:
+        return _parse_ai_agent_mode_value(node.get("value"))
+    return None
+
+
+def _parse_ai_agent_mode_value(raw: Any) -> int | None:
+    if isinstance(raw, bool):
+        return None
+    if isinstance(raw, int):
+        return raw if raw in _AI_AGENT_MODE_LABELS else None
+    if isinstance(raw, str):
+        text = raw.strip().lower()
+        if text in {"0", "disabled"} or text.endswith("_0") or text.endswith("_disabled"):
+            return 0
+        if text in {"1", "block"} or text.endswith("_1") or text.endswith("_block"):
+            return 1
+        if text in {"2", "audit"} or text.endswith("_2") or text.endswith("_audit"):
+            return 2
+    return None
+
+
+def _merge_mode(existing: int | None, incoming: int) -> int:
+    if existing is None:
+        return incoming
+    # Prefer Block (1) > Audit (2) > Disabled (0) if duplicate instances exist.
+    order = {1: 2, 2: 1, 0: 0}
+    return incoming if order.get(incoming, -1) > order.get(existing, -1) else existing
 
 
 def _collect_asr_policies(
@@ -433,6 +669,14 @@ def _iter_setting_children(instance: Any):
             children = node.get(container)
             if isinstance(children, list):
                 for child in children:
+                    if isinstance(child, dict):
+                        yield child
+                        stack.append(child)
+        choice_val = node.get("choiceSettingValue")
+        if isinstance(choice_val, dict):
+            choice_children = choice_val.get("children")
+            if isinstance(choice_children, list):
+                for child in choice_children:
                     if isinstance(child, dict):
                         yield child
                         stack.append(child)
@@ -592,6 +836,25 @@ DEMO_INTUNE_EVIDENCE_BUNDLE: dict[str, Any] = {
             "templateReference": {"templateFamily": "endpointSecuritySecurityBaselines"},
         },
     ],
+    "antivirus_policies": [
+        {
+            "id": "ep-av",
+            "displayName": "Endpoint security - Antivirus",
+            "source": "configurationPolicies",
+            "api_version": "beta",
+            "isAssigned": True,
+            "assigned": True,
+            "assignments": [{"id": "ava1", "target": {"groupId": "g-all"}}],
+            "assignments_error": False,
+            "ai_agent_protection": None,
+            "ai_agent_network_inspection": None,
+            "ai_agent_protection_mode": None,
+            "ai_agent_network_inspection_mode": None,
+            "matched_setting_definition_ids": [],
+            "settings_error": False,
+            "settings_truncated": False,
+        }
+    ],
     "atp_onboarding_state": {
         "onboardedDeviceCount": 2,
         "unknownDeviceCount": 0,
@@ -668,10 +931,14 @@ DEMO_INTUNE_EVIDENCE_BUNDLE: dict[str, Any] = {
     },
     "licensed_units": 100,
     "truncated": False,
+    "antivirus_policies_truncated": False,
+    "configuration_policies_truncated": False,
+    "managed_devices_truncated": False,
     "errors": {
         "managed_devices": "",
         "compliance_policies": "",
         "configuration_policies": "",
+        "antivirus_policies": "",
         "atp_onboarding_state": "",
         "device_configurations": "",
         "asr_policies": "",
