@@ -36,13 +36,13 @@ def test_demo_frozen_anchors():
 
     payload = run_assessment(scanned_at=FROZEN_TIME)
     ids = [f["check_id"] for f in payload["findings"]]
-    assert len(ids) == 175
+    assert len(ids) == 176
     assert len(payload["owned_capabilities"]) == 27
     assert "id-ca-priv-gaps" in ids
     statuses: dict[str, int] = {}
     for f in payload["findings"]:
         statuses[f["status"]] = statuses.get(f["status"], 0) + 1
-    assert statuses == {"gap": 41, "partial": 20, "skipped": 12, "ok": 93, "not_licensed": 9}
+    assert statuses == {"gap": 42, "partial": 20, "skipped": 12, "ok": 93, "not_licensed": 9}
     assert payload["moves"] and payload["recommended_next_steps"]
 
 

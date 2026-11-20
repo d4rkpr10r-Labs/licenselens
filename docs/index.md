@@ -39,7 +39,7 @@ LicenseLens looks at the SKUs in the tenant, maps them to the controls those SKU
 
     ---
 
-    175 checks across identity, email, endpoint, and related workloads.
+    176 checks across identity, email, endpoint, and related workloads.
     Activation checks the paid security you already own; hygiene is an optional
     SCuBA-aligned pack.
 

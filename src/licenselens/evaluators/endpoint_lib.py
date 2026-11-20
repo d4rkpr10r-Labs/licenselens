@@ -40,6 +40,12 @@ def configuration_policies(bundle: dict[str, Any] | None) -> list[dict[str, Any]
     return [p for p in bundle.get("configuration_policies") or [] if isinstance(p, dict)]
 
 
+def antivirus_policies(bundle: dict[str, Any] | None) -> list[dict[str, Any]]:
+    if bundle is None:
+        return []
+    return [p for p in bundle.get("antivirus_policies") or [] if isinstance(p, dict)]
+
+
 def managed_devices(bundle: dict[str, Any] | None) -> list[dict[str, Any]]:
     if bundle is None:
         return []

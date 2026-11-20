@@ -556,6 +556,42 @@
           }
         ]
       },
+      "/deviceManagement/configurationPolicies/ep-av/assignments": {
+        "value": [
+          {
+            "id": "ava1",
+            "target": {
+              "groupId": "g-all"
+            }
+          }
+        ]
+      },
+      "/deviceManagement/configurationPolicies/ep-av/settings": {
+        "value": [
+          {
+            "id": "av-s1",
+            "settingInstance": {
+              "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+              "settingDefinitionId": "device_vendor_msft_defender_configuration_aiagentprotection",
+              "choiceSettingValue": {
+                "value": "device_vendor_msft_defender_configuration_aiagentprotection_2",
+                "children": []
+              }
+            }
+          },
+          {
+            "id": "av-s2",
+            "settingInstance": {
+              "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+              "settingDefinitionId": "device_vendor_msft_defender_configuration_aiagentnetworkinspection",
+              "choiceSettingValue": {
+                "value": "device_vendor_msft_defender_configuration_aiagentnetworkinspection_0",
+                "children": []
+              }
+            }
+          }
+        ]
+      },
       "/deviceManagement/endpointSecurity/attackSurfaceReductionPolicies/asr-1/assignments": {
         "value": [
           {

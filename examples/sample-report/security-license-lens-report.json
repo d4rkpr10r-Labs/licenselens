@@ -676,6 +676,92 @@
       "tier": "activation"
     },
     {
+      "check_id": "endpoint-mde-ai-agent-runtime-protection",
+      "title": "Defender for Endpoint local AI agent runtime protection enforced",
+      "workload": "endpoint",
+      "status": "gap",
+      "severity": "high",
+      "value_impact": "high",
+      "impact": "high",
+      "effort": "hours",
+      "blast_radius": "devices",
+      "pack": "endpoint",
+      "exposure_class": "none",
+      "deep_link": "https://intune.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/antivirus",
+      "summary": "Managed Windows devices exist, Intune Antivirus policies were read cleanly, and neither AiAgentProtection nor AiAgentNetworkInspection is enabled.",
+      "evidence": {
+        "api_version": "beta",
+        "antivirus_policy_count": 1,
+        "assigned_block_policy_count": 0,
+        "assigned_audit_policy_count": 0,
+        "unassigned_enabled_policy_count": 0,
+        "block_modes": [],
+        "audit_modes": [],
+        "managed_windows_device_count": 1,
+        "truncated": false,
+        "policy_names": [
+          "Endpoint security - Antivirus"
+        ],
+        "matched_setting_definition_ids": []
+      },
+      "entitlements_used": [
+        "defender_endpoint_p2"
+      ],
+      "remediation": "In Microsoft Intune (Endpoint security > Antivirus) or the Microsoft Defender portal (Endpoint security policies > Windows), create a Microsoft Defender AI agent runtime protection policy, configure AiAgentProtection (agent-native event inspection) and/or AiAgentNetworkInspection (network inspection) to Block (1) after validating in Audit (2), and assign it to managed Windows device groups.",
+      "references": [
+        "https://learn.microsoft.com/en-us/defender-endpoint/configure-ai-agent-runtime-protection",
+        "https://learn.microsoft.com/en-us/windows/client-management/mdm/defender-csp",
+        "https://learn.microsoft.com/graph/api/resources/intune-deviceconfigv2-devicemanagementconfigurationtemplatefamily?view=graph-rest-beta"
+      ],
+      "customer_title": "Local AI coding and desktop agents may not have runtime protection enabled",
+      "customer_summary": "You license Defender for Endpoint Plan 2 and manage Windows devices, but no assigned Intune Antivirus policy turns on local AI agent runtime protection.",
+      "customer_next_step": "Create and assign a Microsoft Defender AI agent runtime protection policy in Intune Endpoint security > Antivirus (start in Audit mode if needed, then move to Block mode for enforcement).",
+      "status_label": "Needs attention",
+      "confidence": "medium",
+      "confidence_label": "Medium confidence",
+      "data_sources": [
+        "graph.beta.deviceManagement.configurationPolicies",
+        "graph.deviceManagement.managedDevices"
+      ],
+      "limitations": [
+        "Intune Settings Catalog configurationPolicies is a Microsoft Graph beta surface.",
+        "Settings applied outside Intune Settings Catalog (Group Policy, PowerShell Set-MpPreference, or Microsoft Defender portal security settings management without Intune sync) are outside this check's visibility.",
+        "Setting extraction relies on documented Defender CSP settingDefinitionId conventions (AiAgentProtection, AiAgentNetworkInspection; 0=Disabled, 1=Block, 2=Audit) and should be confirmed against live Intune policy exports."
+      ],
+      "evaluation_mode": "direct",
+      "source_references": [],
+      "accepted_risks": [],
+      "mappings": {
+        "nist": [
+          "SI-3",
+          "CM-6"
+        ],
+        "mitre": [
+          "T1059",
+          "T1204"
+        ]
+      },
+      "pass_criteria": {
+        "ok": "At least one assigned Intune Antivirus policy enforces AiAgentProtection or AiAgentNetworkInspection in Block mode (1).",
+        "partial": "Protection is configured in Audit mode (2) only, exists only on an unassigned policy, no managed Windows devices were observed, or the Intune policy/device read was truncated.",
+        "gap": "Managed Windows devices exist, Intune Antivirus policies were read cleanly, and neither AiAgentProtection nor AiAgentNetworkInspection is enabled (Medium confidence; GPO/PowerShell/Defender-portal configs outside Intune are not observed).",
+        "error": "Evidence could not be collected (permissions, API failure, or missing Azure scope).",
+        "evidence_fields": [
+          "antivirus_policy_count",
+          "assigned_block_policy_count",
+          "assigned_audit_policy_count",
+          "unassigned_enabled_policy_count",
+          "block_modes",
+          "audit_modes",
+          "managed_windows_device_count",
+          "api_version",
+          "truncated"
+        ]
+      },
+      "evaluator_ref": "licenselens.evaluators.endpoint_intune_policy.evaluate_endpoint_mde_ai_agent_runtime_protection",
+      "tier": "activation"
+    },
+    {
       "check_id": "id-app-risky-delegated-consent",
       "title": "Risky tenant-wide delegated app consent present",
       "workload": "identity",
@@ -11554,9 +11640,11 @@
     "Power Platform / Power BI PowerShell (powershell.bridge)",
     "Security & Compliance PowerShell (scc_compliance)",
     "azure.arm.securityInsights",
+    "graph.beta.deviceManagement.configurationPolicies",
     "graph.beta.security.insiderRiskManagement.policies",
     "graph.beta.security.securityCopilot.workspaces",
     "graph.deviceManagement",
+    "graph.deviceManagement.managedDevices",
     "graph.identity.conditionalAccess",
     "graph.security.cases.ediscoveryCases",
     "graph.security.incidents",
@@ -11611,8 +11699,8 @@
   "capability_rollup": {
     "you_own": 9,
     "fully_working": 3,
-    "needs_attention": 4,
-    "partly_set_up": 2,
+    "needs_attention": 5,
+    "partly_set_up": 1,
     "assessment_incomplete": 0,
     "not_licensed": 6,
     "entitlement_unknown": 0,
@@ -11673,6 +11761,21 @@
         "teams-third-party-apps-governed",
         "teams-unmanaged-inbound-blocked",
         "teams-unmanaged-outbound-blocked"
+      ]
+    },
+    {
+      "id": "defender_endpoint_p2",
+      "name": "Microsoft Defender for Endpoint P2",
+      "plain_name": "Deep protection and visibility on PCs and devices",
+      "status": "needs_attention",
+      "status_label": "Needs attention",
+      "related_check_ids": [
+        "mde-onboard-gap",
+        "ep-asr-rules",
+        "endpoint-mde-ai-agent-runtime-protection",
+        "mde-sensor-health",
+        "ep-tamper-protection",
+        "id-protective-plan-assignment"
       ]
     },
     {
@@ -11789,20 +11892,6 @@
       "status_label": "Partly set up",
       "related_check_ids": [
         "id-mdca-ca-session-control"
-      ]
-    },
-    {
-      "id": "defender_endpoint_p2",
-      "name": "Microsoft Defender for Endpoint P2",
-      "plain_name": "Deep protection and visibility on PCs and devices",
-      "status": "partly_set_up",
-      "status_label": "Partly set up",
-      "related_check_ids": [
-        "mde-onboard-gap",
-        "ep-asr-rules",
-        "mde-sensor-health",
-        "ep-tamper-protection",
-        "id-protective-plan-assignment"
       ]
     },
     {

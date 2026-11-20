@@ -26,8 +26,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
   Entra Suite SKU aliases. Agent 365 stays research/SKU-name tracked until a
   GA read-only activation check exists.
 - **Checks** — `id-gsa-internet-access-enabled`, `id-gsa-private-access-enabled`,
-  `endpoint-epm-policy-present`, `id-mdca-ca-session-control`,
-  `xdr-sec-copilot-workspace-provisioned` (fixtures + unit tests).
+  `endpoint-epm-policy-present`, `endpoint-mde-ai-agent-runtime-protection`,
+  `id-mdca-ca-session-control`, `xdr-sec-copilot-workspace-provisioned`
+  (fixtures + unit tests).
+- **Defender for Endpoint P2 local AI agent runtime protection** — enriched
+  Intune Settings Catalog `endpointSecurityAntivirus` `configurationPolicies`
+  in `intune_policy.py` (Graph beta, zero new permissions; reuses
+  `DeviceManagementConfiguration.Read.All`) to extract `AiAgentProtection` and
+  `AiAgentNetworkInspection` (`0=Disabled`, `1=Block`, `2=Audit`, `isAssigned`,
+  plus pagination truncation propagation), and added deterministic check
+  `endpoint-mde-ai-agent-runtime-protection` under `defender_endpoint_p2`
+  (`endpoint` and `full` profiles).
 - **Graph permissions** — `NetworkAccess.Read.All` and
   `SecurityCopilotWorkspaces.Read.All` documented for beta collectors.
 - **graph_ops coverage** — AccessReview, AuditLog sign-ins, Organization /

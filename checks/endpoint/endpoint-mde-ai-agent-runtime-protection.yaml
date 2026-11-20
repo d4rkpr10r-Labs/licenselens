@@ -1,0 +1,64 @@
+id: endpoint-mde-ai-agent-runtime-protection
+title: Defender for Endpoint local AI agent runtime protection enforced
+customer_title: Local AI coding and desktop agents may not have runtime protection enabled
+customer_summary: >
+  Defender for Endpoint Plan 2 can inspect local AI agents at runtime and block
+  prompt-injection attacks before an agent runs dangerous commands or reads
+  sensitive files. Turning this on protects endpoints where developers and staff
+  use local AI tools.
+expected_state: >
+  Assigned Intune Antivirus policy enforces AiAgentProtection or
+  AiAgentNetworkInspection in Block mode (1) on Windows.
+customer_next_step: >
+  Create and assign a Microsoft Defender AI agent runtime protection policy in
+  Intune Endpoint security > Antivirus (start in Audit mode if needed, then move
+  to Block mode for enforcement).
+description: >
+  When Microsoft Defender for Endpoint Plan 2 is licensed, local AI agent
+  runtime protection on Windows (GA Nov 2026) should be configured and enforced
+  via Intune Endpoint security > Antivirus (AiAgentProtection and/or
+  AiAgentNetworkInspection set to Block = 1 on an assigned policy). Settings
+  applied outside Intune (GPO, PowerShell Set-MpPreference, or Defender portal
+  without Intune sync) are outside this Graph beta Settings Catalog read.
+workload: endpoint
+required_capabilities:
+  - defender_endpoint_p2
+severity: high
+value_impact: high
+impact: high
+effort: hours
+blast_radius: devices
+pack: endpoint
+exposure_class: none
+deep_link: https://intune.microsoft.com/#view/Microsoft_Intune_Workflows/SecurityManagementMenu/~/antivirus
+collector: intune_collector
+remediation: >
+  In Microsoft Intune (Endpoint security > Antivirus) or the Microsoft Defender
+  portal (Endpoint security policies > Windows), create a Microsoft Defender AI
+  agent runtime protection policy, configure AiAgentProtection (agent-native
+  event inspection) and/or AiAgentNetworkInspection (network inspection) to
+  Block (1) after validating in Audit (2), and assign it to managed Windows
+  device groups.
+references:
+  - https://learn.microsoft.com/en-us/defender-endpoint/configure-ai-agent-runtime-protection
+  - https://learn.microsoft.com/en-us/windows/client-management/mdm/defender-csp
+  - https://learn.microsoft.com/graph/api/resources/intune-deviceconfigv2-devicemanagementconfigurationtemplatefamily?view=graph-rest-beta
+mappings:
+  nist: ["SI-3", "CM-6"]
+  mitre: ["T1059", "T1204"]
+enabled: true
+tier: activation
+pass_criteria:
+  ok: At least one assigned Intune Antivirus policy enforces AiAgentProtection or AiAgentNetworkInspection in Block mode (1).
+  partial: Protection is configured in Audit mode (2) only, exists only on an unassigned policy, no managed Windows devices were observed, or the Intune policy/device read was truncated.
+  gap: Managed Windows devices exist, Intune Antivirus policies were read cleanly, and neither AiAgentProtection nor AiAgentNetworkInspection is enabled (Medium confidence; GPO/PowerShell/Defender-portal configs outside Intune are not observed).
+  evidence_fields:
+    - antivirus_policy_count
+    - assigned_block_policy_count
+    - assigned_audit_policy_count
+    - unassigned_enabled_policy_count
+    - block_modes
+    - audit_modes
+    - managed_windows_device_count
+    - api_version
+    - truncated

@@ -7,7 +7,7 @@ Security License Lens is **advisory**. Confirm every finding in the Microsoft ad
 | Area | What we can read | What we cannot |
 |------|------------------|----------------|
 | Identity (CA, PIM, roles, sign-ins) | Graph (app-only or device code) | Intent of every exclusion group |
-| Endpoint (MDE onboard) | MDE API machine inventory | Full health of every sensor |
+| Endpoint (MDE onboard & AI agent runtime protection) | MDE API machine inventory + Intune Settings Catalog (`configurationPolicies`, Graph beta) | Full health of every sensor; AI agent runtime protection configured outside Intune (GPO, PowerShell `Set-MpPreference`, or Defender portal without Intune sync) |
 | Email (MDO Safe Links / Safe Attachments / presets) | **Nothing via Graph** | Policy config is Exchange Online PowerShell only |
 | MDI sensors | Direct Graph v1.0 `/security/identities/sensors` + `/security/identities/healthIssues` (falls back to labeled Secure Score proxy when direct read is unavailable) | Domain controller OS/network internals outside sensor health & health issues |
 | Purview DLP | Direct Graph v1.0 `/security/dataLossPreventionPolicies` + `/security/dataLossPreventionApps` plus PowerShell IPPS bridge when available (falls back to labeled Secure Score proxy when direct reads are unavailable) | Portal-only rule internals and GSA "Scan with Purview" network content policies (no documented Graph read API yet) |
